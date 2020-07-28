@@ -1,0 +1,10 @@
+# Ignore the following files in commits:
+*.h5
+
+*.pdf
+*.tex
+*.aux
+*.tex
+*.txt
+*.obj
+*.csv
