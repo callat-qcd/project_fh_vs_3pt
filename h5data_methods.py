@@ -7,10 +7,91 @@ import gvar as gv
 possible_FHdatas = ['all', 'gA', 'gV']
 possible_gAsets = ['A1', 'A2', 'A3', 'A4']
 possible_gVsets = ['V1', 'V2', 'V3', 'V4']
+mpi = 0.1885
 
 # For the 3-point correlation functions, the datasets which switch between 2-d array data (for plotting and interacting with the data source) and 1-d data (for running the model-functions and fitting)
 # Universal precondition for the below functions: x_1d, x_2d, y_1d, and y_2d, in the end, must have the
 # same number of elements. Also, x_1d and y_1d have to have the same dimensions, as must x_2d and y_2d
+
+def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
+	prior = gv.BufferDict()
+	
+	prior['E0'] = gv.gvar(0.665, 0.02)
+	prior['Z0'] = gv.gvar(0.000775, 0.000775)
+	prior['Ztilde0'] = gv.gvar(0.0015, 0.0005)
+
+	# Use constant dE to prior the energies
+	dE0 = 2*mpi
+	energyvals = np.array([None]*n_2pt_3pt)
+	dEvals = np.array([None]*(n_2pt_3pt - 1))
+
+	energyvals[0] = gv.gvar(0.665, 0.02)
+	for k in range(1, n_2pt_3pt):
+	    dEvals[k-1] = dE0/np.power(k, e_decay_exp)
+	    energyvals[k] = energyvals[k-1] + dEvals[k-1]
+	
+	prior['Z1'] = gv.gvar(0.0005, 0.0003)
+	prior['Ztilde1'] = gv.gvar(0.0015, 0.001)
+	prior['Z2'] = gv.gvar(0.0005, 0.0003)
+	prior['Ztilde2'] = gv.gvar(0.001, 0.001)
+
+	for n in range(1, n_2pt_3pt):
+	    prior['log(dE{})'.format(n)] = gv.gvar(np.log(dEvals[n-1]), b)
+	    if n > 2:
+	    	prior['Z{}'.format(n)] = gv.gvar(0.0003, 0.0003)
+	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	
+	for n in range(n_2pt_3pt):
+	    for m in range(n_2pt_3pt):
+        	if n + m > 0:
+	        	
+	        	if n == m and n < n_2pt_3pt-1:
+                            prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(1, 0.2)
+                            
+	        	elif n >= m:
+                            prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            
+	        	else:
+                            continue
+	for n in range(n_2pt_3pt):
+	    for m in range(n_2pt_3pt):
+        	if n == m:
+	        	continue
+        	elif n > m:
+	        	continue
+        	else:
+	        	prior['gA3_{0}{1}'.format(n, m)] = prior['gA3_{0}{1}'.format(m, n)] 
+	        	prior['gV4_{0}{1}'.format(n, m)] = prior['gV4_{0}{1}'.format(m, n)]
+
+	prior['gA3_00'] = gv.gvar(1.25, 0.05)
+	prior['gV4_00'] = gv.gvar(1.0, 0.2)
+
+	for n in range(n_sumsub_FH):
+	    prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
+	    prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
+	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
+	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
+
+	# Set the "garbage can" for the Feynman Hellman fit
+	prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
+	prior['Ztilde_FHmax'] = gv.gvar(0, 0.01)
+	prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH - 2]), b)
+
+	
+	for n in range(n_sumsub_FH-1):
+	    prior['gA3_FHmax{}'.format(n)] = gv.gvar(0, 1)
+	    prior['gA3_{}FHmax'.format(n)] = gv.gvar(0, 1)
+	    prior['gV4_FHmax{}'.format(n)] = prior['gA3_FHmax{}'.format(n)]
+	    prior['gV4_{}FHmax'.format(n)] = prior['gA3_{}FHmax'.format(n)]
+	    
+	prior['gA3_FHmaxFHmax'] = gv.gvar(0, 1)
+	prior['gV4_FHmaxFHmax'] = gv.gvar(0, 1)
+	
+	return prior
+
+
 def convert_1dto2d(x_1d, x_2d, y_1d):
     y_2d = np.array([np.array([None for j in range(len(x_2d[i]))]) for i in range(len(x_2d))])
     i = 0
@@ -59,7 +140,16 @@ def get_3pt(fname, dataset, tsep_min, tsep_max):
         
     else:
         return np.array([[[np.real(return_array[i][j][k]) for k in range(64)] for i in range(10)] for j in range(1053)])/4.
+
+# Like get_3pt, but symmetrizes the dataset about the midpoint between tau = 1 and tau = tsep - 1 
+def get_3pt_symmetrized(fname, dataset, tsep_min, tsep_max, half=False):
         
+    unsymmetrized_dataset = get_3pt(fname, dataset, tsep_min, tsep_max)
+    return np.array([ [ [ (unsymmetrized_dataset[k] + unsymmetrized_dataset[j + tsep_min - k])/2. for k in range(len(unsymmetrized_dataset[i][j]))] for j in range(len(unsymmetrized_dataset[i]))] for i in range(len(unsymmetrized_dataset)) ])
+    
+ 			
+
+
 # Gets a FH dataset
 def get_FH(fname, dataset):
     file = h5py.File(fname, "r")
