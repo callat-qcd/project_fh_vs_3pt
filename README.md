@@ -5,14 +5,20 @@ This repo will collect both the analysis notebook(s) that become public with our
 This analysis calculates the ground-state energy and the $g\_{A00}$ and $g\_{V00}$ values of a proton based on nonlinear least-squares fits to simulation data obtained from Lattice QCD at a lattice spacing 0.12 fm
 #### Initial pion mass used: 310 MeV, initial lattice length 24 (both of those are intended to be adjustable)
 
-## Data files
-- a12m310_a_avg.h5: the primary HDF5 file with the 2-point and 3-point correlation function data
-- a12m310_a_fh.h5: the HDF5 file with the Feynman-Hellman data
 
 ## Libraries
 - h5data_methods.py: containes functions for getting data from files and plotting data and fitfunctions
 
-## Code-files
+## Data files
+- a12m310_a_avg.h5: the primary HDF5 file with the 2-point and 3-point correlation function data
+- a12m310_a_fh.h5: the HDF5 file with the Feynman-Hellman data
+
+## Working files
+- model_comparisons: compares the results of fits to different samples and different fitting methods, as well as acting as the location for the data files
+- All_fits_combined: does a simultaneous fit of all samples: 2pt, 3pt, sum-subtracted, Feynman-Hellman
+
+
+### Contents of model_comparisons
 - Model_comparator: compares the results for ground-state energy, $g\_{A00}$, and $g\_{V00}$ for the different fit-models made by the files below
 - Parameter_charts: For each fit-model used below, creates an energy-spectrum of the prior and posterior and compares it to the pion-excitation energies
 - 2point_final: for ascertaining that 2-point data from the a12m310_a_avg.h5 and the a12m310_a_fh.h5 files are the same, doing fits on 2-point data alone, and seeing what happens to ground state energy and fit quality when number of excited states and minimum and maximum time of data is changed
