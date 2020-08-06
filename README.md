@@ -16,7 +16,7 @@ This analysis calculates the ground-state energy and the $g\_{A00}$ and $g\_{V00
 ## Working files
 - model_comparisons: compares the results of fits to different samples and different fitting methods, as well as acting as the location for the data files
 - All_fits_combined: does a simultaneous fit of all samples: 2pt, 3pt, sum-subtracted, Feynman-Hellman
-- Written by Jason Chang (Github repo https://github.com/cchang5/fh_3pt_comparision), compares the output of the fit-functions used in this repo to the output of those used by Jason
+- compare.py: Written by Jason Chang (Github repo https://github.com/cchang5/fh_3pt_comparision), compares the output of the fit-functions used in this repo to the output of those used by Jason (comes with library files seqfhfit.py and h5file_parameters.py)
 
 ### Contents of model_comparisons
 - Model_comparator: compares the results for ground-state energy, $g\_{A00}$, and $g\_{V00}$ for the different fit-models made by the files below
