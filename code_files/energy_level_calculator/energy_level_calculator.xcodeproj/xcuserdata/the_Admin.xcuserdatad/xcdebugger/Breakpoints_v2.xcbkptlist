@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "F0658817-7F04-486E-B32B-D456271975D5"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F4520907-B5E7-406B-B459-7EA740D6E3BA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "367"
+            endingLineNumber = "367"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A62204AB-6B30-426D-A631-19E041E0B211"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "368"
+            endingLineNumber = "368"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AB322BC0-BEB6-451A-8909-28FE5DC8E7B2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "369"
+            endingLineNumber = "369"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "462E7571-061B-40CC-B14B-471CA77A32D6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "370"
+            endingLineNumber = "370"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EBBB7E3D-A514-4D13-B5E1-86C596C703AA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "372"
+            endingLineNumber = "372"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9F0EA573-0CE4-43F1-B59B-D4BCD664D6AF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "373"
+            endingLineNumber = "373"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ACC5C74A-D664-43AE-9C86-7C53B9BA7B63"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "energy_level_calculator/main.c"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

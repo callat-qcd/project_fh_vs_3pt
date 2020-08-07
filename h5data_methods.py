@@ -45,11 +45,13 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Ztilde2'] = gv.gvar(0.001, 0.001)
 	#prior['Ztilde2'] = gv.gvar(0.005, 0.005)
 
-	prior['Z1'] = gv.gvar(0.0005, 0.0003)    
+	#prior['Z1'] = gv.gvar(0.0005, 0.0003)
+	prior['Z1'] = gv.gvar(0.000775, 0.0000775)    
 	prior['Ztilde1'] = gv.gvar(0.003, 0.003)
-	prior['Z2'] = gv.gvar(0.0005, 0.0003)
-	prior['Ztilde2'] = gv.gvar(0.003, 0.003)
-
+	#prior['Z2'] = gv.gvar(0.0005, 0.0003)
+	prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	#prior['Ztilde2'] = gv.gvar(0.003, 0.003)
+	prior['Ztilde2'] = gv.gvar(0.002, 0.002)
 
 	for n in range(1, n_2pt_3pt):
 	    #prior['log(dE{})'.format(n)] = gv.gvar(np.log(dEvals[n-1]), b)
@@ -59,9 +61,10 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.0005, 0.0005)
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.003, 0.003)	
-	    	prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0003)
-	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.0015, 0.0015)
-
+	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0003)
+	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.0015, 0.0015)
+	    	prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
 
 	#prior['Z{}'.format(n)] = gv.gvar(0.0012, 0.0009)
 	#prior['Ztilde{}'.format(n)] = gv.gvar(0, 0.01)
@@ -98,8 +101,11 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
 	#prior['Ztilde_FHmax'] = gv.gvar(0, 0.01)
 	#prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH - 2]), b)
-	prior['Z_FHmax'] = gv.gvar(0.0005, 0.0003)
-	prior['Ztilde_FHmax'] = gv.gvar(0.0015, 0.0015)
+	#prior['Z_FHmax'] = gv.gvar(0.0005, 0.0003)
+	#prior['Ztilde_FHmax'] = gv.gvar(0.0015, 0.0015)
+	prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
+
 	prior['log(FH_dEmax)'] = gv.gvar(-1, b) 
 	
 	for n in range(n_sumsub_FH-1):
