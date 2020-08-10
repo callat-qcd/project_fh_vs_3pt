@@ -207,7 +207,7 @@ int main(int argc, const char * argv[]) {
                         // Calculate the correction to the last pion's momentum
                         n_lastwrittenx = n_lastreadx - pmax - n_pix;
                         n_lastwritteny = n_lastready - pmax - n_piy;
-                        n_lastwrittenz = n_lastready - pmax - n_piz;
+                        n_lastwrittenz = n_lastreadz - pmax - n_piz;
                         
                         // Write the corrected energy to the file
                         fprintf(fptr_pion_a, "%4.4f|", E - E_pi_standard + sqrt(m_pi*m_pi + (n_pix*p_quantum)*(n_pix*p_quantum) + (n_piy*p_quantum)*(n_piy*p_quantum) + (n_piz*p_quantum)*(n_piz*p_quantum)) - sqrt(m_pi*m_pi + (n_lastreadx*p_quantum)*(n_lastreadx*p_quantum) + (n_lastready*p_quantum)*(n_lastready*p_quantum) + (n_lastreadz*p_quantum)*(n_lastreadz*p_quantum)) + sqrt(m_pi*m_pi + (n_lastwrittenx*p_quantum)*(n_lastwrittenx*p_quantum) + (n_lastwritteny*p_quantum)*(n_lastwritteny*p_quantum) + (n_lastwrittenz*p_quantum)*(n_lastwrittenz*p_quantum)));

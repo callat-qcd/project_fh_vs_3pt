@@ -17,6 +17,7 @@ This analysis calculates the ground-state energy and the $g\_{A00}$ and $g\_{V00
 - model_comparisons: compares the results of fits to different samples and different fitting methods, as well as acting as the location for the data files
 - All_fits_combined: does a simultaneous fit of all samples: 2pt, 3pt, sum-subtracted, Feynman-Hellman
 - compare.py: Written by Jason Chang (Github repo https://github.com/cchang5/fh_3pt_comparision), compares the output of the fit-functions used in this repo to the output of those used by Jason (comes with library files seqfhfit.py and h5file_parameters.py)
+- Energy_Levels: uses the results fom energy_level_calculator to create an energy-level diagram of the nucleon excited states
 
 ### Contents of model_comparisons
 - Model_comparator: compares the results for ground-state energy, $g\_{A00}$, and $g\_{V00}$ for the different fit-models made by the files below
@@ -34,7 +35,7 @@ All data files below compare results for fits where the 3-point data has all poi
 
 ## Folders with other data
 - energy_level_calculator: a program that uses a brute-force algorithm to find all possible energy levels based on pion excitation up to a certain number of pions and a certain maximum particle momentum (warning: it does not eliminate unphysical zero-momentum states with odd numbers of pions)
-- old: files that are not currently used. Includes (but is not necessarily limited to) Energy_Levels (for visually representing the energy levels of energy_level_calculator as an energy-level diagram), covar_matrices (for examining the covariance matrices of priors and posteriors in fits to the data), Higher_Order_Effective_States (an abandoned attempt at prioring excited state energies by subtracting out lower order energies and finding the effective mass), First_axial_dataset (a first attempt at fitting the 2-point data, using almost every single energy level up to about 1.68 obtained by energy_level_calculator), 3_pt_sum_subtracted_trial1 (a trial run at plotting both 2-point and 3-point data), 2point_model_comparison (a version of 2point_final but with no data used from a12m310_a_fh.h5 and several abandoned projects), and 3pt_data_A3 and 3pt_data_V4 (test files for the fits to the 3-point data)
+- old: files that are not currently used. Includes (but is not necessarily limited to) covar_matrices (for examining the covariance matrices of priors and posteriors in fits to the data), Higher_Order_Effective_States (an abandoned attempt at prioring excited state energies by subtracting out lower order energies and finding the effective mass), First_axial_dataset (a first attempt at fitting the 2-point data, using almost every single energy level up to about 1.68 obtained by energy_level_calculator), 3_pt_sum_subtracted_trial1 (a trial run at plotting both 2-point and 3-point data), 2point_model_comparison (a version of 2point_final but with no data used from a12m310_a_fh.h5 and several abandoned projects), and 3pt_data_A3 and 3pt_data_V4 (test files for the fits to the 3-point data)
 
 
 

@@ -265,7 +265,7 @@ def raw_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, ylim = None, nplots = 
     
 #Plots out the fit-function with the data
 # Precondition: each fit-result must correspond to a data result
-def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upperbound, yfit_lowerbound, colors, g00=None, ylim = None, nplots = 1, ydat_error = None, datalabels = None, fitlabels = None, logy = False, filename = None):
+def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upperbound, yfit_lowerbound, colors, title_fontsize, axislabel_fontsize, ticklabel_fontsize, legendlabel_fontsize, g00=None, ylim = None, nplots = 1, ydat_error = None, datalabels = None, fitlabels = None, logy = False, filename = None):
     fig = plt.figure(figsize = (10,7))
     ax = plt.axes()
     if logy:
@@ -410,11 +410,14 @@ def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upper
                         if ylim is not None:
                             plt.ylim(ylim[0], ylim[1])
                 
-            plt.legend()
+            plt.legend(fontsize = legendlabel_fontsize)
     
-    plt.xlabel(xtitle)
-    plt.ylabel(ytitle)
-    plt.title(graphtitle)
+    plt.xticks(fontsize=ticklabel_fontsize)
+    plt.yticks(fontsize=ticklabel_fontsize)
+    
+    plt.xlabel(xtitle, fontsize=axislabel_fontsize)
+    plt.ylabel(ytitle, fontsize=axislabel_fontsize)
+    plt.title(graphtitle, fontsize=title_fontsize)
     
     if filename is not None:
         plt.savefig(filename)

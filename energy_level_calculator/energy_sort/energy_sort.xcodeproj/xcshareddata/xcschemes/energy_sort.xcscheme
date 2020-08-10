@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "energy_levels_npi_7_pmax_0.txt"
+            argument = "energy_levels_npi_6_pmax_1.txt"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

@@ -9,8 +9,8 @@
          <BreakpointContent
             uuid = "F4520907-B5E7-406B-B459-7EA740D6E3BA"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
@@ -26,8 +26,8 @@
          <BreakpointContent
             uuid = "A62204AB-6B30-426D-A631-19E041E0B211"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
@@ -43,8 +43,8 @@
          <BreakpointContent
             uuid = "AB322BC0-BEB6-451A-8909-28FE5DC8E7B2"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
@@ -60,8 +60,8 @@
          <BreakpointContent
             uuid = "462E7571-061B-40CC-B14B-471CA77A32D6"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
@@ -77,8 +77,8 @@
          <BreakpointContent
             uuid = "EBBB7E3D-A514-4D13-B5E1-86C596C703AA"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
@@ -94,8 +94,8 @@
          <BreakpointContent
             uuid = "9F0EA573-0CE4-43F1-B59B-D4BCD664D6AF"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
             condition = "i == 256 &amp;&amp; nx == 1 &amp;&amp; ny == 1 &amp;&amp; nz ==1"
+            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "energy_level_calculator/main.c"
             startingColumnNumber = "9223372036854775807"
