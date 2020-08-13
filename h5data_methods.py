@@ -22,7 +22,7 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Ztilde0'] = gv.gvar(0.003, 0.003)
 
 	prior['E0'] = gv.gvar(0.66, 0.01)
-	prior['Z0'] = gv.gvar(0.000775, 0.0000775)
+	prior['Z0'] = gv.gvar(0.0008, 0.00008)
 	prior['Ztilde0'] = gv.gvar(0.003, 0.001)
 
 
@@ -31,7 +31,7 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	energyvals = np.array([None]*n_2pt_3pt)
 	dEvals = np.array([None]*(n_2pt_3pt - 1))
 
-	energyvals[0] = gv.gvar(0.665, 0.02)
+	energyvals[0] = gv.gvar(0.66, 0.01)
 	for k in range(1, n_2pt_3pt):
 	    dEvals[k-1] = dE0/np.power(k, e_decay_exp)
 	    energyvals[k] = energyvals[k-1] + dEvals[k-1]
@@ -46,12 +46,17 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Ztilde2'] = gv.gvar(0.005, 0.005)
 
 	#prior['Z1'] = gv.gvar(0.0005, 0.0003)
-	prior['Z1'] = gv.gvar(0.000775, 0.0000775)    
-	prior['Ztilde1'] = gv.gvar(0.003, 0.003)
+	#prior['Z1'] = gv.gvar(0.000775, 0.0000775)
+	#prior['Ztilde1'] = gv.gvar(0.003, 0.003)
 	#prior['Z2'] = gv.gvar(0.0005, 0.0003)
-	prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	#prior['Z2'] = gv.gvar(0.0005, 0.0005)
 	#prior['Ztilde2'] = gv.gvar(0.003, 0.003)
-	prior['Ztilde2'] = gv.gvar(0.002, 0.002)
+	#prior['Ztilde2'] = gv.gvar(0.002, 0.002)
+ 
+	prior['Z1'] = gv.gvar(0.0005, 0.0005)
+	prior['Ztilde1'] = gv.gvar(0.003, 0.003)
+	prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	prior['Ztilde2'] = gv.gvar(0.003, 0.003)
 
 	for n in range(1, n_2pt_3pt):
 	    #prior['log(dE{})'.format(n)] = gv.gvar(np.log(dEvals[n-1]), b)
@@ -63,7 +68,10 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.003, 0.003)	
 	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0003)
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.0015, 0.0015)
-	    	prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
+            
+	    	prior['Z{}'.format(n)] = gv.gvar(0.0004, 0.0004)
 	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
 
 	#prior['Z{}'.format(n)] = gv.gvar(0.0012, 0.0009)
@@ -90,12 +98,23 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	
 	prior['gA3_00'] = gv.gvar(1.25, 0.05)
 	prior['gV4_00'] = gv.gvar(1.0, 0.2)
+    
 
-	for n in range(n_sumsub_FH):
-	    prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
-	    prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
-	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
-	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
+	prior["d_gA_ss_0"] = gv.gvar(-0.0000015, 0.0000015)
+	prior["d_gA_ps_0"] = gv.gvar(-0.000009, 0.000009)
+	prior["d_gV_ss_0"] = gv.gvar(0.0000013, 0.0000013)
+	prior["d_gV_ps_0"] = gv.gvar(0.0000075, 0.0000075)
+
+	for n in range(1, n_sumsub_FH):
+	    prior["d_gA_ss_{}".format(n)] = gv.gvar(0, 0.0000015)
+	    prior["d_gA_ps_{}".format(n)] = gv.gvar(0, 0.000009)
+	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0, 0.0000013)
+	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0, 0.0000075)
+
+	    #prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
+	    #prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
+	    #prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
+	    #prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
 
 	# Set the "garbage can" for the Feynman Hellman fit
 	#prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
@@ -103,10 +122,20 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH - 2]), b)
 	#prior['Z_FHmax'] = gv.gvar(0.0005, 0.0003)
 	#prior['Ztilde_FHmax'] = gv.gvar(0.0015, 0.0015)
-	prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
-	prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
+	#prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	#prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
+ 
+	if n_sumsub_FH > 2:
+	    prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	    prior['Ztilde_FHmax'] = gv.gvar(0.003, 0.003)
+        
+	else:
+	    prior['Z_FHmax'] = gv.gvar(0.0004, 0.0004)
+	    prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
 
-	prior['log(FH_dEmax)'] = gv.gvar(-1, b) 
+	if n_sumsub_FH > 1:
+	    prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH-2]), b)
+	
 	
 	for n in range(n_sumsub_FH-1):
 	    prior['gA3_FHmax{}'.format(n)] = gv.gvar(0, 1)

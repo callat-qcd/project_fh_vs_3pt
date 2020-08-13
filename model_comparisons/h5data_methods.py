@@ -16,38 +16,63 @@ mpi = 0.1885
 def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	prior = gv.BufferDict()
 	
-	prior['E0'] = gv.gvar(0.665, 0.02)
-	prior['Z0'] = gv.gvar(0.0008, 0.0008)
-	prior['Ztilde0'] = gv.gvar(0.0015, 0.0005)
+	#prior['E0'] = gv.gvar(0.665, 0.02)
+	#prior['Z0'] = gv.gvar(0.0008, 0.0008)
+	#prior['Ztilde0'] = gv.gvar(0.0015, 0.0005)
 	#prior['Ztilde0'] = gv.gvar(0.003, 0.003)
+
+	prior['E0'] = gv.gvar(0.66, 0.01)
+	prior['Z0'] = gv.gvar(0.0008, 0.00008)
+	prior['Ztilde0'] = gv.gvar(0.003, 0.001)
+
 
 	# Use constant dE to prior the energies
 	dE0 = 2*mpi
 	energyvals = np.array([None]*n_2pt_3pt)
 	dEvals = np.array([None]*(n_2pt_3pt - 1))
 
-	energyvals[0] = gv.gvar(0.665, 0.02)
+	energyvals[0] = gv.gvar(0.66, 0.01)
 	for k in range(1, n_2pt_3pt):
 	    dEvals[k-1] = dE0/np.power(k, e_decay_exp)
 	    energyvals[k] = energyvals[k-1] + dEvals[k-1]
 	
-	prior['Z1'] = gv.gvar(0.0005, 0.0003)
+	#prior['Z1'] = gv.gvar(0.0005, 0.0003)
 	#prior['Z1'] = gv.gvar(0.0006, 0.0006)
-	prior['Ztilde1'] = gv.gvar(0.0015, 0.001)
+	#prior['Ztilde1'] = gv.gvar(0.0015, 0.001)
 	#prior['Ztilde1'] = gv.gvar(0.005, 0.005)
-	prior['Z2'] = gv.gvar(0.0005, 0.0003)
+	#prior['Z2'] = gv.gvar(0.0005, 0.0003)
 	#prior['Z2'] = gv.gvar(0.0006, 0.0006)
-	prior['Ztilde2'] = gv.gvar(0.001, 0.001)
+	#prior['Ztilde2'] = gv.gvar(0.001, 0.001)
 	#prior['Ztilde2'] = gv.gvar(0.005, 0.005)
 
+	#prior['Z1'] = gv.gvar(0.0005, 0.0003)
+	#prior['Z1'] = gv.gvar(0.000775, 0.0000775)
+	#prior['Ztilde1'] = gv.gvar(0.003, 0.003)
+	#prior['Z2'] = gv.gvar(0.0005, 0.0003)
+	#prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	#prior['Ztilde2'] = gv.gvar(0.003, 0.003)
+	#prior['Ztilde2'] = gv.gvar(0.002, 0.002)
+ 
+	prior['Z1'] = gv.gvar(0.0005, 0.0005)
+	prior['Ztilde1'] = gv.gvar(0.003, 0.003)
+	prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	prior['Ztilde2'] = gv.gvar(0.003, 0.003)
 
 	for n in range(1, n_2pt_3pt):
 	    prior['log(dE{})'.format(n)] = gv.gvar(np.log(dEvals[n-1]), b)
+	    #prior['log(dE{})'.format(n)] = gv.gvar(-1, b)
 	    if n > 2:
-	    	prior['Z{}'.format(n)] = gv.gvar(0.0003, 0.0003)
+	    	#prior['Z{}'.format(n)] = gv.gvar(0.0003, 0.0003)
 	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
-	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.0005, 0.0005)
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.003, 0.003)	
+	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0003)
+	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.0015, 0.0015)
+	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
+	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
+            
+	    	prior['Z{}'.format(n)] = gv.gvar(0.0004, 0.0004)
+	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
 
 	#prior['Z{}'.format(n)] = gv.gvar(0.0012, 0.0009)
 	#prior['Ztilde{}'.format(n)] = gv.gvar(0, 0.01)
@@ -56,37 +81,70 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	    for m in range(n_2pt_3pt):
         	if n + m > 0:
 	        	
-	        	if n == m and n < n_2pt_3pt-1:
-                            prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
-                            prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(1, 0.2)
-                            
-	        	elif n >= m: #else:
+	        	if m < n:  
                             prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
                             prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+	        	elif n == m:
+                            prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(1, 0.2)
+
+	        	#if n == m and n < n_2pt_3pt-1:
+                            #prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            #prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(1, 0.2)
+                            
+	        	#elif n >= m: #else:
+                            #prior['gA3_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
+                            #prior['gV4_{0}{1}'.format(n, m)] = gv.gvar(0, 1)
 	
 	prior['gA3_00'] = gv.gvar(1.25, 0.05)
 	prior['gV4_00'] = gv.gvar(1.0, 0.2)
+    
 
-	for n in range(n_sumsub_FH):
-	    prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
-	    prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
-	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
-	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
+	prior["d_gA_ss_0"] = gv.gvar(-0.0000015, 0.0000015)
+	prior["d_gA_ps_0"] = gv.gvar(-0.000009, 0.000009)
+	prior["d_gV_ss_0"] = gv.gvar(0.0000013, 0.0000013)
+	prior["d_gV_ps_0"] = gv.gvar(0.0000075, 0.0000075)
+
+	for n in range(1, n_sumsub_FH):
+	    prior["d_gA_ss_{}".format(n)] = gv.gvar(0, 0.0000015)
+	    prior["d_gA_ps_{}".format(n)] = gv.gvar(0, 0.000009)
+	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0, 0.0000013)
+	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0, 0.0000075)
+
+	    #prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
+	    #prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
+	    #prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
+	    #prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
 
 	# Set the "garbage can" for the Feynman Hellman fit
-	prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
-	prior['Ztilde_FHmax'] = gv.gvar(0, 0.01)
-	prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH - 2]), b)
+	#prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
+	#prior['Ztilde_FHmax'] = gv.gvar(0, 0.01)
+	#prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH - 2]), b)
+	#prior['Z_FHmax'] = gv.gvar(0.0005, 0.0003)
+	#prior['Ztilde_FHmax'] = gv.gvar(0.0015, 0.0015)
+	#prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	#prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
+ 
+	if n_sumsub_FH > 2:
+	    prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	    prior['Ztilde_FHmax'] = gv.gvar(0.003, 0.003)
+        
+	else:
+	    prior['Z_FHmax'] = gv.gvar(0.0004, 0.0004)
+	    prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
 
+	if n_sumsub_FH > 1:
+	    prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH-2]), b)
 	
 	for n in range(n_sumsub_FH-1):
 	    prior['gA3_FHmax{}'.format(n)] = gv.gvar(0, 1)
 	    #prior['gA3_{}FHmax'.format(n)] = gv.gvar(0, 1)
 	    prior['gV4_FHmax{}'.format(n)] = gv.gvar(0, 1)
-	    #prior['gV4_{}FHmax'.format(n)] = gv.gvar(0, 1)
-	    
+	    #prior['gV4_{}FHmax'.format(n)] = gv.gvar(0, 1)   
+
 	prior['gA3_FHmaxFHmax'] = gv.gvar(0, 1)
-	prior['gV4_FHmaxFHmax'] = gv.gvar(0, 1)
+	#prior['gV4_FHmaxFHmax'] = gv.gvar(0, 1)
+	prior['gV4_FHmaxFHmax'] = gv.gvar(1, 0.2)	 
 	
 	return prior
 
@@ -235,7 +293,7 @@ def raw_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, ylim = None, nplots = 
     
 #Plots out the fit-function with the data
 # Precondition: each fit-result must correspond to a data result
-def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upperbound, yfit_lowerbound, colors, g00=None, ylim = None, nplots = 1, ydat_error = None, datalabels = None, fitlabels = None, logy = False, filename = None):
+def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upperbound, yfit_lowerbound, colors, title_fontsize, axislabel_fontsize, ticklabel_fontsize, legendlabel_fontsize, g00=None, ylim = None, nplots = 1, ydat_error = None, datalabels = None, fitlabels = None, logy = False, filename = None):
     fig = plt.figure(figsize = (10,7))
     ax = plt.axes()
     if logy:
@@ -380,11 +438,14 @@ def fit_data_plot(graphtitle, xtitle, ytitle, xdat, ydat, xfit, yfit, yfit_upper
                         if ylim is not None:
                             plt.ylim(ylim[0], ylim[1])
                 
-            plt.legend()
+            plt.legend(fontsize = legendlabel_fontsize)
     
-    plt.xlabel(xtitle)
-    plt.ylabel(ytitle)
-    plt.title(graphtitle)
+    plt.xticks(fontsize=ticklabel_fontsize)
+    plt.yticks(fontsize=ticklabel_fontsize)
+    
+    plt.xlabel(xtitle, fontsize=axislabel_fontsize)
+    plt.ylabel(ytitle, fontsize=axislabel_fontsize)
+    plt.title(graphtitle, fontsize=title_fontsize)
     
     if filename is not None:
         plt.savefig(filename)
