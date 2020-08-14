@@ -8,3 +8,6 @@
 *.txt
 *.obj
 *.csv
+
+model_comparisons/a12m310_a_avg.h5
+model_comparisons/a12m310_a_fh.h5
