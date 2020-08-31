@@ -62,9 +62,14 @@ class Prepare_data():
     
         data_dict = {}
 
-        for i in range(len(two_point_data[0])):
-            data_dict['pt2_tsep_' + str(i)] = two_point_data[:, i, 0] # 2pt ss data
+        start = 0
+        end = 784
 
+        #temp = two_point_data[::2]
+
+        for i in range(len(two_point_data[0])):
+            data_dict['pt2_tsep_' + str(i)] = two_point_data[start:end, i, 0] # 2pt ss data    
+            #data_dict['pt2_tsep_' + str(i)] = temp[:, i, 0]
             ## shape = (784,)
 
 
@@ -75,13 +80,13 @@ class Prepare_data():
 
         for i in range(self.pt3_data_range[0], self.pt3_data_range[1]): # average
             for key in ['A3', 'V4']:
-                pro_up[key] = three_point_ml0p00951[proton_UU_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:] - three_point_ml0p00951[proton_DD_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:]
+                pro_up[key] = three_point_ml0p00951[proton_UU_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end] - three_point_ml0p00951[proton_DD_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end]
 
-                pro_dn[key] = three_point_ml0p00951[proton_UU_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:] - three_point_ml0p00951[proton_DD_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:]
+                pro_dn[key] = three_point_ml0p00951[proton_UU_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end] - three_point_ml0p00951[proton_DD_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end]
 
-                pnp_dn[key] = three_point_ml0p00951[proton_np_UU_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:] - three_point_ml0p00951[proton_np_DD_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:]
+                pnp_dn[key] = three_point_ml0p00951[proton_np_UU_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end] - three_point_ml0p00951[proton_np_DD_dn_dn[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end]
 
-                pnp_up[key] = three_point_ml0p00951[proton_np_UU_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:] - three_point_ml0p00951[proton_np_DD_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][:]
+                pnp_up[key] = three_point_ml0p00951[proton_np_UU_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end] - three_point_ml0p00951[proton_np_DD_up_up[i-self.pt3_data_range[0]]][key]['px0_py0_pz0']['local_curr'][start:end]
 
             
             data_dict['pt3_A3_tsep_' + str(i)] = ( np.imag(pro_up['A3']) - np.imag(pro_dn['A3']) + np.imag(pnp_dn['A3']) - np.imag(pnp_up['A3']) )/4
@@ -311,17 +316,17 @@ class Fit():
             sum_tsep_A3 = x['sum_A3']
             sum_tsep_V4 = x['sum_V4']
 
-            sum_tsep_A3_fit_1 = sum_tsep_A3[:-1]
-            sum_tsep_V4_fit_1 = sum_tsep_V4[:-1]
+            sum_tsep_A3_fit_1 = sum_tsep_A3
+            sum_tsep_V4_fit_1 = sum_tsep_V4
 
-            sum_tsep_A3_fit_2 = sum_tsep_A3[1:]
-            sum_tsep_V4_fit_2 = sum_tsep_V4[1:]
+            sum_tsep_A3_fit_2 = sum_tsep_A3 + 1
+            sum_tsep_V4_fit_2 = sum_tsep_V4 + 1
 
-            pt2_t_A3_fit_1 = sum_tsep_A3[:-1]
-            pt2_t_A3_fit_2 = sum_tsep_A3[1:]
+            pt2_t_A3_fit_1 = sum_tsep_A3
+            pt2_t_V4_fit_1 = sum_tsep_V4
 
-            pt2_t_V4_fit_1 = sum_tsep_V4[:-1]
-            pt2_t_V4_fit_2 = sum_tsep_V4[1:]
+            pt2_t_A3_fit_2 = sum_tsep_A3 + 1
+            pt2_t_V4_fit_2 = sum_tsep_V4 + 1
 
             val['sum_A3'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p, self.sum_nstates)['pt2']) # using same nstates in the ratio
 
@@ -375,10 +380,10 @@ class Fit():
             sum_A3_factor=[]
             sum_V4_factor=[]
 
-            for t in sum_A3[:-1]:
+            for t in sum_A3:
                 sum_A3_factor.append(data_avg_dict['sum_A3_fit_'+str(t)])
 
-            for t in sum_V4[:-1]:
+            for t in sum_V4:
                 sum_V4_factor.append(data_avg_dict['sum_V4_fit_'+str(t)])
 
             t_tsep_tau['sum_A3'] = sum_A3
@@ -399,6 +404,30 @@ class Fit():
         return fit_result
 
 # %%
+def data_plot(pt2_data_range, data_avg_dict):
+    '''plot effective mass with 2pt data, plot form factor with 3pt data'''
+    m0_eff = []
+    m0_eff_err = []
+
+    for i in range(pt2_data_range[0], pt2_data_range[1]-1):
+        temp = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
+        m0_eff.append(temp.mean)
+        m0_eff_err.append(temp.sdev)
+
+    plt.figure(figsize=(10, 7))
+    plt.errorbar(np.arange(pt2_data_range[0], pt2_data_range[1]-1), np.array(m0_eff), yerr=np.array(m0_eff_err), fmt='x', label='data')
+    plt.grid()
+    plt.minorticks_on()
+    plt.xlim([2, 25])
+    plt.ylim([0.45, 0.65])
+    plt.xlabel('t', size=20)
+    plt.ylabel('meff', size=20)
+    plt.legend()
+    plt.show()
+
+    print(m0_eff[8])
+
+# %%
 if __name__ == '__main__':
     file_name = 'a09m310_e_gA_srcs0-15.h5'
     file_path = os.getcwd() + '/' + file_name # just put the data file inside the 'my_project' folder, if no database, data file should be put in the same path as this file.
@@ -410,48 +439,50 @@ if __name__ == '__main__':
 
     data_avg_dict = prepare_data.read_data_with_average()
 
+    data_plot(pt2_data_range, data_avg_dict)
+
+# %%
+# do the fit
+
 #############################################################
 ################ set parameters #############################
 
-    pt2_t = np.arange(4, 12)
-    pt2_nstates = 4
+pt2_t = np.array([7, 8, 9, 10, 11, 12])
+pt2_nstates = 4
 
-    pt3_A3_t = [4,  5,  6,  7,  8,  8,  9,  9, 10, 10, 10, 11, 11, 11, 12, 12, 12,
-       12, 13, 13, 13, 13, 14, 14, 14, 14, 14]
-    pt3_A3_tau = [2, 2, 3, 3, 3, 4, 3, 4, 3, 4, 5, 3, 4, 5, 3, 4, 5, 6, 3, 4, 5, 6,
-       3, 4, 5, 6, 7]
-    pt3_V4_t = [4,  5,  6,  7,  8,  9, 10, 10, 11, 11, 12, 12, 12, 13, 13, 13, 14,
-       14, 14, 14]
-    pt3_V4_tau = [2, 2, 3, 3, 4, 4, 4, 5, 4, 5, 4, 5, 6, 4, 5, 6, 4, 5, 6, 7]
+pt3_A3_t = [7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+pt3_A3_tau = [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+pt3_V4_t = pt3_A3_t
+pt3_V4_tau = pt3_A3_tau
 
-    pt3_A3 = [np.array(pt3_A3_t), np.array(pt3_A3_tau)]
-    pt3_V4 = [np.array(pt3_V4_t), np.array(pt3_V4_tau)]
-    pt3_nstates = pt2_nstates
+pt3_A3 = [np.array(pt3_A3_t), np.array(pt3_A3_tau)]
+pt3_V4 = [np.array(pt3_V4_t), np.array(pt3_V4_tau)]
+pt3_nstates = pt2_nstates
 
-    sum_A3 = np.arange(3, 10)  # +1
-    sum_V4 = sum_A3  # +1
-    sum_nstates = 3
-    sum_tau_cut = 1
+sum_A3 = np.array([7, 8, 9, 10, 11, 12])
+sum_V4 = sum_A3 
+sum_nstates = 3
+sum_tau_cut = 1
 
-    use_p0 = False
-    include_2pt = True
-    include_3pt = True
-    include_sum = True
+use_p0 = False
+include_2pt = True
+include_3pt = True
+include_sum = True
 
 ##############################################################
 ##############################################################
 
-    data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
+data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
 
-    if use_p0 == False:
-        best_p0 = 0
+if use_p0 == False:
+    best_p0 = 0
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
-    fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)
+fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)
 
-    best_p0 = fit_result.p   
+best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}   
 
-    print(fit_result.format(100)) 
+print(fit_result) 
 
 # %%
