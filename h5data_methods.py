@@ -53,9 +53,9 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Ztilde2'] = gv.gvar(0.003, 0.003)
 	#prior['Ztilde2'] = gv.gvar(0.002, 0.002)
  
-	prior['Z1'] = gv.gvar(0.0005, 0.0005)
+	prior['Z1'] = gv.gvar(0.0008, 0.0008)
 	prior['Ztilde1'] = gv.gvar(0.003, 0.003)
-	prior['Z2'] = gv.gvar(0.0005, 0.0005)
+	prior['Z2'] = gv.gvar(0.0008, 0.0008)
 	prior['Ztilde2'] = gv.gvar(0.003, 0.003)
 
 	for n in range(1, n_2pt_3pt):
@@ -71,8 +71,8 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	    	#prior['Z{}'.format(n)] = gv.gvar(0.0005, 0.0005)
 	    	#prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
             
-	    	prior['Z{}'.format(n)] = gv.gvar(0.0004, 0.0004)
-	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.002, 0.002)
+	    	prior['Z{}'.format(n)] = gv.gvar(0.0008, 0.0008)
+	    	prior['Ztilde{}'.format(n)] = gv.gvar(0.003, 0.003)
 
 	#prior['Z{}'.format(n)] = gv.gvar(0.0012, 0.0009)
 	#prior['Ztilde{}'.format(n)] = gv.gvar(0, 0.01)
@@ -106,15 +106,15 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	prior["d_gV_ps_0"] = gv.gvar(0.0000075, 0.0000075)
 
 	for n in range(1, n_sumsub_FH):
-	    prior["d_gA_ss_{}".format(n)] = gv.gvar(0, 0.0000015)
-	    prior["d_gA_ps_{}".format(n)] = gv.gvar(0, 0.000009)
-	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0, 0.0000013)
-	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0, 0.0000075)
+	    #prior["d_gA_ss_{}".format(n)] = gv.gvar(0, 0.0000015)
+	    #prior["d_gA_ps_{}".format(n)] = gv.gvar(0, 0.000009)
+	    #prior["d_gV_ss_{}".format(n)] = gv.gvar(0, 0.0000013)
+	    #prior["d_gV_ps_{}".format(n)] = gv.gvar(0, 0.0000075)
 
-	    #prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
-	    #prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
-	    #prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
-	    #prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
+	    prior["d_gA_ss_{}".format(n)] = gv.gvar(-0.0000015, 0.0000015)
+	    prior["d_gA_ps_{}".format(n)] = gv.gvar(-0.000009, 0.000009)
+	    prior["d_gV_ss_{}".format(n)] = gv.gvar(0.0000013, 0.0000013)
+	    prior["d_gV_ps_{}".format(n)] = gv.gvar(0.0000075, 0.0000075)
 
 	# Set the "garbage can" for the Feynman Hellman fit
 	#prior['Z_FHmax'] = gv.gvar(0.0012, 0.0009)
@@ -126,12 +126,12 @@ def prior(n_2pt_3pt, n_sumsub_FH, b, e_decay_exp):
 	#prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
  
 	if n_sumsub_FH > 2:
-	    prior['Z_FHmax'] = gv.gvar(0.0005, 0.0005)
+	    prior['Z_FHmax'] = gv.gvar(0.0008, 0.0008)
 	    prior['Ztilde_FHmax'] = gv.gvar(0.003, 0.003)
         
 	else:
-	    prior['Z_FHmax'] = gv.gvar(0.0004, 0.0004)
-	    prior['Ztilde_FHmax'] = gv.gvar(0.002, 0.002)
+	    prior['Z_FHmax'] = gv.gvar(0.0008, 0.0008)
+	    prior['Ztilde_FHmax'] = gv.gvar(0.003, 0.003)
 
 	if n_sumsub_FH > 1:
 	    prior['log(FH_dEmax)'] = gv.gvar(np.log(dEvals[n_sumsub_FH-2]), b)

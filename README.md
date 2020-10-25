@@ -14,7 +14,12 @@ This analysis calculates the ground-state energy and the $g\_{A00}$ and $g\_{V00
 - a12m310_a_fh.h5: the HDF5 file with the Feynman-Hellman data
 
 ## Working files
+- a09: for creating fits from data with the new a09m310_e_gA_srcs0-15.h5 0.09 fm-width dataset, for comparison with Jinchen's results
 - model_comparisons: compares the results of fits to different samples and different fitting methods, as well as acting as the location for the data files
+- jinchen_comparisons: compares the results of a fit of all samples, 2pt, 3pt, sum-subtracted, Feynman-Hellman, with my algorithm vs Jason's and Jinchen's
+- prior_comparisons: compares the results of a 2-point fit for various values of the priors. The working file for the fits is 2point_final from model_comparisons with modified priors.
+
+### Contents of jinchen_comparisons
 - All_fits_combined: does a simultaneous fit of all samples: 2pt, 3pt, sum-subtracted, Feynman-Hellman
 - compare.py: Written by Jason Chang (Github repo https://github.com/cchang5/fh_3pt_comparision), compares the output of the fit-functions used in this repo to the output of those used by Jason (comes with library files seqfhfit.py and h5file_parameters.py)
 - Energy_Levels: uses the results fom energy_level_calculator to create an energy-level diagram of the nucleon excited states
