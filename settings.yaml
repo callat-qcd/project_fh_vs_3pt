@@ -1,0 +1,4 @@
+SECRET_KEY: "a)8%t68!@t1s@=a)126ybjl47z$)moszd4e=nrn2(21jy$yzyu"
+PROJECT_APPS: ['fh_db.ff_fit']
+ALLOWED_HOSTS: []
+DEBUG: True
