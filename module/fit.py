@@ -6,11 +6,8 @@ import lsqfit as lsf
 import math
 import hashlib
 
-from module.prior_setting import prior_ho_width_1
-prior = prior_ho_width_1
-
 class Fit():
-    def __init__(self, file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum):
+    def __init__(self, file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum):
         self.file_name = file_name
         
         self.pt2_nstates = pt2_nstates

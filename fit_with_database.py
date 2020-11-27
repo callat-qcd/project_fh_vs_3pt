@@ -10,6 +10,8 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true" # for jupyter to use database
 # %%
 from module.prepare_data import Prepare_data
 from module.fit import Fit
+from module.prior_setting import prior_id2_width_1
+prior = prior_id2_width_1
 
 # %%
 def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num=None, pt2_range=[None, None], pt3_A3_range=[None, None], pt3_V4_range=[None, None], sum_A3_range=[None, None], sum_V4_range=[None, None], pt3_tau_dict=None):
@@ -80,13 +82,15 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
     'd3_ps_V4': 8.925147564672736e-27, 'fh_A3_4': -0.0007628417809514719, 'fh_V4_4': -0.0026882359647512925, 'd4_ss_A3': -1.8337248632272437e-26, 'd4_ss_V4': 1.0839295795776121e-30, 'd4_ps_A3': -8.40639490383513e-31, 
     'd4_ps_V4': -1.8447470978983475e-30, 'd5_ss_A3': -4.996925396047227e-31, 'd5_ss_V4': 1.0374204770912712e-30, 'd5_ps_A3': -2.4636016481713015e-30, 'd5_ps_V4': -5.605193857299268e-45, 'fh_A3_5': -9.616184647013097e-06, 'fh_V4_5': 0.9999986504760016}
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
     fit_result, hexcode, dr_hex = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0, save)
 
     best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}   
 
-    print(fit_result.format(100)) 
+    print(fit_result)
+    print(fit_result.p['A3_00'].mean)
+    print(fit_result.p['A3_00'].sdev) 
 
     if save == True:
         tau_dict = gv.dumps(pt3_tau_dict)
@@ -132,7 +136,6 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
 
 # %%
-
 file_name = 'a09m310_e_gA_srcs0-15.h5'
 file_path = './' + file_name # just put the data file in the same path as this code.
 
@@ -152,7 +155,7 @@ sum_tau_cut = 1
 id_num = 1
 
 fit_type = "continuous" 
-save = False
+save = True
 
 ##################################################################################################################
 #########################################################
@@ -178,15 +181,15 @@ elif fit_type == "continuous":
         pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1)
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(4, 5) for tmax in range(18, 19)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
     pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
-    pt3_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
+    #pt3_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_nstates_list = [nstates for nstates in range(5, 6)] # pt2_nstates = pt3_nstates
 
     sum_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
-    sum_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
+    #sum_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
     sum_nstates_list = [nstates for nstates in range(5, 6)]
 
     times = 0
@@ -194,14 +197,15 @@ elif fit_type == "continuous":
     for pt2_range in pt2_range_list:
         for pt2_nstates in pt2_nstates_list:
             for pt3_A3_range in pt3_A3_range_list:
-                for pt3_V4_range in pt3_V4_range_list:
-                    for sum_A3_range in sum_A3_range_list:
-                        for sum_V4_range in sum_V4_range_list:
-                            for sum_nstates in sum_nstates_list:
-                                print('#################################################')
-                                times += 1
-                                pt3_nstates = pt2_nstates ##
-                                fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
+                for sum_A3_range in sum_A3_range_list:
+                    for sum_nstates in sum_nstates_list:
+                        print('#################################################')
+                        times += 1
+                        pt3_nstates = pt2_nstates ##
+                        pt3_V4_range = pt3_A3_range ##
+                        sum_V4_range = sum_A3_range ##
+
+                        fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
     print('total '+str(times)+' fits')
 #########################################################
 

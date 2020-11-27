@@ -16,6 +16,7 @@ from module.plot import tmin_plot
 from module.plot import tmin_div_plot
 from module.plot import tmin_late_plot
 from module.plot import tmax_plot
+from module.plot import tau_cut_plot
 
 # labels
 c2pt_tmin = r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$"
@@ -64,7 +65,7 @@ E0_ylim=[0.484, 0.497]
 ####################################
 ########## 23s 2pt tmin #############
 #####################################
-n_range=[5, 8]
+n_range=[4, 8]
 t_range=[3, 8]
 best_n=5
 best_t=3
@@ -101,4 +102,84 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
 
 tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
 
+# %%
+####################################
+########## 23s 3pt tmin #############
+#####################################
+n_range=[4, 8]
+t_range=[3, 8]
+best_n=5
+best_t=3
+
+nstate_name='3pt'
+tmin_name='3pt_gA' # here because gA and gV performs differently in 3pt, so you may change paras of gA/ gV separately
+
+fit_name='23s'
+xlabel=c3pt_tmin
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True, 
+pt2_tmin=3, pt2_tmax=18,
+pt3_A3_tsep_max=15, id_num=1,
+sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
+
+tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
+# %%
+####################################
+########## 23s 3pt tmax #############
+#####################################
+t_range = [8, 16]
+best_n = 5
+best_t = 15
+
+tmax_name = '3pt' # varying tmax is not so interesting as tmin 
+fit_name = '23s'
+xlabel = c3pt_tmax
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True,
+pt2_tmin=3, pt2_tmax=18, pt2_nstates=5,
+pt3_A3_tsep_min=3, id_num=1,
+sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
+
+tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
+
+# %%
+####################################
+########## 23s sum tmin #############
+#####################################
+n_range=[4, 8]
+t_range=[3, 8]
+best_n=5
+best_t=3
+
+nstate_name='sum'
+tmin_name='sum_gA'
+
+fit_name='23s'
+xlabel=csum_tmin
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True, 
+pt2_tmin=3, pt2_tmax=18, pt2_nstates=5,
+pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
+sum_A3_tsep_max=14, sum_tau_cut=1)
+
+tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
+
+# %%
+####################################
+########## 23s tau cut #############
+#####################################
+# taucut-1, taucut, taucut+1, taucut+2, taucut+3
+E0 = [0.49225, 0.4904, 0.4897, 0.4896, 0.4894]
+E0_err = [0.00049, 0.0016, 0.0018, 0.0020, 0.0022]
+A3 = [1.326, 1.253, 1.258, 1.253, 1.253]
+A3_err = [0.012, 0.019, 0.022, 0.021, 0.022]
+V4 = [1.0224, 1.02244, 1.0230, 1.0227, 1.0227]
+V4_err = [0.0011, 0.00087, 0.0020, 0.0020, 0.0021]
+Q = [0.076, 0.88, 0.61, 0.45, 0.21]
+
+n = 5
+
+fit_name = '23s'
+
+tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim)
 # %%

@@ -703,7 +703,7 @@ def prior_ho_width_ge2_10(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 
-def prior_sw_width_1(max_nstate, pt3_nstates, sum_nstates, fh_nstates): # square well
+def prior_sw_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
     prior = {}
 
     prior['E0'] = gv.gvar(0.50, 0.05)
@@ -752,7 +752,7 @@ def prior_sw_width_1(max_nstate, pt3_nstates, sum_nstates, fh_nstates): # square
     return prior
 
 
-def prior_id1_width_1(max_nstate, pt3_nstates, sum_nstates, fh_nstates): # square well
+def prior_id1_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
     prior = {}
 
     prior['E0'] = gv.gvar(0.50, 0.05)
@@ -801,7 +801,7 @@ def prior_id1_width_1(max_nstate, pt3_nstates, sum_nstates, fh_nstates): # squar
     return prior
 
 
-def prior_id2_width_1(max_nstate, pt3_nstates, sum_nstates, fh_nstates): # square well
+def prior_id2_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
     prior = {}
 
     prior['E0'] = gv.gvar(0.50, 0.05)

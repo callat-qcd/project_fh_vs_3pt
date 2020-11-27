@@ -1428,3 +1428,95 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.savefig('./new_plots/'+fit_name+'_E0-'+tmax_name+'_tmax.pdf', transparent=True)
 
 # %%
+def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim):
+    #####################gA
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylim(gA_ylim)
+
+    ax1.errorbar(np.arange(0, 5), np.array(A3), yerr=np.array(A3_err), marker='o', color=color_list[n-2], **errorp)
+
+    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[2] + A3_err[2])*np.ones([6]), (A3[2] - A3_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
+    # best fit
+    ax1.errorbar(np.array([1]), np.array([A3[1]]), yerr=np.array([A3_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+
+
+    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
+
+    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
+
+    # best fit
+    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
+
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    #plt.xlabel('$tau\ cut$', **textp)
+    plt.xticks([0, 1, 2, 3, 4], ['-1', 'tau cut', '+1', '+2', '+3'])
+    plt.xlim([-0.5, 4.5])
+    ax2.tick_params(axis='both', which='major', **labelp)
+    plt.tight_layout(pad=30, rect=aspect)
+    plt.savefig("./new_plots/"+fit_name+"_gA_tins.pdf", transparent=True)
+
+    #####################gV
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylim(gV_ylim)
+
+
+    ax1.errorbar(np.arange(0, 5), np.array(V4), yerr=np.array(V4_err), marker='o', color=color_list[n-2], **errorp)
+
+    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (V4[2] + V4_err[2])*np.ones([6]), (V4[2] - V4_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
+    # best fit
+    ax1.errorbar(np.array([1]), np.array([V4[1]]), yerr=np.array([V4_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+
+
+    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
+
+    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
+
+    # best fit
+    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
+
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    #plt.xlabel('$tau\ cut$', **textp)
+    plt.xticks([0, 1, 2, 3, 4], ['-1', 'tau cut', '+1', '+2', '+3'])
+    plt.xlim([-0.5, 4.5])
+    ax2.tick_params(axis='both', which='major', **labelp)
+    plt.tight_layout(pad=30, rect=aspect)
+    plt.savefig("./new_plots/"+fit_name+"_gV_tins.pdf", transparent=True)
+
+
+    ######################E0
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(e0_label, **textp)
+    ax1.set_ylim(E0_ylim)
+
+    ax1.errorbar(np.arange(0, 5), np.array(E0), yerr=np.array(E0_err), marker='o', color=color_list[n-2], **errorp)
+
+    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (E0[2] + E0_err[2])*np.ones([6]), (E0[2] - E0_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
+    # best fit
+    ax1.errorbar(np.array([1]), np.array([E0[1]]), yerr=np.array([E0_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+
+
+    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
+
+    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
+
+    # best fit
+    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
+
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    #plt.xlabel('$tau\ cut$', **textp)
+    plt.xticks([0, 1, 2, 3, 4], ['-1', 'tau cut', '+1', '+2', '+3'])
+    plt.xlim([-0.5, 4.5])
+    ax2.tick_params(axis='both', which='major', **labelp)
+    plt.tight_layout(pad=30, rect=aspect)
+    plt.savefig("./new_plots/"+fit_name+"_E0_tins.pdf", transparent=True)

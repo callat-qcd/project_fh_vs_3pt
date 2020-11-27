@@ -170,7 +170,7 @@ Q_list = []
 log_list = []
 
 # ho prior
-for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='c37aac2fa3a28221a4503a06864c6b47', include_2pt=True,  include_3pt=True, include_sum=True,
+for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmax=18, pt2_nstates=5,
 pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
@@ -212,7 +212,7 @@ swQ_list = []
 swlog_list = []
     
 # sw prior    
-for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='deea211c96a006341ba9afe762fead45', include_2pt=True, include_3pt=True, include_sum=True,
+for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='ce6f28b84ebcdf0de58d5fa15396687a', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmax=18, pt2_nstates=5,
 pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
@@ -253,7 +253,7 @@ id1Q_list = []
 id1log_list = []
     
 # id1
-for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='7bebb9724db5d546cd3e3db2d024d7f8', include_2pt=True, include_3pt=True, include_sum=True,
+for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='6d93adeadf0937e2ab03d441887082ca', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmax=18, pt2_nstates=5,
 pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
@@ -294,7 +294,7 @@ id2Q_list = []
 id2log_list = []
     
 # id2
-for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='9749061fedb67fd7f9fe9a4957b71921', include_2pt=True, include_3pt=True, include_sum=True, 
+for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8251565b53438fc6cf6fee9df7b98c09', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmax=18, pt2_nstates=5,
 pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
@@ -409,7 +409,7 @@ plt.savefig('./new_plots/spec_23s_2pttmin.pdf', transparent=True)
 E_prior_list = []
 Eerr_prior_list = []
 
-for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='c37aac2fa3a28221a4503a06864c6b47', include_2pt=True, include_3pt=True, include_sum=True,
+for situation in ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmin=3, pt2_tmax=18, pt2_nstates=5,
 pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
