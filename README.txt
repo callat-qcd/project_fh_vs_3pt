@@ -2,7 +2,7 @@ This project is used to fit a09 data and produce all plots in fh comparison pape
 
 In order to use database, please download "fh_db-db.sqlite" from [https://drive.google.com/file/d/1JpksWCjo0sZDMfOSm7ojQKNv5VDNWHXi/view?usp=sharing], and put it at same path as this txt file.
 
-Numb of files check: 16 (including "fh_db-db.sqlite" and this txt file)
+Numb of files check: 17 (including "fh_db-db.sqlite", ".gitignore" and this txt file)
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 
