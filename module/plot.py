@@ -371,7 +371,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     value['gV_err']=[]
     x = []
 
-    for n_ in range(n_range[1]):
+    for n_ in range(n_range[1]): # n_ represents index of n in n_range
         value['Q'].append([])
         value['logGBF'].append([])
         value['E0'].append([])
@@ -382,8 +382,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
         value['gV_err'].append([])
         x.append([])
 
-
-    for n in range(n_range[0], n_range[1]):
+    for n in range(n_range[0], n_range[1]): # n represents nstates value
         for situation in situation_list:         
             nstate_dict = {}
             nstate_dict['2pt'] = situation.pt2_nstates
@@ -391,15 +390,6 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
             nstate_dict['sum'] = situation.sum_nstates
             
             if nstate_dict[nstate_name] == n:
-                value['Q'][n].append(situation.Q_value)
-                value['logGBF'][n].append(situation.log_GBF)
-                value['E0'][n].append(situation.E0)
-                value['E0_err'][n].append(situation.E0_err)
-                value['gA'][n].append(situation.A300)
-                value['gA_err'][n].append(situation.A300_err)
-                value['gV'][n].append(situation.V400)
-                value['gV_err'][n].append(situation.V400_err)
-                
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
@@ -409,10 +399,37 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
                 
                 x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
+        x[n].sort() # fix n, search for all situations to complete x[n], then sort x[n]
+
+        for i in range(len(x[n])):
+            for situation in situation_list:
+                nstate_dict = {}
+                nstate_dict['2pt'] = situation.pt2_nstates
+                nstate_dict['3pt'] = situation.pt3_nstates
+                nstate_dict['sum'] = situation.sum_nstates
+
+                tmin_dict = {}
+                tmin_dict['2pt'] = situation.pt2_tmin
+                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
+                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
+                
+                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
+                    value['Q'][n].append(situation.Q_value)
+                    value['logGBF'][n].append(situation.log_GBF)
+                    value['E0'][n].append(situation.E0)
+                    value['E0_err'][n].append(situation.E0_err)
+                    value['gA'][n].append(situation.A300)
+                    value['gA_err'][n].append(situation.A300_err)
+                    value['gV'][n].append(situation.V400)
+                    value['gV_err'][n].append(situation.V400_err)
+                
+            
     print(x)
     
-    best_n_ = best_n - n_range[0]
-    best_t_ = best_t - t_range[0]
+    best_n_ = best_n - n_range[0] # n_ represents index, n represents value
+    best_t_ = best_t - t_range[0] # t_ represents index, t represents value
 
     #####################################################################################
     #####################################################################################
@@ -422,7 +439,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
 
     # ax1
@@ -495,7 +512,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)     
 
 
     # ax1
@@ -568,7 +585,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x，y轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
     # ax1
     ax1.set_ylabel(e0_label, **textp)
@@ -655,25 +672,48 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
         x.append([])
 
 
-    for n in range(n_range[0], n_range[1]):
-        n_ = n - n_range[0]
-        for situation in situation_list[n_]:         
-            value['Q'][n].append(situation.Q_value)
-            value['E0'][n].append(situation.E0)
-            value['E0_err'][n].append(situation.E0_err)
-            value['gA'][n].append(situation.A300)
-            value['gA_err'][n].append(situation.A300_err)
-            value['gV'][n].append(situation.V400)
-            value['gV_err'][n].append(situation.V400_err)
+    for n in range(n_range[0], n_range[1]): # n represents nstates value
+        for situation in situation_list:         
+            nstate_dict = {}
+            nstate_dict['2pt'] = situation.pt2_nstates
+            nstate_dict['3pt'] = situation.pt3_nstates
+            nstate_dict['sum'] = situation.sum_nstates
+            
+            if nstate_dict[nstate_name] == n:
+                tmin_dict = {}
+                tmin_dict['2pt'] = situation.pt2_tmin
+                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
+                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
+                
+                x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
-            tmin_dict = {}
-            tmin_dict['2pt'] = situation.pt2_tmin
-            tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-            tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
-            tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-            tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
+        x[n].sort() # fix n, search for all situations to complete x[n], then sort x[n]
 
-            x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
+        for i in range(len(x[n])):
+            for situation in situation_list:
+                nstate_dict = {}
+                nstate_dict['2pt'] = situation.pt2_nstates
+                nstate_dict['3pt'] = situation.pt3_nstates
+                nstate_dict['sum'] = situation.sum_nstates
+
+                tmin_dict = {}
+                tmin_dict['2pt'] = situation.pt2_tmin
+                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
+                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
+                
+                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
+                    value['Q'][n].append(situation.Q_value)
+                    value['logGBF'][n].append(situation.log_GBF)
+                    value['E0'][n].append(situation.E0)
+                    value['E0_err'][n].append(situation.E0_err)
+                    value['gA'][n].append(situation.A300)
+                    value['gA_err'][n].append(situation.A300_err)
+                    value['gV'][n].append(situation.V400)
+                    value['gV_err'][n].append(situation.V400_err)
 
     print(x)
     
@@ -693,7 +733,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      #不同subplot共享x轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      
 
 
     # ax1
@@ -754,7 +794,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      #不同subplot共享x轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      
 
 
     # ax1
@@ -813,7 +853,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      #不同subplot共享x，y轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)    
 
     # ax1
     ax1.set_ylabel(e0_label, **textp)
@@ -890,7 +930,7 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
         x.append([])
 
 
-    for n in range(n_range[0], n_range[1]):
+    for n in range(n_range[0], n_range[1]): # n represents nstates value
         for situation in situation_list:         
             nstate_dict = {}
             nstate_dict['2pt'] = situation.pt2_nstates
@@ -898,17 +938,6 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
             nstate_dict['sum'] = situation.sum_nstates
             
             if nstate_dict[nstate_name] == n:
-                value['Q'][n].append(situation.Q_value)
-                value['logGBF'][n].append(situation.log_GBF)
-                value['E0'][n].append(situation.E0)
-                value['E0_err'][n].append(situation.E0_err)
-                value['z0'][n].append(situation.z0)
-                value['z0_err'][n].append(situation.z0_err)
-                value['gA'][n].append(situation.A300)
-                value['gA_err'][n].append(situation.A300_err)
-                value['gV'][n].append(situation.V400)
-                value['gV_err'][n].append(situation.V400_err)
-                
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
@@ -917,6 +946,32 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
                 tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
                 
                 x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
+
+        x[n].sort() # fix n, search for all situations to complete x[n], then sort x[n]
+
+        for i in range(len(x[n])):
+            for situation in situation_list:
+                nstate_dict = {}
+                nstate_dict['2pt'] = situation.pt2_nstates
+                nstate_dict['3pt'] = situation.pt3_nstates
+                nstate_dict['sum'] = situation.sum_nstates
+
+                tmin_dict = {}
+                tmin_dict['2pt'] = situation.pt2_tmin
+                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
+                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
+                
+                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
+                    value['Q'][n].append(situation.Q_value)
+                    value['logGBF'][n].append(situation.log_GBF)
+                    value['E0'][n].append(situation.E0)
+                    value['E0_err'][n].append(situation.E0_err)
+                    value['gA'][n].append(situation.A300)
+                    value['gA_err'][n].append(situation.A300_err)
+                    value['gV'][n].append(situation.V400)
+                    value['gV_err'][n].append(situation.V400_err)
 
     print(x)
     
@@ -1004,7 +1059,7 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
 
     # ax1
@@ -1077,7 +1132,7 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x，y轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
     # ax1
     ax1.set_ylabel(e0_label, **textp)
@@ -1150,7 +1205,7 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      #不同subplot共享x，y轴
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
     # ax1
     ax1.set_ylabel(z0_label, **textp)
@@ -1229,20 +1284,28 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     x=[]
 
     for situation in situation_list:
-        value['Q'].append(situation.Q_value)
-        value['E0'].append(situation.E0)
-        value['E0_err'].append(situation.E0_err)
-        value['gA'].append(situation.A300)
-        value['gA_err'].append(situation.A300_err)
-        value['gV'].append(situation.V400)
-        value['gV_err'].append(situation.V400_err)
-
         tmax_dict = {}
         tmax_dict['2pt'] = situation.pt2_tmax
         tmax_dict['3pt'] = situation.pt3_A3_tsep_max
         tmax_dict['sum'] = situation.sum_A3_tsep_max
 
         x.append(tmax_dict[tmax_name])  # here is the varying parameter
+
+    x.sort()
+    for i in range(len(x)):
+        for situation in situation_list:
+            tmax_dict = {}
+            tmax_dict['2pt'] = situation.pt2_tmax
+            tmax_dict['3pt'] = situation.pt3_A3_tsep_max
+            tmax_dict['sum'] = situation.sum_A3_tsep_max
+            if tmax_dict[tmax_name] == x[i]:
+                value['Q'].append(situation.Q_value)
+                value['E0'].append(situation.E0)
+                value['E0_err'].append(situation.E0_err)
+                value['gA'].append(situation.A300)
+                value['gA_err'].append(situation.A300_err)
+                value['gV'].append(situation.V400)
+                value['gV_err'].append(situation.V400_err)
 
     print(x)
     
@@ -1257,7 +1320,7 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      #不同subplot共享x轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
     ax1.set_ylabel(oa00_label, **textp)
     ax1.set_ylim(gA_ylim)
 
@@ -1295,7 +1358,7 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      #不同subplot共享x轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
     ax1.set_ylabel(ov00_label, **textp)
     ax1.set_ylim(gV_ylim)
 
@@ -1333,7 +1396,7 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      #不同subplot共享x，y轴
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
     ax1.set_ylabel(e0_label, **textp)
     ax1.set_ylim(E0_ylim)
 

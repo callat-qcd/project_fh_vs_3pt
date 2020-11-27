@@ -1,6 +1,6 @@
 This project is used to fit a09 data and produce all plots in fh comparison paper.
 
-Numb of files check: 17
+Numb of files check: 
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 

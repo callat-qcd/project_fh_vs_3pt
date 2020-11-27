@@ -64,8 +64,8 @@ E0_ylim=[0.484, 0.497]
 ####################################
 ########## 23s 2pt tmin #############
 #####################################
-n_range=[4, 6]
-t_range=[3, 5]
+n_range=[5, 8]
+t_range=[3, 8]
 best_n=5
 best_t=3
 
@@ -77,7 +77,7 @@ xlabel=c2pt_tmin
 
 situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True, 
 pt2_tmax=18,
-pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=2,
+pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
 
 tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
@@ -96,7 +96,7 @@ xlabel = c2pt_tmax
 
 situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=True,
 pt2_tmin=3, pt2_nstates=5,
-pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=2,
+pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=1,
 sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
 
 tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
