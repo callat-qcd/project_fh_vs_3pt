@@ -4,7 +4,7 @@ Numb of files check:
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 
-FILES:
+FILES: (13 files)
 
 "fit_with_database.py": This is fit code combined with EspressoDB, you can save fit results in the database named "fh_db". Two ways of fit paras input are allowed: "scatter" and "continue"
 	"scattered" is used to fit with scattered tsep and tau list, but it cannot be marked by tmin/ tmax in database, so you 		need "id_num" to mark your fits.
@@ -17,11 +17,11 @@ FILES:
 
 “stability_plot.py”: This code is used to produce all stability plots.
 
-FOLDERS:
+FOLDERS: (4 folders)
 
 "module": This folder contains all the class files that shared by all codes, including "prior_setting.py" (prior funcs of different models), "prepare_data.py" (Class Prepare_data, used to process data file), "plot.py" and "fit.py" (Class Fit, all fit funcs).
 
-"new_plots" This is used to store all figures.
+"new_plots" This is used to store all figures. <IF THERE IS NO "new_plots" folder, please create one first>
 
 About Database "fh_db"
 This is an almost empty database, you can use "fit_with_database.py" to fill in with the fits you need for plots.
