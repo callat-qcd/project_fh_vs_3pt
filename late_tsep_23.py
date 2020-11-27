@@ -4,16 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import gvar as gv  
 import hashlib
+import os
 from scipy import interpolate
 
 plt.rcParams.update({"text.usetex": True})
 import matplotlib as mpl
 mpl.pyplot.ion()
-%matplotlib inline
+# %matplotlib inline # for jupyter
 
 # %%
 from module.prepare_data import Prepare_data
 from module.fit import Fit
+from module.prior_setting import prior_ho_width_1
+prior = prior_ho_width_1
 
 # %%
 ### standard colors
@@ -126,7 +129,7 @@ for nstates in range(1, 5):
                'd1_ss_A3': 0.0, 'd1_ss_V4': 0.0, 'd1_ps_A3': 0.0, 'd1_ps_V4': 0.0, 'fh_A3_2': 0.0, 'fh_V4_2': 0.0, 'd2_ss_A3': 0.0, 'd2_ss_V4': 0.0, 'd2_ps_A3': 0.0, 'd2_ps_V4': 0.0, 'fh_A3_3': 0.0, 'fh_V4_3': 0.0,
                'd3_ss_A3': 0.0, 'd3_ss_V4': 0.0, 'd3_ps_A3': 0.0, 'd3_ps_V4': 0.0, 'd4_ss_A3': 0.0, 'd4_ss_V4': 0.0, 'd4_ps_A3': 0.0, 'd4_ps_V4': 0.0, 'fh_A3_4': 0.0, 'fh_V4_4': 1.0}
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
     fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 
@@ -221,7 +224,7 @@ for nstates in range(1, 5):
                'd1_ss_A3': 0.0, 'd1_ss_V4': 0.0, 'd1_ps_A3': 0.0, 'd1_ps_V4': 0.0, 'fh_A3_2': 0.0, 'fh_V4_2': 0.0, 'd2_ss_A3': 0.0, 'd2_ss_V4': 0.0, 'd2_ps_A3': 0.0, 'd2_ps_V4': 0.0, 'fh_A3_3': 0.0, 'fh_V4_3': 0.0,
                'd3_ss_A3': 0.0, 'd3_ss_V4': 0.0, 'd3_ps_A3': 0.0, 'd3_ps_V4': 0.0, 'd4_ss_A3': 0.0, 'd4_ss_V4': 0.0, 'd4_ps_A3': 0.0, 'd4_ps_V4': 0.0, 'fh_A3_4': 0.0, 'fh_V4_4': 1.0}
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
     fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 
@@ -316,7 +319,7 @@ for nstates in range(1, 5):
                'd1_ss_A3': 0.0, 'd1_ss_V4': 0.0, 'd1_ps_A3': 0.0, 'd1_ps_V4': 0.0, 'fh_A3_2': 0.0, 'fh_V4_2': 0.0, 'd2_ss_A3': 0.0, 'd2_ss_V4': 0.0, 'd2_ps_A3': 0.0, 'd2_ps_V4': 0.0, 'fh_A3_3': 0.0, 'fh_V4_3': 0.0,
                'd3_ss_A3': 0.0, 'd3_ss_V4': 0.0, 'd3_ps_A3': 0.0, 'd3_ps_V4': 0.0, 'd4_ss_A3': 0.0, 'd4_ss_V4': 0.0, 'd4_ps_A3': 0.0, 'd4_ps_V4': 0.0, 'fh_A3_4': 0.0, 'fh_V4_4': 1.0}
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
     fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 
@@ -488,7 +491,7 @@ for tmin in range(6, 12):
                'd1_ss_A3': 0.0, 'd1_ss_V4': 0.0, 'd1_ps_A3': 0.0, 'd1_ps_V4': 0.0, 'fh_A3_2': 0.0, 'fh_V4_2': 0.0, 'd2_ss_A3': 0.0, 'd2_ss_V4': 0.0, 'd2_ps_A3': 0.0, 'd2_ps_V4': 0.0, 'fh_A3_3': 0.0, 'fh_V4_3': 0.0,
                'd3_ss_A3': 0.0, 'd3_ss_V4': 0.0, 'd3_ps_A3': 0.0, 'd3_ps_V4': 0.0, 'd4_ss_A3': 0.0, 'd4_ss_V4': 0.0, 'd4_ps_A3': 0.0, 'd4_ps_V4': 0.0, 'fh_A3_4': 0.0, 'fh_V4_4': 1.0}
 
-    fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
     fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 

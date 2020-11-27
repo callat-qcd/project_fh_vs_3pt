@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import gvar as gv  
 import hashlib
+import os
 from scipy import interpolate
 
 plt.rcParams.update({"text.usetex": True})
 import matplotlib as mpl
 mpl.pyplot.ion()
-%matplotlib inline
+#%matplotlib inline
 
 # %%
 from module.prepare_data import Prepare_data
@@ -17,6 +18,8 @@ from module.fit import Fit
 from module.plot import plot_pt2
 from module.plot import plot_pt3
 from module.plot import plot_sum
+from module.prior_setting import prior_ho_width_1
+prior = prior_ho_width_1
 
 # %% ########## best fit: ############
 # 2pt + 3pt + sum
@@ -103,7 +106,7 @@ best_p0 = {'E0': 0.49007432827585923, 'log(dE1)': -1.2182574657830274, 'z0': 0.0
                    'd3_ps_V4': 8.925147564672736e-27, 'fh_A3_4': -0.0007628417809514719, 'fh_V4_4': -0.0026882359647512925, 'd4_ss_A3': -1.8337248632272437e-26, 'd4_ss_V4': 1.0839295795776121e-30, 'd4_ps_A3': -8.40639490383513e-31, 
                    'd4_ps_V4': -1.8447470978983475e-30, 'd5_ss_A3': -4.996925396047227e-31, 'd5_ss_V4': 1.0374204770912712e-30, 'd5_ps_A3': -2.4636016481713015e-30, 'd5_ps_V4': -5.605193857299268e-45, 'fh_A3_5': -9.616184647013097e-06, 'fh_V4_5': 0.9999986504760016}
 
-fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
 fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 
@@ -177,7 +180,7 @@ data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
 if use_p0 == False:
     best_p0 = 0
 
-fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
 fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 
@@ -264,7 +267,7 @@ best_p0 = {'E0': 0.4926861952896794, 'log(dE1)': -1.273594898116278, 'z0': 0.000
            'd1_ss_A3': 0.0, 'd1_ss_V4': 0.0, 'd1_ps_A3': 0.0, 'd1_ps_V4': 0.0, 'fh_A3_2': 0.0, 'fh_V4_2': 0.0, 'd2_ss_A3': 0.0, 'd2_ss_V4': 0.0, 'd2_ps_A3': 0.0, 'd2_ps_V4': 0.0, 'fh_A3_3': 0.0, 'fh_V4_3': 0.0,
            'd3_ss_A3': 0.0, 'd3_ss_V4': 0.0, 'd3_ps_A3': 0.0, 'd3_ps_V4': 0.0, 'd4_ss_A3': 0.0, 'd4_ss_V4': 0.0, 'd4_ps_A3': 0.0, 'd4_ps_V4': 0.0, 'fh_A3_4': 0.0, 'fh_V4_4': 1.0}
 
-fitter = Fit(file_name, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
 
 fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0)[0]
 

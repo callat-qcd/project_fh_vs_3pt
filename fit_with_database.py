@@ -10,8 +10,8 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true" # for jupyter to use database
 # %%
 from module.prepare_data import Prepare_data
 from module.fit import Fit
-from module.prior_setting import prior_id2_width_1
-prior = prior_id2_width_1
+from module.prior_setting import prior_ho_width_1
+prior = prior_ho_width_1
 
 # %%
 def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num=None, pt2_range=[None, None], pt3_A3_range=[None, None], pt3_V4_range=[None, None], sum_A3_range=[None, None], sum_V4_range=[None, None], pt3_tau_dict=None):
@@ -155,7 +155,7 @@ sum_tau_cut = 1
 id_num = 1
 
 fit_type = "continuous" 
-save = True
+save = False
 
 ##################################################################################################################
 #########################################################
@@ -181,7 +181,7 @@ elif fit_type == "continuous":
         pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1)
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
     pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]

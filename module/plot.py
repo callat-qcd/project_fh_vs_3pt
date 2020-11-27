@@ -22,7 +22,7 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [red, orange, yellow, green, blue, violet, grey, grape, peach, fuschia]
+color_list = [red, orange, yellow, green, blue, violet, grey, grape, peach, fuschia, sunkist, lime, turquoise]
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
 
 figsize = (7, 4)

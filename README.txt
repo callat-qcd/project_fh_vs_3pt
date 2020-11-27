@@ -10,7 +10,7 @@ USAGE:
 AFTER PUT "fh_db-db.sqlite" AND TWO DATA FILES AT RIGHT PATH, CREATE A NEW FOLDER NAMED "new_plots".
 If you want plots of data or fit results on data, run "data_fit_plot.py".
 If you want plots about late tsep 23 fits, run "late_tsep_23.py".
-If you want stability plots or spectrum plots, run "stability_plot.py" or "spectrum_plot.py". <These two files depend on database>
+If you want stability plots or spectrum plots, run "stability_plot.py" or "spectrum_plot.py"(spectrum takes some time, about 2 min). <These two files depend on database>
 If you want the rest stability plots or more spectrum plots, you need to use "fit_with_database.py" to produce the fit results you need for plots and store them in the database (just make "save=True" in the fit code), then turn to "stability_plot.py" or "spectrum_plot.py", add extra blocks.
 
 FILES:
