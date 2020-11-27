@@ -2,6 +2,7 @@
 import numpy as np 
 import gvar as gv  
 import hashlib
+import os
 
 from fh_db.ff_fit.models import FF_fit as ff_fit_FF_fit
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true" # for jupyter to use database
