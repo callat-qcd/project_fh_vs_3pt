@@ -1,11 +1,13 @@
 This project is used to fit a09 data and produce all plots in fh comparison paper.
 
-Numb of files check: 16
+In order to use database, please download "fh_db-db.sqlite" from [https://drive.google.com/file/d/1JpksWCjo0sZDMfOSm7ojQKNv5VDNWHXi/view?usp=sharing], and put it at same path as this txt file.
+
+Numb of files check: 16 (including "fh_db-db.sqlite" and this txt file)
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 
 USAGE:
-AFTER PUT TWO DATA FILES AT RIGHT PATH, CREATE A NEW FOLDER NAMED "new_plots".
+AFTER PUT "fh_db-db.sqlite" AND TWO DATA FILES AT RIGHT PATH, CREATE A NEW FOLDER NAMED "new_plots".
 If you want plots of data or fit results on data, run "data_fit_plot.py".
 If you want plots about late tsep 23 fits, run "late_tsep_23.py".
 If you want stability plots or spectrum plots, run "stability_plot.py" or "spectrum_plot.py". <These two files depend on database>
