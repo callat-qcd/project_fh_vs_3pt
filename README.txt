@@ -1,13 +1,16 @@
 This project is used to fit a09 data and produce all plots in fh comparison paper.
 
-In order to use database, please download "fh_db-db.sqlite" from [https://drive.google.com/file/d/1JpksWCjo0sZDMfOSm7ojQKNv5VDNWHXi/view?usp=sharing], and put it at same path as this txt file.
-
-Numb of files check: 18 (including "fh_db-db.sqlite", ".gitignore" and this txt file)
+In order to use database:
+1 run "pip install espressodb"
+2 please download "fh_db-db.sqlite" file from [https://drive.google.com/file/d/1JpksWCjo0sZDMfOSm7ojQKNv5VDNWHXi/view?usp=sharing], and put it at same path as this txt file. 
+3 change the "NAME" in "db-config.yaml" file to the correct path of "fh_db-db.sqlite" file
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 
+Total numb of files check: 21 (including "fh_db-db.sqlite", two data files and all hidden items)
+
 USAGE:
-AFTER PUT "fh_db-db.sqlite" AND TWO DATA FILES AT RIGHT PATH, CREATE A NEW FOLDER NAMED "new_plots".
+After put "fh_db-db.sqlite" and two data files at right place: 
 If you want plots of data or fit results on data, run "data_fit_plot.py".
 If you want plots about late tsep 23 fits, run "late_tsep_23.py".
 If you want stability plots or spectrum plots, run "stability_plot.py" or "spectrum_plot.py"(spectrum takes some time, about 2 min). <These two files depend on database>
