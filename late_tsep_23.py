@@ -36,17 +36,20 @@ fuschia = "#C3559F"
 
 # style
 
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.1, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
+figsize = (7, 4)
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 q_label = r"$Q$"
 oa00_label = r"$O^A_{00}$"
 ov00_label = r"$O^V_{00}$"
 gA_ylim=[1.1, 1.30]
 gV_ylim=[1.0051, 1.03]
-textp = {"fontsize": 12}
-labelp = {"labelsize": 12}
+textp = {"fontsize": 14}
+labelp = {"labelsize": 14}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 aspect=[0.15, 0.15, 0.8, 0.8]
+
+plt.rcParams['figure.figsize'] = figsize
 
 # %%
 ### 2pt+3pt [10, 12, 14]  # tau cut + 1
@@ -345,9 +348,15 @@ y2v = n_gv[0] + n_gv[1]
 # nstate = 1, 2, 3, 4    
 
 #####################gA
+fig=plt.figure()
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
 ax1.set_ylabel(oa00_label, **textp)
 ax1.set_ylim(gA_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(4):
     ax1.errorbar(np.array([i]), np.array(A3[i]), yerr=np.array(A3_err[i]), marker='o', color=blue, **errorp, label='tau cut')
@@ -374,16 +383,21 @@ for i in range(4):
 ax2.scatter(np.array([1]), np.array(Q[1]), marker='o', c=blue, edgecolors=blue)
 
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xticks([0, 1, 2, 3], ['1 state', '2 states', '3 states', '4 states'])
+plt.xticks([0, 1, 2, 3], [r'$1\ state$', r'$2\ states$', r'$3\ states$', r'$4\ states$'])
 plt.xlim([-0.5, 3.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
 fig.savefig("./new_plots/ga_23_late_tsep_101214_taucut.pdf", transparent=True)
 
 ######################gV
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
 ax1.set_ylabel(ov00_label, **textp)
 ax1.set_ylim(gV_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(4):
     ax1.errorbar(np.array([i]), np.array(V4[i]), yerr=np.array(V4_err[i]), marker='o', color=blue, **errorp, label='tau cut')
@@ -411,7 +425,7 @@ for i in range(4):
 ax2.scatter(np.array([1]), np.array(Q[1]), marker='o', c=blue, edgecolors=blue)
 
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xticks([0, 1, 2, 3], ['1 state', '2 states', '3 states', '4 states'])
+plt.xticks([0, 1, 2, 3], [r'$1\ state$', r'$2\ states$', r'$3\ states$', r'$4\ states$'])
 plt.xlim([-0.5, 3.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
@@ -512,9 +526,14 @@ for tmin in range(6, 12):
 # tmin = 6, 7, 8, 9, 10, 11
 
 #####################gA
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
 ax1.set_ylabel(oa00_label, **textp)
 ax1.set_ylim(gA_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(6):
     ax1.errorbar(np.array([i+6]), np.array(tA3[i]), yerr=np.array(tA3_err[i]), marker='o', color=blue, **errorp)
@@ -534,16 +553,21 @@ for i in range(6):
 ax2.scatter(np.array([7]), np.array(tQ[1]), marker='o', c=blue, edgecolors=blue)
 
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xlabel('2pt tmin')
+#plt.xlabel('2pt tmin')
 plt.xlim([5.5, 11.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
 fig.savefig("./new_plots/ga_23_late_tsep_101214_2pttmin.pdf", transparent=True)
 
 ######################gV
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
 ax1.set_ylabel(ov00_label, **textp)
 ax1.set_ylim(gV_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(6):
     ax1.errorbar(np.array([i+6]), np.array(tV4[i]), yerr=np.array(tV4_err[i]), marker='o', color=blue, **errorp)
@@ -563,7 +587,7 @@ for i in range(6):
 ax2.scatter(np.array([7]), np.array(tQ[1]), marker='o', c=blue, edgecolors=blue)
     
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xlabel('2pt tmin')
+#plt.xlabel('2pt tmin')
 plt.xlim([5.5, 11.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
@@ -589,9 +613,14 @@ Q = [0.88, 0.59, 0.8738588083167814]
 c_list = [5, 2, 5]
 
 #####################gA
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)    
 ax1.set_ylabel(oa00_label, **textp)
 ax1.set_ylim(gA_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(3):
     ax1.errorbar(np.array([i]), np.array(A3[i]), yerr=np.array(A3_err[i]), marker='o', color="k", **errorp)
@@ -607,16 +636,21 @@ for i in range(3):
 
 plt.subplots_adjust(wspace=0, hspace=0)
 #plt.xlabel('$tau\ cut$', **textp)
-plt.xticks([0, 1, 2], ['23s', '23', '23 late tsep'])
+plt.xticks([0, 1, 2], [r'$23s$', r'$23$', r'$23\ late\ tsep$'])
 plt.xlim([-0.5, 2.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
 fig.savefig("./new_plots/gv_23_late_tsep_101214_compare_ga.pdf", transparent=True)
 
 ######################gV
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)    
 ax1.set_ylabel(ov00_label, **textp)
 ax1.set_ylim(gV_ylim)
+ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(3):
     ax1.errorbar(np.array([i]), np.array(V4[i]), yerr=np.array(V4_err[i]), marker='o', color="k", **errorp)
@@ -632,7 +666,7 @@ for i in range(3):
 
 plt.subplots_adjust(wspace=0, hspace=0)
 #plt.xlabel('$tau\ cut$', **textp)
-plt.xticks([0, 1, 2], ['23s', '23', '23 late tsep'])
+plt.xticks([0, 1, 2], [r'$23s$', r'$23$', r'$23\ late\ tsep$'])
 plt.xlim([-0.5, 2.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)

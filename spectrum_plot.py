@@ -147,8 +147,9 @@ errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 gridspec_tmin = {'height_ratios': [3, 1, 1], 'left': 0.1, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 figsize = (7, 4)
 aspect=[0.15, 0.15, 0.8, 0.8]
-textp = {"fontsize": 12}
-labelp = {"labelsize": 12}
+textp = {"fontsize": 14}
+labelp = {"labelsize": 14}
+labelsize = {'size': 15}
 
 plt.rcParams.update({"text.usetex": True})
 
@@ -399,6 +400,8 @@ plt.subplots_adjust(wspace=0, hspace=0)
 plt.xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
 plt.xlim([2.5, 7.5])
 ax1.tick_params(axis='both', which='major', **labelp)
+ax2.tick_params(axis='both', which='major', **labelp)
+ax3.tick_params(axis='both', which='major', **labelp)
 
 plt.tight_layout(pad=30, rect=aspect)
 
