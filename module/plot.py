@@ -165,6 +165,9 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     gA_fit_err = {}
     gV_fit = {}
     gV_fit_err = {}
+
+    gA_pone = {}
+    gA_done = {}
     
     gA_tsep = []
     gA_tau = []
@@ -192,6 +195,8 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
         gV_err['tsep_'+str(i)] = []
         gV_fit['tsep_'+str(i)] = []
         gV_fit_err['tsep_'+str(i)] = []
+
+        gA_pone['tsep_'+str(i)] = []
         
     for i in range(pt3_data_range[0], pt3_data_range[1]):
         for j in range(tau_cut, i-tau_cut+1):
@@ -206,8 +211,25 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
             gV_err['tsep_'+str(i)].append(temp2.sdev)
           
     if fit_result != None and fitter != None:
+########################################
+        p_done = gv.BufferDict(fit_result.p) # no transition
+        for key in p_done:
+            if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
+                p_done[key] = 0
+
+        p_pone = gv.BufferDict(fit_result.p) # no scattering
+        for key in p_pone:
+            if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]):
+                p_pone[key] = 0
+
+        p_tone = gv.BufferDict(fit_result.p) # no scattering except for g.s.
+        for key in p_tone:
+            if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]) and key != 'A3_00':
+                p_tone[key] = 0
+                 
+######################################## no transition
         pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-        pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_A3']
+        pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), p_tone)['pt3_A3']
         pt3_gV_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_V4']
         index = 0
         for i in range(pt3_data_range[0], pt3_data_range[1]):
@@ -222,17 +244,56 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
                 gV_fit['tsep_'+str(i)].append(temp2.mean)
                 gV_fit_err['tsep_'+str(i)].append(temp2.sdev)
             
+######################################### data - no scattering
+        gA_tsep_pone = []
+        gA_tau_pone = []      
+
+        for i in range(pt3_data_range[0], pt3_data_range[1]): 
+            for j in range(tau_cut, i-tau_cut+1):
+                gA_tsep_pone.append(i)
+                gA_tau_pone.append(j)
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
+        pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep_pone), np.array(gV_tsep), np.array(gA_tau_pone), np.array(gV_tau), p_pone)['pt3_A3']
+
+        index = 0
+        for i in range(pt3_data_range[0], pt3_data_range[1]):
+            for j in range(tau_cut, i-tau_cut+1):
+                index = int((pt3_data_range[0]+i+1-4*tau_cut)*(i-pt3_data_range[0])/2 + j - 1)
+                
+                temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
+                gA_pone['tsep_'+str(i)].append(temp1)
+
+            gA_done['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_pone['tsep_'+str(i)])
+
+        mean_demo = []
+        sdev_demo = []
+        for i in range(pt3_data_range[0], pt3_data_range[1]):
+            mean_demo.append(gA_done['tsep_'+str(i)][int(i/2-1)].mean)
+            sdev_demo.append(gA_done['tsep_'+str(i)][int(i/2-1)].sdev)
+
+        print("#############################################################################"+plot_type)
+        print(mean_demo)
+        print("###")
+        print(sdev_demo)
+#########################################
+
         
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
         color = color_list[idx]
-        ax.errorbar(np.arange(-(i-2)/2, (i)/2, 1), np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
+        #ax.errorbar(np.arange(-(i-2)/2, (i)/2, 1), np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
 
-        if fit_result != None and fitter != None:
+        if fit_result != None and fitter != None: #
             gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
             gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
-            ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
+            # no transition
+            ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
+
+            gA_done_mean = np.array([value.mean for value in gA_done['tsep_'+str(i)]])
+            gA_done_sdev = np.array([value.sdev for value in gA_done['tsep_'+str(i)]])
+            # data - no scattering
+            ax.errorbar(np.arange(tau_cut - i/2, i/2 - tau_cut + 1), gA_done_mean, yerr=gA_done_sdev, marker='x', color=color, **errorp)
     
     ax.set_xlim([-6.5, 6.5])
     ax.set_ylim([1, 1.3])
@@ -294,18 +355,22 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), yerr=np.array(gA_err), marker='o', color="k", **errorp)
     print(gA)
     print(gA_err)
+
+    plt_min = 2
+    plt_max = 60 
+
     if fit_result != None and fitter != None and sum_nstates != None:
         if sum_nstates == pt2_nstates:
-            pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['pt2']
-            sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
-            sum_V4_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_V4']
+            pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p)['pt2']
+            sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+            sum_V4_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
             
         else:
-            pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p, sum_nstates)['pt2']
-            sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
-            sum_V4_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_V4']
+            pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p, sum_nstates)['pt2']
+            sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+            sum_V4_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
         
-        for i in range(len(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)) - int(1 / plot_space)):
+        for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
             temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
             gA_fit.append(temp1.mean)
             gA_fit_err.append(temp1.sdev)
@@ -317,14 +382,68 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
         gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
         
-        fillx = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
+        fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
         ax.fill_between(fillx, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
-        print(fillx)
-        print(gA_fit_y1)
-        print(gA_fit_y2)
+        # print(fillx)
+        # print(gA_fit_y1)
+        # print(gA_fit_y2)
+######################################
+        ### original gA from 3pt with tau = tsep/2
+        y3 = np.array([1.137246887069871, 1.0397951114352422, 1.0581101894217029, 1.0944768415815544, 1.129653822067308, 1.1607318494702763, 1.1883613569687608])
+        dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
+        x3 = np.arange(2, 15, 2)
+
+        # gAmid = [gA[f"tsep_{ct}"][int((ct-2)//2)] for ct in range(2, 15, 2)]
+        # dgAmid = [gA_err[f"tsep_{ct}"][int((ct-2)//2)] for ct in range(2, 15, 2)]
+
+        ### data - no scattering gA 
+        y3_done = np.array([1.0195360458832394, 1.0893909029623612, 1.1367911598123608, 1.1701175686966554, 1.194236140049032, 1.2108177493138421, 1.2234315614842413, 1.2319953761391047, 1.2381890580516874, 1.2425562547424884, 1.2475651577496345, 1.2516835729951374, 1.256218751115326])
+
+        dy3_done = np.array([0.12573219168627772, 0.09577705855193626, 0.07304366582520941, 0.05717267001084419, 0.046343818747095256, 0.03890761037325474, 0.033799693653416125, 0.030168408694296482, 0.027798146254859157, 0.02605746812833626, 0.025035005528865912, 0.02444899214157165, 0.024224341858953526])
+
+        x3_done = np.arange(2, 15)
+
+######################################## 
+        p_done = gv.BufferDict(fit_result.p) # no transition
+        for key in p_done:
+            if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
+                p_done[key] = 0
+
+        p_tone = gv.BufferDict(fit_result.p) # no scattering except for g.s.
+        for key in p_tone:
+            if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]) and key != 'A3_00':
+                p_tone[key] = 0
+
+########################################
+
+        ax.errorbar(x3, y3, yerr=dy3, ls='none', marker='o', capsize=3, color=orange) # original gA from 3pt
+
+        ax.errorbar(x3_done, y3_done, yerr=dy3_done, ls='none', marker='x', capsize=3, color=yellow) # data - no scattering gA
+
+        pt2_fitter = fitter.pt2_fit_function(fillx, p_done)['pt2']
+        pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, p_done)['pt3_A3'] # no transition
+
+        demo1 = pt3_gA_fitter/pt2_fitter
+
+        ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo1]), np.array([y.mean+y.sdev for y in demo1]), alpha=0.2, color=grey)
+
+        # pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
+        # pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, fit_result.p)['pt3_A3'] # original gA from 3pt
+
+        # demo2 = pt3_gA_fitter/pt2_fitter
+
+        # ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo2]), np.array([y.mean+y.sdev for y in demo2]), alpha=0.2, color=orange)
+
+        pt2_fitter = fitter.pt2_fit_function(fillx, p_tone)['pt2']
+        pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, p_tone)['pt3_A3'] # no scattering except for g.s.
+
+        demo3 = pt3_gA_fitter/pt2_fitter
+
+        ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo3]), np.array([y.mean+y.sdev for y in demo3]), alpha=0.2, color=orange)
+
+##################
     
-    
-    ax.set_xlim([1.5, 13.5])
+    ax.set_xlim([plt_min-0.5, plt_max+0.5])
     ax.set_ylim([1, 1.4])
     ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
@@ -333,24 +452,24 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/soaeff{plot_type}.pdf", transparent=True)
     plt.show()
-    
+### gV    
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gV), yerr=np.array(gV_err), marker='o', color="k", **errorp)
-    print(gV)
-    print(gV_err)
+    # print(gV)
+    # print(gV_err)
     if fit_result != None and fitter != None and sum_nstates != None:
         gV_fit_y1 = np.array(gV_fit) + np.array(gV_fit_err)
         gV_fit_y2 = np.array(gV_fit) - np.array(gV_fit_err)
         
-        fillx = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
+        fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
         ax.fill_between(fillx, gV_fit_y1, gV_fit_y2, color=blue, alpha=0.3)
-        print(fillx)
-        print(gV_fit_y1)
-        print(gV_fit_y2)
+        # print(fillx)
+        # print(gV_fit_y1)
+        # print(gV_fit_y2)
     
     
-    ax.set_xlim([1.5, 13.5])
+    ax.set_xlim([1.5, 20.5])
     ax.set_ylim([1.0, 1.1])
     ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oveff_label, **textp)
@@ -362,7 +481,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
 
     #print(gA[8])
 
-    return [np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), np.array(gA_err)] # save this for data plot of half stat
+    return [np.arange(plt_min, plt_max-1), np.array(gA), np.array(gA_err)] # save this for data plot of half stat
 
 
 # %%
