@@ -271,6 +271,7 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
     gA_nsca = {}
     gA_ntra = {} # data - no scattering
+    gA_ntra_avg = {}
     
     gA_tsep = []
     gA_tau = []
@@ -292,6 +293,7 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         gA_fit_err['tsep_'+str(i)] = []
 
         gA_nsca['tsep_'+str(i)] = []
+        gA_ntra_avg['tsep_'+str(i)] = list(np.zeros(i-2*tau_cut+1))
           
     p_ntra = gv.BufferDict(fit_result.p) # no transition
     for key in p_ntra:
@@ -338,11 +340,14 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
         gA_ntra['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_nsca['tsep_'+str(i)]) # ntra = data - nsca
 
+        for j in range(i-2*tau_cut+1):
+            gA_ntra_avg['tsep_'+str(i)][j] = (gA_ntra['tsep_'+str(i)][j] + gA_ntra['tsep_'+str(i)][i-2*tau_cut-j])/2 # average 
+
     mean_demo = []
     sdev_demo = []
     for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].sdev)
+        mean_demo.append(gA_ntra_avg['tsep_'+str(i)][int(i/2-1)].mean)
+        sdev_demo.append(gA_ntra_avg['tsep_'+str(i)][int(i/2-1)].sdev)
 
     print("########################### data - no scattering ########################"+plot_type)
     print(mean_demo)
@@ -359,8 +364,8 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         # no transition
         ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
 
-        gA_ntra_mean = np.array([value.mean for value in gA_ntra['tsep_'+str(i)]])
-        gA_ntra_sdev = np.array([value.sdev for value in gA_ntra['tsep_'+str(i)]])
+        gA_ntra_mean = np.array([value.mean for value in gA_ntra_avg['tsep_'+str(i)]])
+        gA_ntra_sdev = np.array([value.sdev for value in gA_ntra_avg['tsep_'+str(i)]])
         # data - no scattering
         ax.errorbar(np.arange(tau_cut - i/2, i/2 - tau_cut + 1), gA_ntra_mean, yerr=gA_ntra_sdev, marker='x', color=color, **errorp)
     
@@ -381,6 +386,7 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
     gA_nsca = {}
     gA_ntra = {} # data - no transition and no g.s.
+    gA_nsca_avg = {}
     
     gA_tsep = []
     gA_tau = []
@@ -402,6 +408,7 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         gA_fit_err['tsep_'+str(i)] = []
 
         gA_ntra['tsep_'+str(i)] = []
+        gA_nsca_avg['tsep_'+str(i)] = list(np.zeros(i-2*tau_cut+1))
 
     p_nsca = gv.BufferDict(fit_result.p) # no scattering except for g.s.
     for key in p_nsca:
@@ -450,11 +457,14 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
         gA_nsca['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_ntra['tsep_'+str(i)]) # nsca = data - ntra
 
+        for j in range(i-2*tau_cut+1):
+            gA_nsca_avg['tsep_'+str(i)][j] = (gA_nsca['tsep_'+str(i)][j] + gA_nsca['tsep_'+str(i)][i-2*tau_cut-j])/2 # average 
+
     mean_demo = []
     sdev_demo = []
     for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].sdev)
+        mean_demo.append(gA_nsca_avg['tsep_'+str(i)][int(i/2-1)].mean)
+        sdev_demo.append(gA_nsca_avg['tsep_'+str(i)][int(i/2-1)].sdev)
 
     print("########################## data - no transition and no g.s. ################################"+plot_type)
     print(mean_demo)
@@ -471,8 +481,8 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         # no transition
         ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
 
-        gA_nsca_mean = np.array([value.mean for value in gA_nsca['tsep_'+str(i)]])
-        gA_nsca_sdev = np.array([value.sdev for value in gA_nsca['tsep_'+str(i)]])
+        gA_nsca_mean = np.array([value.mean for value in gA_nsca_avg['tsep_'+str(i)]])
+        gA_nsca_sdev = np.array([value.sdev for value in gA_nsca_avg['tsep_'+str(i)]])
         # data - no scattering
         ax.errorbar(np.arange(tau_cut - i/2, i/2 - tau_cut + 1), gA_nsca_mean, yerr=gA_nsca_sdev, marker='x', color=color, **errorp)
     
@@ -679,6 +689,9 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_ntra = []
     gA_fit_err_ntra = []
 
+    print('p_ntra: ')
+    print(p_ntra)
+
     if sum_nstates == pt2_nstates:
         pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_ntra)['pt2']
         sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_ntra)['sum_A3']
@@ -826,6 +839,9 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
 
 ###################### no scattering except for g.s. sum-sub
+    print("p_nsca: ")
+    print(p_nsca)
+
     gA_fit_nsca = []
     gA_fit_err_nsca = []
 
