@@ -1995,7 +1995,7 @@ def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV
 
     #####################gV
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(ov00_label, **textp)
     ax1.set_ylim(gV_ylim)
 
 
