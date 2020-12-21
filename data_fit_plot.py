@@ -18,6 +18,10 @@ from module.fit import Fit
 from module.plot import plot_pt2
 from module.plot import plot_pt3
 from module.plot import plot_sum
+from module.plot import plot_pt3_no_tra
+from module.plot import plot_pt3_no_sca
+from module.plot import plot_sum_no_tra
+from module.plot import plot_sum_no_sca
 from module.prior_setting import prior_ho_width_1
 prior = prior_ho_width_1
 
@@ -119,18 +123,25 @@ best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}
 
 print('plot of 2pt+3pt+sum best fit')
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_pt3(pt3_data_range, data_avg_dict_completed, 1) # 1 is tau cut
+plot_pt3(pt3_data_range, data_avg_dict_completed, 1) # 1 is tau cut
 
-temp = plot_sum(pt3_data_range, data_avg_dict_completed)
+plot_sum(pt3_data_range, data_avg_dict_completed)
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s") # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s") # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s")
+plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s")
 
-temp = plot_sum(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s") #if you just want to plot data, cut the last three parameters
+plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s")
 
+plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s")
+
+plot_sum(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s") #if you just want to plot data, cut the last three parameters
+
+plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s")
+
+plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s")
 
 # %%
 #############################
@@ -193,13 +204,13 @@ best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}
 
 print('plot of 2pt+sum best fit')
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_sum(pt3_data_range, data_avg_dict_completed) #if you just want to plot data, cut the last three parameters
+plot_sum(pt3_data_range, data_avg_dict_completed) #if you just want to plot data, cut the last three parameters
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_2s") # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_2s") # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_sum(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_2s") #if you just want to plot data, cut the last three parameters
+plot_sum(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_2s") #if you just want to plot data, cut the last three parameters
 
 # %%
 ############################################
@@ -280,13 +291,13 @@ best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}
 
 print('plot of 2pt+3pt best fit')
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed) # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_pt3(pt3_data_range, data_avg_dict_completed, 1)
+plot_pt3(pt3_data_range, data_avg_dict_completed, 1)
 
-temp = plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23") # if you just want to plot data, cut the last two parameters: fit_result and fitter
+plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23") # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-temp = plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23")
+plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23")
 
 
 # %%
