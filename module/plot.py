@@ -54,6 +54,7 @@ z0_label = r"$z_{0}$"
 nstate_label = r"$n_{\textrm{states}}$"
 t_label = r"$t$"
 tau_label = r"$\tau$"
+fm_label = r"$fm$"
 meff_label = r"$m_{\textrm{eff}}$"
 zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
@@ -61,8 +62,10 @@ oveff_label = r"$O^V_{\textrm{eff}}$"
 
 plt.rcParams['figure.figsize'] = figsize
 
+omega_imp_a09 = 0.08730 # converse lattice to fm
+
 # %%
-def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_type=None):
+def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_type=None, plot_in_fm=False):
     '''plot effective mass with 2pt data, you can also plot fit on data'''
     m0_eff = []
     m0_eff_err = []
@@ -71,6 +74,19 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
     
     plot_space = 0.05 # smaller, more smoothy
 
+    if plot_in_fm == False:
+        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1)
+        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
+
+    elif plot_in_fm == True:
+        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1) * omega_imp_a09 
+        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)] * omega_imp_a09 
+
+    else:
+        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1)
+        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
+        print("Input error: plot_in_fm")
+
     for i in range(pt2_data_range[0], pt2_data_range[1]-1):
         temp = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
         m0_eff.append(temp.mean)
@@ -78,7 +94,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt2_data_range[0], pt2_data_range[1]-1), np.array(m0_eff), yerr=np.array(m0_eff_err), marker='o', color="k", **errorp)
+    ax.errorbar(x_errorbar, np.array(m0_eff), yerr=np.array(m0_eff_err), marker='o', color="k", **errorp)
     
     if fit_result != None and fitter != None:
         pt2_fitter = fitter.pt2_fit_function(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space), fit_result.p)['pt2']
@@ -94,15 +110,21 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
             m0_eff_fit_y1.append(m0_eff_fit[i] + m0_eff_fit_err[i])
             m0_eff_fit_y2.append(m0_eff_fit[i] - m0_eff_fit_err[i])
-        ax.fill_between(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)], np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
+        ax.fill_between(x_fill, np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
             
-    
-    ax.set_xlim([2, 25])
+    x_lim = [2, 25]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([0.45, 0.62])
-    ax.set_xlabel(t_label, **textp)
-    ax.set_ylabel(meff_label, **textp)
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.set_ylabel(meff_label, **textp)        
     
+    ax.tick_params(axis='both', which='major', **labelp)
+
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/meff{plot_type}.pdf", transparent=True)
     plt.show()
@@ -117,7 +139,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
     
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt2_data_range[0], pt2_data_range[1]-1), [i.mean for i in zeff], yerr=[i.sdev for i in zeff], marker='o', color="k", **errorp)
+    ax.errorbar(x_errorbar, [i.mean for i in zeff], yerr=[i.sdev for i in zeff], marker='o', color="k", **errorp)
  
     if fit_result != None and fitter != None:
         z0_eff_fit = []
@@ -139,13 +161,20 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
             z0_eff_fit_y1.append(z0_eff_fit[i] + z0_eff_fit_err[i])
             z0_eff_fit_y2.append(z0_eff_fit[i] - z0_eff_fit_err[i])
         
-        ax.fill_between(x, np.array(z0_eff_fit_y1), np.array(z0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
+        ax.fill_between(x_fill, np.array(z0_eff_fit_y1), np.array(z0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
 
-   
-    ax.set_xlim([2, 25])
+    x_lim = [2, 25]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([0, 3E-7])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(zeff_label, **textp)
+
+
     ax.tick_params(axis='both', which='major', **labelp)
     
     #plt.tight_layout(pad=0, rect=aspect)
@@ -154,7 +183,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     # return [np.arange(pt2_data_range[0], pt2_data_range[1]-1), np.array(m0_eff), np.array(m0_eff_err)] # save this for data plot of half stat
 
-def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, fitter=None, plot_type=None):
+def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, fitter=None, plot_type=None, plot_in_fm=False):
     '''plot form factor with 3pt data, you can also plot fit on data'''
     gA = {}
     gA_err = {}
@@ -226,17 +255,36 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
+        if plot_in_fm == False:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+
+        elif plot_in_fm == True:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
+
+        else:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+            print("Input error: plot_in_fm")
+
         color = color_list[idx]
-        ax.errorbar(np.arange(-(i-2)/2, (i)/2, 1), np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
+        ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
 
         if fit_result != None and fitter != None:
             gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
             gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
-            ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
-    
-    ax.set_xlim([-6.5, 6.5])
+            ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
+
+    x_lim = [-6.5, 6.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([1, 1.3])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
     #
     #plt.tight_layout(pad=0, rect=aspect)
@@ -247,31 +295,49 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
+        if plot_in_fm == False:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+
+        elif plot_in_fm == True:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
+
+        else:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+            print("Input error: plot_in_fm")
+
         color = color_list[idx]
-        ax.errorbar(np.arange(-(i-2)/2, (i)/2, 1), np.array(gV['tsep_' + str(i)]), yerr=np.array(gV_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
+        ax.errorbar(x_errorbar, np.array(gV['tsep_' + str(i)]), yerr=np.array(gV_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
 
         if fit_result != None and fitter != None:
             gV_fit_y1 = np.array(gV_fit['tsep_'+str(i)]) + np.array(gV_fit_err['tsep_'+str(i)])
             gV_fit_y2 = np.array(gV_fit['tsep_'+str(i)]) - np.array(gV_fit_err['tsep_'+str(i)])
-            ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gV_fit_y1, gV_fit_y2, color=color, alpha=0.3) # tau_cut=1
+            ax.fill_between(x_fill, gV_fit_y1, gV_fit_y2, color=color, alpha=0.3) # tau_cut=1
+
+    x_lim = [-6.5, 6.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
     
-    ax.set_xlim([-6.5, 6.5])
     ax.set_ylim([1.0, 1.15])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oveff_label, **textp)
     #
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/oveff{plot_type}.pdf", transparent=True)
     plt.show()
 
-def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type):
+def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type, plot_in_fm=False):
     '''plot form factor with 3pt data, you can also plot fit on data'''    
     gA_fit = {} # no transition
     gA_fit_err = {}
 
     gA_nsca = {}
     gA_ntra = {} # data - no scattering
-    gA_ntra_avg = {}
     
     gA_tsep = []
     gA_tau = []
@@ -293,7 +359,6 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         gA_fit_err['tsep_'+str(i)] = []
 
         gA_nsca['tsep_'+str(i)] = []
-        gA_ntra_avg['tsep_'+str(i)] = list(np.zeros(i-2*tau_cut+1))
           
     p_ntra = gv.BufferDict(fit_result.p) # no transition
     for key in p_ntra:
@@ -340,14 +405,11 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
         gA_ntra['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_nsca['tsep_'+str(i)]) # ntra = data - nsca
 
-        for j in range(i-2*tau_cut+1):
-            gA_ntra_avg['tsep_'+str(i)][j] = (gA_ntra['tsep_'+str(i)][j] + gA_ntra['tsep_'+str(i)][i-2*tau_cut-j])/2 # average 
-
     mean_demo = []
     sdev_demo = []
     for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_ntra_avg['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_ntra_avg['tsep_'+str(i)][int(i/2-1)].sdev)
+        mean_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].mean)
+        sdev_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].sdev)
 
     print("########################### data - no scattering ########################"+plot_type)
     print(mean_demo)
@@ -358,20 +420,39 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
+        if plot_in_fm == False:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+
+        elif plot_in_fm == True:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
+
+        else:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+            print("Input error: plot_in_fm")
+
         color = color_list[idx]
         gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
         gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
         # no transition
-        ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
+        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
 
-        gA_ntra_mean = np.array([value.mean for value in gA_ntra_avg['tsep_'+str(i)]])
-        gA_ntra_sdev = np.array([value.sdev for value in gA_ntra_avg['tsep_'+str(i)]])
+        gA_ntra_mean = np.array([value.mean for value in gA_ntra['tsep_'+str(i)]])
+        gA_ntra_sdev = np.array([value.sdev for value in gA_ntra['tsep_'+str(i)]])
         # data - no scattering
-        ax.errorbar(np.arange(tau_cut - i/2, i/2 - tau_cut + 1), gA_ntra_mean, yerr=gA_ntra_sdev, marker='x', color=color, **errorp)
+        ax.errorbar(x_errorbar, gA_ntra_mean, yerr=gA_ntra_sdev, marker='x', color=color, **errorp)
     
-    ax.set_xlim([-6.5, 6.5])
+    x_lim = [-6.5, 6.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([1, 1.3])
-    ax.set_xlabel(tau_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
     #
@@ -379,14 +460,13 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     plt.savefig(f"./new_plots/oaeff{plot_type}_ntra.pdf", transparent=True)
     plt.show()
 
-def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type):
+def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type, plot_in_fm=False):
     '''plot form factor with 3pt data, you can also plot fit on data'''    
     gA_fit = {} 
     gA_fit_err = {} # no scattering except for g.s.
 
     gA_nsca = {}
     gA_ntra = {} # data - no transition and no g.s.
-    gA_nsca_avg = {}
     
     gA_tsep = []
     gA_tau = []
@@ -408,7 +488,6 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         gA_fit_err['tsep_'+str(i)] = []
 
         gA_ntra['tsep_'+str(i)] = []
-        gA_nsca_avg['tsep_'+str(i)] = list(np.zeros(i-2*tau_cut+1))
 
     p_nsca = gv.BufferDict(fit_result.p) # no scattering except for g.s.
     for key in p_nsca:
@@ -457,14 +536,11 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
 
         gA_nsca['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_ntra['tsep_'+str(i)]) # nsca = data - ntra
 
-        for j in range(i-2*tau_cut+1):
-            gA_nsca_avg['tsep_'+str(i)][j] = (gA_nsca['tsep_'+str(i)][j] + gA_nsca['tsep_'+str(i)][i-2*tau_cut-j])/2 # average 
-
     mean_demo = []
     sdev_demo = []
     for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_nsca_avg['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_nsca_avg['tsep_'+str(i)][int(i/2-1)].sdev)
+        mean_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].mean)
+        sdev_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].sdev)
 
     print("########################## data - no transition and no g.s. ################################"+plot_type)
     print(mean_demo)
@@ -475,20 +551,37 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
+        if plot_in_fm == False:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+
+        elif plot_in_fm == True:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
+
+        else:
+            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
+            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+            print("Input error: plot_in_fm")
+
         color = color_list[idx]
         gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
         gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
         # no transition
-        ax.fill_between(np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density), gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
+        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
 
-        gA_nsca_mean = np.array([value.mean for value in gA_nsca_avg['tsep_'+str(i)]])
-        gA_nsca_sdev = np.array([value.sdev for value in gA_nsca_avg['tsep_'+str(i)]])
+        gA_nsca_mean = np.array([value.mean for value in gA_nsca['tsep_'+str(i)]])
+        gA_nsca_sdev = np.array([value.sdev for value in gA_nsca['tsep_'+str(i)]])
         # data - no scattering
-        ax.errorbar(np.arange(tau_cut - i/2, i/2 - tau_cut + 1), gA_nsca_mean, yerr=gA_nsca_sdev, marker='x', color=color, **errorp)
+        ax.errorbar(x_errorbar, gA_nsca_mean, yerr=gA_nsca_sdev, marker='x', color=color, **errorp)
     
     ax.set_xlim([-6.5, 6.5])
     ax.set_ylim([1, 1.3])
     ax.set_xlabel(tau_label, **textp)
+
+    if plot_in_fm == True:
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
     #
@@ -496,7 +589,7 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     plt.savefig(f"./new_plots/oaeff{plot_type}_nsca.pdf", transparent=True)
     plt.show()
 
-def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=None, pt2_nstates=None, sum_nstates=None, plot_type=None):
+def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=None, pt2_nstates=None, sum_nstates=None, plot_type=None, plot_in_fm=False):
     '''plot form factor with sum data, you can also plot fit on data'''
     gA = []
     gA_err = []
@@ -510,6 +603,19 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     
     plot_space = 0.05
 
+    if plot_in_fm == False:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
+
+    elif plot_in_fm == True:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1) * omega_imp_a09
+        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)] * omega_imp_a09
+
+    else:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
+        print("Input error: plot_in_fm")
+
     for i in range(pt3_data_range[0], pt3_data_range[1]-1):
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
         gA.append(temp1.mean)
@@ -521,7 +627,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
 
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), yerr=np.array(gA_err), marker='o', color="k", **errorp)
+    ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color="k", **errorp)
     # print(gA)
     # print(gA_err)
     if fit_result != None and fitter != None and sum_nstates != None:
@@ -547,16 +653,18 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
         gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
         
-        fillx = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
-        ax.fill_between(fillx, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
-        # print(fillx)
-        # print(gA_fit_y1)
-        # print(gA_fit_y2)
+        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
     
-    
-    ax.set_xlim([1.5, 13.5])
+
+    x_lim = [1.5, 13.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([1, 1.4])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
     
     #plt.tight_layout(pad=0, rect=aspect)
@@ -565,23 +673,25 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gV), yerr=np.array(gV_err), marker='o', color="k", **errorp)
+    ax.errorbar(x_errorbar, np.array(gV), yerr=np.array(gV_err), marker='o', color="k", **errorp)
     # print(gV)
     # print(gV_err)
     if fit_result != None and fitter != None and sum_nstates != None:
         gV_fit_y1 = np.array(gV_fit) + np.array(gV_fit_err)
         gV_fit_y2 = np.array(gV_fit) - np.array(gV_fit_err)
         
-        fillx = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
-        ax.fill_between(fillx, gV_fit_y1, gV_fit_y2, color=blue, alpha=0.3)
-        # print(fillx)
-        # print(gV_fit_y1)
-        # print(gV_fit_y2)
+        ax.fill_between(x_fill, gV_fit_y1, gV_fit_y2, color=blue, alpha=0.3)
     
     
-    ax.set_xlim([1.5, 13.5])
+    x_lim = [1.5, 13.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([1.0, 1.1])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oveff_label, **textp)
     
     #plt.tight_layout(pad=0, rect=aspect)
@@ -592,7 +702,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
 
     # return [np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), np.array(gA_err)] # save this for data plot of half stat
         
-def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type):
+def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type, plot_in_fm=False):
     '''plot form factor with sum data, you can also plot fit on data'''
     gA = []
     gA_err = []
@@ -604,6 +714,23 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     
     plot_space = 0.05
 
+    plt_min = 2
+    plt_max = 60 
+    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] # as tsep input
+
+    if plot_in_fm == False:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
+
+    elif plot_in_fm == True:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1) * omega_imp_a09
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] * omega_imp_a09
+
+    else:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
+        print("Input error: plot_in_fm")
+
     for i in range(pt3_data_range[0], pt3_data_range[1]-1):
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
         gA.append(temp1.mean)
@@ -612,10 +739,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 ##################### fit on data
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
-
-    plt_min = 2
-    plt_max = 60 
+    ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
 
     if sum_nstates == pt2_nstates:
         pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p)['pt2']
@@ -639,8 +763,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
     gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
     
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-    ax.fill_between(fillx, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
+    ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
 
 ######################################## 
     p_ntra = gv.BufferDict(fit_result.p) # no transition
@@ -658,6 +781,9 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
     x3 = np.arange(2, 15, 2)
 
+    if plot_in_fm == True:
+        x3 = x3 * omega_imp_a09
+
     ax.errorbar(x3, y3, yerr=dy3, ls='none', marker='o', capsize=3, color=orange) 
 
     pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
@@ -665,7 +791,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     demo_ori = pt3_gA_fitter/pt2_fitter
 
-    ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
+    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
 
 
 ##################### data - no scattering gA from 3pt with tau = tsep/2
@@ -675,6 +801,9 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     x3_ntra = np.arange(2, 15, 2)
 
+    if plot_in_fm == True:
+        x3_ntra = x3_ntra * omega_imp_a09
+
     ax.errorbar(x3_ntra, y3_ntra, yerr=dy3_ntra, ls='none', marker='x', capsize=3, color=yellow) 
 
     pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
@@ -682,15 +811,12 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     demo_ntra = pt3_gA_fitter/pt2_fitter
 
-    ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo_ntra]), np.array([y.mean+y.sdev for y in demo_ntra]), alpha=0.2, color=yellow)
+    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ntra]), np.array([y.mean+y.sdev for y in demo_ntra]), alpha=0.2, color=yellow)
 
 
 ###################### no transition sum-sub
     gA_fit_ntra = []
     gA_fit_err_ntra = []
-
-    print('p_ntra: ')
-    print(p_ntra)
 
     if sum_nstates == pt2_nstates:
         pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_ntra)['pt2']
@@ -709,8 +835,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1_ntra = np.array(gA_fit_ntra) + np.array(gA_fit_err_ntra)
     gA_fit_y2_ntra = np.array(gA_fit_ntra) - np.array(gA_fit_err_ntra)
     
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-    ax.fill_between(fillx, gA_fit_y1_ntra, gA_fit_y2_ntra, color=green, alpha=0.3)
+    ax.fill_between(x_fill, gA_fit_y1_ntra, gA_fit_y2_ntra, color=green, alpha=0.3)
 
 ######################## data - no scattering sum-sub
     gA_fit_ntra = []
@@ -728,13 +853,19 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
         gA_fit_ntra.append(temp1) # ntra = data - nsca
 
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array([val.mean for val in gA_fit_ntra]), yerr=np.array([val.sdev for val in gA_fit_ntra]), ls='none', marker='x', capsize=3, color=green)
+    ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_ntra]), yerr=np.array([val.sdev for val in gA_fit_ntra]), ls='none', marker='x', capsize=3, color=green)
 
 ##################
+
+    x_lim = [plt_min-0.5, plt_max+0.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
     
-    ax.set_xlim([plt_min-0.5, plt_max+0.5])
     ax.set_ylim([1, 1.4])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
     
@@ -743,7 +874,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     plt.show()
 
 
-def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type):
+def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type, plot_in_fm=False):
     '''plot form factor with sum data, you can also plot fit on data'''
     gA = []
     gA_err = []
@@ -755,6 +886,23 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     
     plot_space = 0.05
 
+    plt_min = 2
+    plt_max = 60 
+    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] # as tsep input
+
+    if plot_in_fm == False:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
+
+    elif plot_in_fm == True:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1) * omega_imp_a09
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] * omega_imp_a09
+
+    else:
+        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
+        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
+        print("Input error: plot_in_fm")
+
     for i in range(pt3_data_range[0], pt3_data_range[1]-1):
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
         gA.append(temp1.mean)
@@ -763,10 +911,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 ##################### fit on data
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
-
-    plt_min = 2
-    plt_max = 60 
+    ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
 
     if sum_nstates == pt2_nstates:
         pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p)['pt2']
@@ -790,8 +935,8 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
     gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
     
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-    ax.fill_between(fillx, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
+    
+    ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
 
 ######################################## 
     p_nsca = gv.BufferDict(fit_result.p) # no scattering except for g.s.
@@ -811,6 +956,9 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
     x3 = np.arange(2, 15, 2)
 
+    if plot_in_fm == True:
+        x3 = x3 * omega_imp_a09
+
     ax.errorbar(x3, y3, yerr=dy3, ls='none', marker='o', capsize=3, color=orange) 
 
     pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
@@ -818,7 +966,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     demo_ori = pt3_gA_fitter/pt2_fitter
 
-    ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
+    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
 
 
 ##################### data - no transition and no g.s. gA from 3pt with tau = tsep/2
@@ -828,6 +976,9 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     x3_nsca = np.arange(2, 15, 2)
 
+    if plot_in_fm == True:
+        x3_nsca = x3_nsca * omega_imp_a09
+
     ax.errorbar(x3_nsca, y3_nsca, yerr=dy3_nsca, ls='none', marker='x', capsize=3, color=yellow) 
 
     pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
@@ -835,13 +986,10 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     demo_nsca = pt3_gA_fitter/pt2_fitter
 
-    ax.fill_between(fillx, np.array([y.mean-y.sdev for y in demo_nsca]), np.array([y.mean+y.sdev for y in demo_nsca]), alpha=0.2, color=yellow)
+    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_nsca]), np.array([y.mean+y.sdev for y in demo_nsca]), alpha=0.2, color=yellow)
 
 
 ###################### no scattering except for g.s. sum-sub
-    print("p_nsca: ")
-    print(p_nsca)
-
     gA_fit_nsca = []
     gA_fit_err_nsca = []
 
@@ -862,8 +1010,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1_nsca = np.array(gA_fit_nsca) + np.array(gA_fit_err_nsca)
     gA_fit_y2_nsca = np.array(gA_fit_nsca) - np.array(gA_fit_err_nsca)
     
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-    ax.fill_between(fillx, gA_fit_y1_nsca, gA_fit_y2_nsca, color=green, alpha=0.3)
+    ax.fill_between(x_fill, gA_fit_y1_nsca, gA_fit_y2_nsca, color=green, alpha=0.3)
 
 ######################## data - no transition and no g.s. sum-sub
     gA_fit_nsca = []
@@ -881,13 +1028,19 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
         gA_fit_nsca.append(temp1) # nsca = data - ntra
 
-    ax.errorbar(np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array([val.mean for val in gA_fit_nsca]), yerr=np.array([val.sdev for val in gA_fit_nsca]), ls='none', marker='x', capsize=3, color=green)
+    ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_nsca]), yerr=np.array([val.sdev for val in gA_fit_nsca]), ls='none', marker='x', capsize=3, color=green)
 
 ##################
     
-    ax.set_xlim([plt_min-0.5, plt_max+0.5])
+    x_lim = [plt_min-0.5, plt_max+0.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(t_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+        ax.set_xlabel(fm_label, **textp)
+
     ax.set_ylim([1, 1.4])
-    ax.set_xlabel(t_label, **textp)
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
     
@@ -1212,48 +1365,25 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
         x.append([])
 
 
-    for n in range(n_range[0], n_range[1]): # n represents nstates value
-        for situation in situation_list:         
-            nstate_dict = {}
-            nstate_dict['2pt'] = situation.pt2_nstates
-            nstate_dict['3pt'] = situation.pt3_nstates
-            nstate_dict['sum'] = situation.sum_nstates
-            
-            if nstate_dict[nstate_name] == n:
-                tmin_dict = {}
-                tmin_dict['2pt'] = situation.pt2_tmin
-                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
-                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
-                
-                x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
+    for n in range(n_range[0], n_range[1]):
+        n_ = n - n_range[0]
+        for situation in situation_list[n_]:         
+            value['Q'][n].append(situation.Q_value)
+            value['E0'][n].append(situation.E0)
+            value['E0_err'][n].append(situation.E0_err)
+            value['gA'][n].append(situation.A300)
+            value['gA_err'][n].append(situation.A300_err)
+            value['gV'][n].append(situation.V400)
+            value['gV_err'][n].append(situation.V400_err)
 
-        x[n].sort() # fix n, search for all situations to complete x[n], then sort x[n]
+            tmin_dict = {}
+            tmin_dict['2pt'] = situation.pt2_tmin
+            tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+            tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
+            tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+            tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
 
-        for i in range(len(x[n])):
-            for situation in situation_list:
-                nstate_dict = {}
-                nstate_dict['2pt'] = situation.pt2_nstates
-                nstate_dict['3pt'] = situation.pt3_nstates
-                nstate_dict['sum'] = situation.sum_nstates
-
-                tmin_dict = {}
-                tmin_dict['2pt'] = situation.pt2_tmin
-                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
-                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
-                
-                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
-                    value['Q'][n].append(situation.Q_value)
-                    value['logGBF'][n].append(situation.log_GBF)
-                    value['E0'][n].append(situation.E0)
-                    value['E0_err'][n].append(situation.E0_err)
-                    value['gA'][n].append(situation.A300)
-                    value['gA_err'][n].append(situation.A300_err)
-                    value['gV'][n].append(situation.V400)
-                    value['gV_err'][n].append(situation.V400_err)
+            x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
     print(x)
     
