@@ -52,9 +52,10 @@ ov00_label = r"$O^V_{00}$"
 e0_label = r"$E_{0}$"
 z0_label = r"$z_{0}$"
 nstate_label = r"$n_{\textrm{states}}$"
-t_label = r"$t$"
-tau_label = r"$\tau$"
-fm_label = r"$fm$"
+t_label = r"$t_{\rm sep}$"
+tau_label = r"$\tau - t_{\rm sep}/2$"
+fm_t_label = r"$t_{\rm sep} / {\rm fm}$"
+fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
 meff_label = r"$m_{\textrm{eff}}$"
 zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
@@ -118,7 +119,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
 
     ax.set_ylim([0.45, 0.62])
     ax.set_ylabel(meff_label, **textp)        
@@ -169,7 +170,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
 
     ax.set_ylim([0, 3E-7])
     ax.set_ylabel(zeff_label, **textp)
@@ -282,7 +283,7 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
         ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_tau_label, **textp)
 
     ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
@@ -322,7 +323,7 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
         ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_tau_label, **textp)
     
     ax.set_ylim([1.0, 1.15])
     ax.set_ylabel(oveff_label, **textp)
@@ -450,7 +451,7 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_tau_label, **textp)
 
     ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
@@ -581,7 +582,7 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_tau_label, **textp)
 
     ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
@@ -664,7 +665,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
 
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
@@ -691,7 +692,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
 
     ax.set_ylim([1.0, 1.1])
     ax.set_ylabel(oveff_label, **textp)
@@ -865,7 +866,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
     
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
@@ -1040,7 +1041,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_label, **textp)
+        ax.set_xlabel(fm_t_label, **textp)
 
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
