@@ -279,7 +279,7 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
+        ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_label, **textp)
@@ -319,7 +319,7 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
+        ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_label, **textp)
@@ -447,7 +447,7 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
+        ax.set_xlabel(tau_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_label, **textp)
@@ -574,14 +574,16 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
         gA_nsca_sdev = np.array([value.sdev for value in gA_nsca['tsep_'+str(i)]])
         # data - no scattering
         ax.errorbar(x_errorbar, gA_nsca_mean, yerr=gA_nsca_sdev, marker='x', color=color, **errorp)
-    
-    ax.set_xlim([-6.5, 6.5])
-    ax.set_ylim([1, 1.3])
-    ax.set_xlabel(tau_label, **textp)
 
-    if plot_in_fm == True:
+    x_lim = [-6.5, 6.5]
+    if plot_in_fm == False:
+        ax.set_xlim(x_lim)
+        ax.set_xlabel(tau_label, **textp)
+    elif plot_in_fm == True:
+        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_label, **textp)
 
+    ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
     #
