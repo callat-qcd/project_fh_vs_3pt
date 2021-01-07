@@ -779,6 +779,19 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]):
             p_nsca[key] = 0
 
+    p_gs = gv.BufferDict(fit_result.p) # g.s. only
+    for key in p_gs:
+        if key.split("_")[0] in ["A3"] and key != 'A3_00':
+            p_gs[key] = 0
+
+    p_gs_pt2 = gv.BufferDict(fit_result.p) # g.s. only for 2pt
+    for key in p_gs_pt2:
+        if 'z'in key and key != 'z0' and key != 'log(z2)':
+            p_gs_pt2[key] = 0
+
+    del p_gs_pt2['log(z2)']
+    p_gs_pt2['z2'] = 0
+
 ##################### original gA from 3pt with tau = tsep/2
     y3 = np.array([1.137246887069871, 1.0397951114352422, 1.0581101894217029, 1.0944768415815544, 1.129653822067308, 1.1607318494702763, 1.1883613569687608])
     dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
@@ -822,11 +835,11 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_err_ntra = []
 
     if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_ntra)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
         sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_ntra)['sum_A3']
         
     else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_ntra, sum_nstates)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
         sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_ntra)['sum_A3']
     
     for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
@@ -834,6 +847,8 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         gA_fit_ntra.append(temp1.mean)
         gA_fit_err_ntra.append(temp1.sdev)
 
+    ###
+    print(p_ntra)
         
     gA_fit_y1_ntra = np.array(gA_fit_ntra) + np.array(gA_fit_err_ntra)
     gA_fit_y2_ntra = np.array(gA_fit_ntra) - np.array(gA_fit_err_ntra)
@@ -844,11 +859,11 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_ntra = []
 
     if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2)['pt2']
         sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca)['sum_A3']
         
     else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca, sum_nstates)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2, sum_nstates)['pt2']
         sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca)['sum_A3']
     
     for i in range(pt3_data_range[0], pt3_data_range[1]-1):
@@ -856,7 +871,55 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
         gA_fit_ntra.append(temp1) # ntra = data - nsca
 
-    ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_ntra]), yerr=np.array([val.sdev for val in gA_fit_ntra]), ls='none', marker='x', capsize=3, color=green)
+    #ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_ntra]), yerr=np.array([val.sdev for val in gA_fit_ntra]), ls='none', marker='x', capsize=3, color=green)
+
+######################
+###################### g.s. only
+    gA_fit_gs = []
+    gA_fit_err_gs = []
+
+    if sum_nstates == pt2_nstates:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
+        
+    else:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
+        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
+    
+    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
+        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
+        gA_fit_gs.append(temp1.mean)
+        gA_fit_err_gs.append(temp1.sdev)
+
+        
+    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
+    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
+    
+    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=red, alpha=0.3)
+
+######################
+###################### sum-sub / g.s. only of 2pt
+    gA_fit_gs = []
+    gA_fit_err_gs = []
+
+    if sum_nstates == pt2_nstates:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+        
+    else:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
+        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+    
+    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
+        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
+        gA_fit_gs.append(temp1.mean)
+        gA_fit_err_gs.append(temp1.sdev)
+
+        
+    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
+    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
+    
+    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
 
 ##################
 
@@ -871,6 +934,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
+    ax.text(2.7, 1.35, r'$ntra$', fontsize=15)
     
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/soaeff{plot_type}_ntra.pdf", transparent=True)
@@ -954,6 +1018,19 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
 
     p_ntra['A3_00'] = 0
 
+    p_gs = gv.BufferDict(fit_result.p) # g.s. only
+    for key in p_gs:
+        if key.split("_")[0] in ["A3"] and key != 'A3_00':
+            p_gs[key] = 0
+
+    p_gs_pt2 = gv.BufferDict(fit_result.p) # g.s. only for 2pt
+    for key in p_gs_pt2:
+        if 'z'in key and key != 'z0' and key != 'log(z2)':
+            p_gs_pt2[key] = 0
+
+    del p_gs_pt2['log(z2)']
+    p_gs_pt2['z2'] = 0
+
 ##################### original gA from 3pt with tau = tsep/2
     y3 = np.array([1.137246887069871, 1.0397951114352422, 1.0581101894217029, 1.0944768415815544, 1.129653822067308, 1.1607318494702763, 1.1883613569687608])
     dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
@@ -997,11 +1074,11 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_err_nsca = []
 
     if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_nsca)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
         sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_nsca)['sum_A3']
         
     else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_nsca, sum_nstates)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
         sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_nsca)['sum_A3']
     
     for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
@@ -1009,21 +1086,26 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         gA_fit_nsca.append(temp1.mean)
         gA_fit_err_nsca.append(temp1.sdev)
 
+    ###
+    print(p_nsca)
+    print(p_gs_pt2)
+
         
     gA_fit_y1_nsca = np.array(gA_fit_nsca) + np.array(gA_fit_err_nsca)
     gA_fit_y2_nsca = np.array(gA_fit_nsca) - np.array(gA_fit_err_nsca)
     
     ax.fill_between(x_fill, gA_fit_y1_nsca, gA_fit_y2_nsca, color=green, alpha=0.3)
 
+
 ######################## data - no transition and no g.s. sum-sub
     gA_fit_nsca = []
 
     if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2)['pt2']
         sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra)['sum_A3']
         
     else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra, sum_nstates)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2, sum_nstates)['pt2']
         sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra)['sum_A3']
     
     for i in range(pt3_data_range[0], pt3_data_range[1]-1):
@@ -1031,7 +1113,55 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
         gA_fit_nsca.append(temp1) # nsca = data - ntra
 
-    ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_nsca]), yerr=np.array([val.sdev for val in gA_fit_nsca]), ls='none', marker='x', capsize=3, color=green)
+    #ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_nsca]), yerr=np.array([val.sdev for val in gA_fit_nsca]), ls='none', marker='x', capsize=3, color=green)
+
+######################
+###################### g.s. only
+    gA_fit_gs = []
+    gA_fit_err_gs = []
+
+    if sum_nstates == pt2_nstates:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
+        
+    else:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
+        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
+    
+    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
+        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
+        gA_fit_gs.append(temp1.mean)
+        gA_fit_err_gs.append(temp1.sdev)
+
+        
+    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
+    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
+    
+    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=red, alpha=0.3)
+
+######################
+###################### g.s. only for 2pt
+    gA_fit_gs = []
+    gA_fit_err_gs = []
+
+    if sum_nstates == pt2_nstates:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+        
+    else:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
+        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
+    
+    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
+        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
+        gA_fit_gs.append(temp1.mean)
+        gA_fit_err_gs.append(temp1.sdev)
+
+        
+    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
+    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
+    
+    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
 
 ##################
     
@@ -1046,6 +1176,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
+    ax.text(2.7, 1.35, r'$nsca$', fontsize=15)
     
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/soaeff{plot_type}_nsca.pdf", transparent=True)
