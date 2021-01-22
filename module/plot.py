@@ -717,7 +717,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     
     plot_space = 0.05
 
-    plt_min = 2
+    plt_min = 0
     plt_max = 60 
     fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] # as tsep input
 
@@ -820,14 +820,14 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     if plot_in_fm == True:
         x3_ntra = x3_ntra * omega_imp_a09
 
-    ax.errorbar(x3_ntra, y3_ntra, yerr=dy3_ntra, ls='none', marker='x', capsize=3, color=yellow) 
+    #ax.errorbar(x3_ntra, y3_ntra, yerr=dy3_ntra, ls='none', marker='x', capsize=3, color=yellow) 
 
     pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
     pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, p_ntra)['pt3_A3']  # here fillx/2 means tau = tsep/2
 
     demo_ntra = pt3_gA_fitter/pt2_fitter
 
-    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ntra]), np.array([y.mean+y.sdev for y in demo_ntra]), alpha=0.2, color=yellow)
+    #ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ntra]), np.array([y.mean+y.sdev for y in demo_ntra]), alpha=0.2, color=yellow)
 
 
 ###################### no transition sum-sub
@@ -853,7 +853,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1_ntra = np.array(gA_fit_ntra) + np.array(gA_fit_err_ntra)
     gA_fit_y2_ntra = np.array(gA_fit_ntra) - np.array(gA_fit_err_ntra)
     
-    ax.fill_between(x_fill, gA_fit_y1_ntra, gA_fit_y2_ntra, color=green, alpha=0.3)
+    #ax.fill_between(x_fill, gA_fit_y1_ntra, gA_fit_y2_ntra, color=green, alpha=0.3)
 
 ######################## data - no scattering sum-sub
     gA_fit_ntra = []
@@ -919,7 +919,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
     gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
     
-    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
+    #ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
 
 ##################
 
@@ -931,6 +931,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_t_label, **textp)
     
+    ax.set_xlim([0, 5])
     ax.set_ylim([1, 1.4])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)

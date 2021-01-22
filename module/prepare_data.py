@@ -89,6 +89,7 @@ class Prepare_data():
 
 
             ## shape = (784, tsep+1)
+            ## full tau: shape = (784, 96)
 
         print(np.shape(data_dict['pt2_tsep_1']))
         print(np.shape(data_dict['pt3_A3_tsep_3']))

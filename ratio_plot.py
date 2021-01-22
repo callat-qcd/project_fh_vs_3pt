@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import gvar as gv  
 import os
-from scipy import interpolate
 
 plt.rcParams.update({"text.usetex": True})
 import matplotlib as mpl
@@ -31,8 +30,6 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red]
-
 figsize = (7, 4)
 aspect=[0.15, 0.15, 0.8, 0.8]
 plt.rcParams['figure.figsize'] = figsize
@@ -42,6 +39,11 @@ labelp = {"labelsize": 14}
 textp = {"fontsize": 15}
 
 # %%
+def legend_without_duplicate_labels(ax):
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique))
+
 def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, div_2pt):
     # tra data: data_avg_dict - fit_result with p_ntra
     # sca data: data_avg_dict - fit_result with p_nsca, here sca does not include g.s.
@@ -56,7 +58,9 @@ def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, di
     pt2_data = []  
     pt3_gA_data = []  
 
-    gA_tsep_fit = np.linspace(pt3_data_range[0], pt3_data_range[1], 1000)
+    linspace_num = 2000
+
+    gA_tsep_fit = np.linspace(0, 35, linspace_num)
     gA_tau_fit = gA_tsep_fit / 2 
 
     for t in range(pt3_data_range[0], pt3_data_range[1]): # tsep and tau to calc fit values of no transition 
@@ -112,6 +116,7 @@ def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, di
     for key in p_ngs:
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][1] == '0'):
             p_ngs[key] = 0
+    p_ngs['z0'] = 0
 
     # print('\n p_ngs: \n')
     # print(p_ngs)
@@ -125,6 +130,21 @@ def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, di
     pt3_gA_gs_data = pt3_gA_data - pt3_gA_fit_ngs
     if div_2pt == True:
         pt3_gA_gs_data = pt3_gA_gs_data / pt2_gs_data
+
+    #####################
+    ###### all data #####
+
+    # fit function values of no transition
+    pt3_gA_fit_ngs = fitter.pt3_fit_function(np.array(gA_tsep_data), np.array(gA_tsep_data), np.array(gA_tau_data), np.array(gA_tau_data), p_ngs)['pt3_A3'] # here gV_tsep and gV_tau same as gA
+
+    pt3_gA_all_data = pt3_gA_data - pt3_gA_fit_ngs
+
+    if div_2pt == True:
+        pt3_gA_all_data = pt3_gA_all_data / pt2_data
+
+    pt3_gA_all_data += pt3_gA_sca_data
+    pt3_gA_all_data += pt3_gA_tra_data
+
 
     ########################
     ####### tra fit ########
@@ -164,6 +184,9 @@ def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, di
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][1] != '0'):
             p_gs[key] = 0
 
+        if ('z' in key and key != 'z0'):
+            p_gs[key] = 0
+
     # print('\n p_gs: \n')
     # print(p_gs)
 
@@ -175,17 +198,30 @@ def pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, di
         pt3_gA_gs_fit = pt3_gA_gs_fit / pt2_gs_fit
 
 
-    return pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data
+    ########################
+    ####### all fit ########
+
+    # fit function values of only g.s.
+    pt3_gA_all_fit = fitter.pt3_fit_function(np.array(gA_tsep_fit), np.array(gA_tsep_fit), np.array(gA_tau_fit), np.array(gA_tau_fit), p_gs)['pt3_A3'] # here gV_tsep and gV_tau same as gA
+
+    pt3_gA_all_fit += fitter.pt3_fit_function(np.array(gA_tsep_fit), np.array(gA_tsep_fit), np.array(gA_tau_fit), np.array(gA_tau_fit), p_sca)['pt3_A3']
+
+    pt3_gA_all_fit += fitter.pt3_fit_function(np.array(gA_tsep_fit), np.array(gA_tsep_fit), np.array(gA_tau_fit), np.array(gA_tau_fit), p_tra)['pt3_A3']
+
+    if div_2pt == True:
+        pt3_gA_all_fit = pt3_gA_all_fit / pt2_fit
+
+    return pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_all_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, pt3_gA_all_data
 
 
 def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
     # tra data: ( data_avg_dict[sum] - fit_result[sum] with p_ntra ) / data_avg_dict[pt2]
     # sca data: ( data_avg_dict[sum] - fit_result[sum] with p_nsca ) / data_avg_dict[pt2], here sca does not include g.s.
-    # gs data: ( data_avg_dict[sum] - fit_result[sum] with p_ngs ) / data_avg_dict[pt2] 
+    # gs data: ( data_avg_dict[sum] - fit_result[sum] with p_ngs ) / ( data_avg_dict[pt2] - fit_result[2pt] with p_ngs )
 
     # tra fit: fit_result[sum] / fit_result[pt2] with p_tra then subtract
     # sca fit: fit_result[sum] / fit_result[pt2] with p_sca then subtract
-    # gs fit: fit_result[sum] / fit_result[pt2] with p_gs then subtract
+    # gs fit: fit_result[sum] / fit_result[pt2] with p_gs for both then subtract
 
     sum_data_range = [pt3_data_range[0], pt3_data_range[1]-1]
 
@@ -193,7 +229,11 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
     pt2_data = []  
     sum_gA_data = []  
 
-    gA_tsep_fit = np.linspace(sum_data_range[0], sum_data_range[1], 1000)
+    linspace_num = 2000
+
+    gA_tsep_fit = np.linspace(0, 35, linspace_num)
+
+    plot_gap = (35 - 0) / (linspace_num - 1) 
 
     for t in range(pt3_data_range[0], pt3_data_range[1]): # tsep to calc fit values of no transition 
         gA_tsep_data.append(t)
@@ -202,7 +242,6 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
 
     pt2_data = np.array(pt2_data)
     sum_gA_data = np.array(sum_gA_data)
-
 
     pt2_fit = fitter.pt2_fit_function(gA_tsep_fit, fit_result.p)['pt2']
 
@@ -251,19 +290,22 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
     sum_gA_sca_data = np.array(sum_gA_sca_data)
 
     #####################
-    ###### gs data ######
+    ###### gs data ######      summation of C3_gs / C2_gs 
     p_ngs = gv.BufferDict(fit_result.p) # no g.s.
     for key in p_ngs:
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][1] == '0'):
             p_ngs[key] = 0
+    p_ngs['z0'] = 0
 
     # print('\n p_ngs: \n')
     # print(p_ngs)
 
     # fit function values of no transition
+    pt2_fit_ngs = fitter.pt2_fit_function(np.array(gA_tsep_data), p_ngs)['pt2']
+
     sum_gA_fit_ngs = fitter.summation_same_can(np.array(gA_tsep_data), np.array(gA_tsep_data), p_ngs)['sum_A3'] # here gV_tsep same as gA
 
-    ratio_gA_gs_data = (sum_gA_data - sum_gA_fit_ngs) / pt2_data
+    ratio_gA_gs_data = (sum_gA_data - sum_gA_fit_ngs) / (pt2_data - pt2_fit_ngs)
 
     sum_gA_gs_data = []
 
@@ -271,6 +313,24 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
         sum_gA_gs_data.append(ratio_gA_gs_data[t+1] - ratio_gA_gs_data[t])
 
     sum_gA_gs_data = np.array(sum_gA_gs_data)
+
+    #####################
+    ###### all data #####      
+
+    # fit function values of no transition
+
+    sum_gA_fit_ngs = fitter.summation_same_can(np.array(gA_tsep_data), np.array(gA_tsep_data), p_ngs)['sum_A3'] # here gV_tsep same as gA
+
+    ratio_gA_all_data = (sum_gA_data - sum_gA_fit_ngs) / (pt2_data)
+    ratio_gA_all_data += ratio_gA_sca_data
+    ratio_gA_all_data += ratio_gA_tra_data
+
+    sum_gA_all_data = []
+
+    for t in range(sum_data_range[1] - sum_data_range[0]):
+        sum_gA_all_data.append(ratio_gA_all_data[t+1] - ratio_gA_all_data[t])
+
+    sum_gA_all_data = np.array(sum_gA_all_data)
 
     ########################
     ####### tra fit ########
@@ -287,14 +347,15 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
 
     sum_gA_tra_fit = []
 
-    for t in range(len(gA_tsep_fit) - 1):
-        sum_gA_tra_fit.append(ratio_gA_tra_fit[t+1] - ratio_gA_tra_fit[t])
+    for t in range(len(gA_tsep_fit) - int(1/plot_gap)):
+        temp = (ratio_gA_tra_fit[t+int(1/plot_gap)] - ratio_gA_tra_fit[t]) # here gA[t+1] - gA[t] != 1
+        sum_gA_tra_fit.append(temp)
 
     sum_gA_tra_fit = np.array(sum_gA_tra_fit)
 
     ########################
     ####### sca fit ########
-    p_sca = gv.BufferDict(fit_result.p) # no g.s.
+    p_sca = gv.BufferDict(fit_result.p) # sca only
     for key in p_sca:
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
             p_sca[key] = 0
@@ -308,70 +369,152 @@ def sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter):
 
     sum_gA_sca_fit = []
 
-    for t in range(len(gA_tsep_fit) - 1):
-        sum_gA_sca_fit.append(ratio_gA_sca_fit[t+1] - ratio_gA_sca_fit[t])
+    for t in range(len(gA_tsep_fit) - int(1/plot_gap)):
+        temp = (ratio_gA_sca_fit[t+int(1/plot_gap)] - ratio_gA_sca_fit[t]) # here gA[t+1] - gA[t] != 1
+        sum_gA_sca_fit.append(temp)
 
     sum_gA_sca_fit = np.array(sum_gA_sca_fit)
 
     ########################
     ####### gs fit #########
-    p_gs = gv.BufferDict(fit_result.p) # no g.s.
+    p_gs = gv.BufferDict(fit_result.p) # g.s. only
     for key in p_gs:
         if key.split("_")[0] in ["A3"] and (key.split("_")[1][1] != '0'):
+            p_gs[key] = 0
+        
+        if ('z' in key and key != 'z0'):
             p_gs[key] = 0
 
     # print('\n p_gs: \n')
     # print(p_gs)
 
     # fit function values of only transition
-    ratio_gA_gs_fit = fitter.summation_same_can(np.array(gA_tsep_fit), np.array(gA_tsep_fit), p_gs)['sum_A3'] / pt2_fit # here gV_tsep same as gA
+    pt2_gs_fit = fitter.pt2_fit_function(np.array(gA_tsep_fit), p_gs)['pt2']
+    ratio_gA_gs_fit = fitter.summation_same_can(np.array(gA_tsep_fit), np.array(gA_tsep_fit), p_gs)['sum_A3'] / pt2_gs_fit # here gV_tsep same as gA
 
     sum_gA_gs_fit = []
 
-    for t in range(len(gA_tsep_fit) - 1):
-        sum_gA_gs_fit.append(ratio_gA_gs_fit[t+1] - ratio_gA_gs_fit[t])
+    for t in range(len(gA_tsep_fit) - int(1/plot_gap)):
+        temp = (ratio_gA_gs_fit[t+int(1/plot_gap)] - ratio_gA_gs_fit[t]) # here gA[t+1] - gA[t] != 1
+        sum_gA_gs_fit.append(temp)
 
     sum_gA_gs_fit = np.array(sum_gA_gs_fit)
 
+    ########################
+    ####### all fit ########
 
-    return sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data
+    # print('\n p_gs: \n')
+    # print(p_gs)
 
-def ratio_plot(pt3_data_range, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, plot_in_fm):
+    # print('\n p_sca: \n')
+    # print(p_sca)
 
-    omega_imp_a09 = 0.08730 # converse lattice to fm
+    # print('\n p_tra: \n')
+    # print(p_tra)
+
+    # fit function values of only transition
+    ratio_gA_all_fit = fitter.summation_same_can(np.array(gA_tsep_fit), np.array(gA_tsep_fit), p_gs)['sum_A3'] / pt2_fit # here gV_tsep same as gA
+
+    ratio_gA_all_fit += fitter.summation_same_can(np.array(gA_tsep_fit), np.array(gA_tsep_fit), p_sca)['sum_A3'] / pt2_fit
+
+    ratio_gA_all_fit += fitter.summation_same_can(np.array(gA_tsep_fit), np.array(gA_tsep_fit), p_tra)['sum_A3'] / pt2_fit
+
+    sum_gA_all_fit = []
+
+    for t in range(len(gA_tsep_fit) - int(1/plot_gap)):
+        temp = (ratio_gA_all_fit[t+int(1/plot_gap)] - ratio_gA_all_fit[t]) # here gA[t+1] - gA[t] != 1
+        sum_gA_all_fit.append(temp)
+
+    sum_gA_all_fit = np.array(sum_gA_all_fit)
+
+
+    return plot_gap, ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit, ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data
+
+def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_all_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, pt3_gA_all_data, ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit, ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data, div_2pt, sum_tau_cut_plot, plot_in_fm):
+
+    if plot_in_fm == True:
+        omega_imp_a09 = 0.08730 # converse lattice to fm
+        plot_xmax = 3
+    elif plot_in_fm == False:
+        omega_imp_a09 = 1
+        plot_xmax = 3 / 0.08730
+
+    linspace_num = 2000
 
     pt3_tsep_data = np.arange(pt3_data_range[0], pt3_data_range[1], 2) # errorbar do not need plot density
 
-    pt3_tsep_fit = np.linspace(pt3_data_range[0], pt3_data_range[1], 1000)
+    pt3_tsep_fit = np.linspace(0, 35, linspace_num) # till 3fm
+
+    plot_gap = (35 - 0) / (linspace_num - 1) 
 
     sum_tsep_data = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
 
-    sum_tsep_fit = np.linspace(pt3_data_range[0], pt3_data_range[1]-1, 1000)[:-1]
+    sum_tsep_fit = np.linspace(0, 35, linspace_num)[:-int(1/plot_gap)]
 
-    if plot_in_fm == True:
-        pt3_tsep_data = pt3_tsep_data * omega_imp_a09
-        pt3_tsep_fit = pt3_tsep_fit * omega_imp_a09
-        sum_tsep_data = sum_tsep_data * omega_imp_a09
-        sum_tsep_fit = sum_tsep_fit * omega_imp_a09
+    pt3_tsep_data = pt3_tsep_data * omega_imp_a09
+    pt3_tsep_fit = pt3_tsep_fit * omega_imp_a09
+    sum_tsep_data = sum_tsep_data * omega_imp_a09
+    sum_tsep_fit = sum_tsep_fit * omega_imp_a09
 
+
+    # transite ratio to sum-sub
+    sum_gA_tra_fit = []
+    sum_gA_sca_fit = []
+    sum_gA_gs_fit = []
+    sum_gA_all_fit = []
+
+    sum_list = [sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_all_fit]
+
+    ratio_list = [ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit]
+
+    for i in range(len(sum_list)):
+        for t in range(len(sum_tsep_fit)):
+            temp = (ratio_list[i][t+int(1/plot_gap)] - ratio_list[i][t]) # here gA[t+1] - gA[t] != 1
+            sum_list[i].append(temp)
+
+    [sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_all_fit] = [np.array(lis) for lis in sum_list]
+    
+
+    sum_gA_tra_data = []
+    sum_gA_sca_data = []
+    sum_gA_gs_data = []
+    sum_gA_all_data = []
+
+    sum_list = [sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, sum_gA_all_data]
+
+    ratio_list = [ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data]
+
+    for i in range(len(sum_list)):
+        for t in range(len(sum_tsep_data)):
+            temp = (ratio_list[i][t+1] - ratio_list[i][t]) # here gA[t+1] - gA[t] != 1
+            sum_list[i].append(temp)
+
+    [sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, sum_gA_all_data] = [np.array(lis) for lis in sum_list]
+
+
+
+    ###### tra plot ######
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
 
-    temp_mean = np.array([val.mean for val in pt3_gA_tra_fit / pt3_gA_gs_fit])
-    temp_sdev = np.array([val.sdev for val in pt3_gA_tra_fit / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='3pt tra fit')
+    temp_mean = np.array([val.mean for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)]) 
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt tra fit')
 
-    temp_mean = np.array([val.mean for val in sum_gA_tra_fit / sum_gA_gs_fit])
-    temp_sdev = np.array([val.sdev for val in sum_gA_tra_fit / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=red, alpha=0.3, label='sum tra fit')
+    temp_mean = np.array([val.mean for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt tra data', **errorp)
 
-    temp_mean = np.array([val.mean for val in pt3_gA_tra_data / pt3_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in pt3_gA_tra_data / pt3_gA_gs_data])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='3pt tra data', **errorp)
+    temp_mean = np.array([val.mean for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum tra fit')
 
-    temp_mean = np.array([val.mean for val in sum_gA_tra_data / sum_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in sum_gA_tra_data / sum_gA_gs_data])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=red, label='sum tra data', **errorp)
+    temp_mean = np.array([val.mean for val in (sum_gA_tra_data / sum_gA_gs_data)])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_tra_data / sum_gA_gs_data)])
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum tra data', **errorp)
+    
+
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
@@ -379,38 +522,196 @@ def ratio_plot(pt3_data_range, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
 
     ax.tick_params(axis='both', which='major', **labelp)
-    ax.legend()
+    if div_2pt == True:
+        ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=15)
+
+    ax.set_ylim([-0.15, 0.15])
+    ax.set_xlim([0, plot_xmax + 0.8])
+
+    ax.legend(loc='upper right')
+
+    plt.savefig(f"./new_plots/ratio_tra.pdf", transparent=True)
     plt.show()
+
+
+    ###### sca plot ######
+    plt.figure(figsize=figsize)
+    ax = plt.axes(aspect)
+
+    temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)]) 
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt sca fit')
+
+    temp_mean = np.array([val.mean for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt sca data', **errorp)
+
+    temp_mean = np.array([val.mean for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum sca fit')
+
+    temp_mean = np.array([val.mean for val in (sum_gA_sca_data / sum_gA_gs_data)])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_sca_data / sum_gA_gs_data)])
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum sca data', **errorp)
+    
+
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+
+    if plot_in_fm == False:
+        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+    elif plot_in_fm == True:
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+
+    ax.tick_params(axis='both', which='major', **labelp)
+    if div_2pt == True:
+        ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=15)
+
+    ax.set_ylim([-0.15, 0.15])
+    ax.set_xlim([0, plot_xmax + 0.8])
+
+    ax.legend(loc='upper right')
+
+    plt.savefig(f"./new_plots/ratio_sca.pdf", transparent=True)
+    plt.show()
+
+
+
+
+    ###### 3pt/2pt plot ######
+    plt.figure(figsize=figsize)
+    ax = plt.axes(aspect)
+
+    pt2_es_fit = pt3_gA_all_fit - pt3_gA_gs_fit - pt3_gA_tra_fit - pt3_gA_sca_fit
+    pt2_es_data = pt3_gA_all_data - pt3_gA_gs_data - pt3_gA_tra_data - pt3_gA_sca_data
+
+    plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit, pt3_gA_all_fit - pt3_gA_gs_fit]
+    plot_data_list = [pt3_gA_tra_data, pt3_gA_sca_data, pt2_es_data, pt3_gA_all_data - pt3_gA_gs_data]
+    label_list = ['3pt tra ', '3pt sca ', '2pt es ', '3pt ']
+    color_list = [blue, red, grape, green]
+
+    for i in range(len(plot_fit_list)):
+        temp_mean = np.array([val.mean for val in plot_fit_list[i] / pt3_gA_gs_fit])
+        temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / pt3_gA_gs_fit])
+        ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i] + 'fit')
+
+        temp_mean = np.array([val.mean for val in plot_data_list[i] / pt3_gA_gs_data])
+        temp_sdev = np.array([val.sdev for val in plot_data_list[i] / pt3_gA_gs_data])
+        ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], label=label_list[i] + 'data', **errorp)
+
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+
+    if plot_in_fm == False:
+        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+    elif plot_in_fm == True:
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+
+    ax.tick_params(axis='both', which='major', **labelp)
+    if div_2pt == True:
+        ax.text(20 * omega_imp_a09, 0.10, '3pt / 2pt', fontsize=15)
+    elif div_2pt == False:
+        ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=15)
+
+    ax.set_ylim([-0.15, 0.15])
+    ax.set_xlim([0, plot_xmax + 0.8])
+
+    ax.legend(loc='upper right')
+
+    plt.savefig(f"./new_plots/ratio_pt3_pt2.pdf", transparent=True)
+    plt.show()
+
+
+
+
+
+    ###### sum-sub plot ######
+    plt.figure(figsize=figsize)
+    ax = plt.axes(aspect)
+
+    pt2_es_fit = sum_gA_all_fit - sum_gA_gs_fit - sum_gA_tra_fit - sum_gA_sca_fit
+    pt2_es_data = sum_gA_all_data - sum_gA_gs_data - sum_gA_tra_data - sum_gA_sca_data
+
+    plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit, sum_gA_all_fit - sum_gA_gs_fit]
+    plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data, sum_gA_all_data - sum_gA_gs_data]
+    label_list = ['sum tra ', 'sum sca ', '2pt es ', 'sum ']
+    color_list = [blue, red, grape, green]
+
+    for i in range(len(plot_fit_list)):
+        temp_mean = np.array([val.mean for val in plot_fit_list[i] / sum_gA_gs_fit])
+        temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / sum_gA_gs_fit])
+        ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i] + 'fit')
+
+        temp_mean = np.array([val.mean for val in plot_data_list[i] / sum_gA_gs_data])
+        temp_sdev = np.array([val.sdev for val in plot_data_list[i] / sum_gA_gs_data])
+        ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], label=label_list[i] + 'data', **errorp)
+
+
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+
+    if plot_in_fm == False:
+        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+    elif plot_in_fm == True:
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+
+    ax.tick_params(axis='both', which='major', **labelp)
+    ax.text(20 * omega_imp_a09, 0.10, 'sum sub', fontsize=15)
+    ax.set_ylim([-0.15, 0.15])
+    ax.set_xlim([0, plot_xmax + 0.8])
+
+
+    ax.legend(loc='upper right')
+
+    plt.savefig(f"./new_plots/ratio_sum_sub.pdf", transparent=True)
+    plt.show()
+
 
     
 
+    ###### compare plot ######
     plt.figure(figsize=figsize)
     ax = plt.axes(aspect)
 
-    temp_mean = np.array([val.mean for val in pt3_gA_sca_fit / pt3_gA_gs_fit])
-    temp_sdev = np.array([val.sdev for val in pt3_gA_sca_fit / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='3pt sca fit')
 
-    temp_mean = np.array([val.mean for val in sum_gA_sca_fit / sum_gA_gs_fit])
-    temp_sdev = np.array([val.sdev for val in sum_gA_sca_fit / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=red, alpha=0.3, label='sum sca fit')
+    temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit]) 
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt fit')
 
-    temp_mean = np.array([val.mean for val in pt3_gA_sca_data / pt3_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in pt3_gA_sca_data / pt3_gA_gs_data])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='3pt sca data', **errorp)
+    temp_mean = np.array([val.mean for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt data', **errorp)
 
-    temp_mean = np.array([val.mean for val in sum_gA_sca_data / sum_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in sum_gA_sca_data / sum_gA_gs_data])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=red, label='sum sca data', **errorp)
+    temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum fit')
+
+    temp_mean = np.array([val.mean for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum data', **errorp)
+
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
     elif plot_in_fm == True:
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
 
+    if div_2pt == True:
+        ax.text(20 * omega_imp_a09, 0.08, '3pt / 2pt', fontsize=15)
+    elif div_2pt == False:
+        ax.text(20 * omega_imp_a09, 0.08, '3pt', fontsize=15)
+
     ax.tick_params(axis='both', which='major', **labelp)
-    ax.legend()
+    ax.text(20 * omega_imp_a09, 0.1, 'tau cut: '+str(sum_tau_cut_plot), fontsize=15)
+    # ax.set_ylim([1, 1.4])
+    ax.set_ylim([-0.15, 0.15])
+    ax.set_xlim([0, plot_xmax + 0.8])
+
+    legend_without_duplicate_labels(ax)
+
+    plt.savefig(f"./new_plots/ratio_compare.pdf", transparent=True)
     plt.show()
+
+    print(sum_gA_gs_fit)
+    print(pt3_gA_gs_fit)
 
 # %%
 file_name = 'a09m310_e_gA_srcs0-15.h5'
@@ -476,14 +777,75 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 
 print(fit_result)
 
-# %%
-div_2pt = False
+# %% 
+sum_tau_cut_plot = 1 # this is for plot
+fitter_plot = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut_plot,  include_2pt, include_3pt, include_sum)
+
+div_2pt = True
 plot_in_fm = True
 
-pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data = pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter, div_2pt)
+pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_all_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, pt3_gA_all_data = pt3_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter_plot, div_2pt)
 
-sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data = sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter)
+plot_gap, ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit, ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data = sum_gA_ratio(pt3_data_range, data_avg_dict_completed, fit_result, fitter_plot)
 
-ratio_plot(pt3_data_range, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, plot_in_fm)
+ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_all_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, pt3_gA_all_data, ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit, ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data, div_2pt, sum_tau_cut_plot, plot_in_fm)
+
+
+
+
+
+
+
+# %% demonstrate that gs+tra+sca = original sum
+# p_gs = gv.BufferDict(fit_result.p) # g.s. only
+# for key in p_gs:
+#     if key.split("_")[0] in ["A3"] and (key.split("_")[1][1] != '0'):
+#         p_gs[key] = 0
+    
+#     if ('z' in key and key != 'z0'):
+#         p_gs[key] = 0
+
+
+# p_sca = gv.BufferDict(fit_result.p) # sca only
+# for key in p_sca:
+#     if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
+#         p_sca[key] = 0
+# p_sca['A3_00'] = 0
+
+# p_tra = gv.BufferDict(fit_result.p) 
+# for key in p_tra:
+#     if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]):
+#         p_tra[key] = 0
+
+# num = 700
+
+# result_a = fitter_plot.summation_same_can(np.linspace(0, 35, num), np.linspace(0, 35, num), fit_result.p)['sum_A3']
+
+# result_b = fitter_plot.summation_same_can(np.linspace(0, 35, num), np.linspace(0, 35, num), p_gs)['sum_A3'] + fitter_plot.summation_same_can(np.linspace(0, 35, num), np.linspace(0, 35, num), p_sca)['sum_A3'] + fitter_plot.summation_same_can(np.linspace(0, 35, num), np.linspace(0, 35, num), p_tra)['sum_A3']
+
+# for val in (result_a-result_b):
+#     if val > 1e-18:
+#         print(val)
+
+# gap = int((num-1)/35)+1
+# omega_imp_a09 = 0.08730
+
+# pt2_fitter = fitter_plot.pt2_fit_function(np.linspace(0, 35, num), fit_result.p, sum_nstates)['pt2']
+# mean = []
+# sdev = []
+# for i in range(num-gap):
+#     temp = result_a[i+gap] / pt2_fitter[i+gap] - result_a[i] / pt2_fitter[i]
+#     mean.append(temp.mean)
+#     sdev.append(temp.sdev)
+
+# y1 = np.array(mean) + np.array(sdev)
+# y2 = np.array(mean) - np.array(sdev)
+
+# plt.figure()
+# ax = plt.axes()
+# ax.fill_between(np.linspace(0, 35, num)[:-gap]*omega_imp_a09, y1, y2, color=blue, alpha=0.3)
+# ax.set_xlim([0, 5])
+# ax.set_ylim([1.0, 1.4])
+# plt.show()
 
 # %%
