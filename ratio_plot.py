@@ -600,7 +600,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', alpha=0.5)
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
 
@@ -650,7 +650,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', alpha=0.5)
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
 
