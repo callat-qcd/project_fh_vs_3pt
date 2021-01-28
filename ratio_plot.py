@@ -515,6 +515,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
@@ -556,6 +558,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
@@ -603,6 +607,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
@@ -653,6 +659,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
@@ -695,6 +703,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum data', **errorp)
 
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
         ax.set_xlabel(r"$t_{\rm sep}$", **textp)
