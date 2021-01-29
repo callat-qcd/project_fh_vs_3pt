@@ -499,22 +499,22 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt tra fit')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt tra')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt tra data', **errorp)
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
     temp_mean = np.array([val.mean for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
     temp_sdev = np.array([val.sdev for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum tra fit')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum tra')
 
     temp_mean = np.array([val.mean for val in (sum_gA_tra_data / sum_gA_gs_data)])
     temp_sdev = np.array([val.sdev for val in (sum_gA_tra_data / sum_gA_gs_data)])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum tra data', **errorp)
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
@@ -542,22 +542,22 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt sca fit')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt sca')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt sca data', **errorp)
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum sca fit')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum sca')
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_data / sum_gA_gs_data)])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_data / sum_gA_gs_data)])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum sca data', **errorp)
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
@@ -588,25 +588,29 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     pt2_es_fit = pt3_gA_all_fit - pt3_gA_gs_fit - pt3_gA_tra_fit - pt3_gA_sca_fit
     pt2_es_data = pt3_gA_all_data - pt3_gA_gs_data - pt3_gA_tra_data - pt3_gA_sca_data
 
-    plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit, pt3_gA_all_fit - pt3_gA_gs_fit]
-    plot_data_list = [pt3_gA_tra_data, pt3_gA_sca_data, pt2_es_data, pt3_gA_all_data - pt3_gA_gs_data]
-    label_list = ['3pt tra ', '3pt sca ', '2pt es ', '3pt ']
-    color_list = [blue, red, grape, green]
+    plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit]
+    plot_data_list = [pt3_gA_tra_data, pt3_gA_sca_data, pt2_es_data]
+    label_list = ['3pt tra ', '3pt sca ', '2pt es ']
+    color_list = [blue, red, grape]
 
     for i in range(len(plot_fit_list)):
         temp_mean = np.array([val.mean for val in plot_fit_list[i] / pt3_gA_gs_fit])
         temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / pt3_gA_gs_fit])
-        ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i] + 'fit')
+        ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i])
 
         temp_mean = np.array([val.mean for val in plot_data_list[i] / pt3_gA_gs_data])
         temp_sdev = np.array([val.sdev for val in plot_data_list[i] / pt3_gA_gs_data])
-        ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], label=label_list[i] + 'data', **errorp)
+        ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
+
+    temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='/', label='3pt')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sca')
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
@@ -640,25 +644,29 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     pt2_es_fit = sum_gA_all_fit - sum_gA_gs_fit - sum_gA_tra_fit - sum_gA_sca_fit
     pt2_es_data = sum_gA_all_data - sum_gA_gs_data - sum_gA_tra_data - sum_gA_sca_data
 
-    plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit, sum_gA_all_fit - sum_gA_gs_fit]
-    plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data, sum_gA_all_data - sum_gA_gs_data]
-    label_list = ['sum tra ', 'sum sca ', '2pt es ', 'sum ']
-    color_list = [blue, red, grape, green]
+    plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit]
+    plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data]
+    label_list = ['sum tra ', 'sum sca ', '2pt es ']
+    color_list = [blue, red, grape]
 
     for i in range(len(plot_fit_list)):
         temp_mean = np.array([val.mean for val in plot_fit_list[i] / sum_gA_gs_fit])
         temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / sum_gA_gs_fit])
-        ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i] + 'fit')
+        ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i])
 
         temp_mean = np.array([val.mean for val in plot_data_list[i] / sum_gA_gs_data])
         temp_sdev = np.array([val.sdev for val in plot_data_list[i] / sum_gA_gs_data])
-        ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], label=label_list[i] + 'data', **errorp)
+        ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
+
+    temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='/', label='sum')
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', label='2pt+sca')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sca')
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
@@ -688,21 +696,21 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt fit')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, label='3pt data', **errorp)
+    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
     temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum fit')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum')
 
     temp_mean = np.array([val.mean for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
     temp_sdev = np.array([val.sdev for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, label='sum data', **errorp)
+    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='--', linewidth=1)
+    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 

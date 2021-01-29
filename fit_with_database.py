@@ -88,7 +88,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
     best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}   
 
-    print(fit_result)
+    print(fit_result.format(100))
     print(fit_result.p['A3_00'].mean)
     print(fit_result.p['A3_00'].sdev) 
 
@@ -145,6 +145,8 @@ pt3_data_range = [2, 15] # range in data file
 prepare_data = Prepare_data(file_name, file_path, pt2_data_range, pt3_data_range)
 
 data_avg_dict = prepare_data.read_data_with_average()
+
+print([i.mean for i in data_avg_dict['pt3_A3_tsep_10']])
 
 use_p0 = False
 include_2pt = True

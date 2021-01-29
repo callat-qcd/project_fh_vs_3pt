@@ -336,6 +336,8 @@ class Fit():
             Amp['pt3_A3'] = np.array(pt3_A3_amp)
             Amp['pt3_V4'] = np.array(pt3_V4_amp)
 
+            print(pt3_A3_amp)
+
         if self.include_sum == True:
             sum_A3_factor=[]
             sum_V4_factor=[]
