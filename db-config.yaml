@@ -1,2 +1,2 @@
 ENGINE: django.db.backends.sqlite3
-NAME: /home/greyyy/Desktop/qcd/fh_comparison/fh_db/fh_db-db.sqlite
+NAME: /home/greyyy/github/project_fh_vs_3pt/fh_db-db.sqlite
