@@ -20,7 +20,7 @@ figsize = (7, 4)
 aspect=[0.15, 0.15, 0.8, 0.8]
 plt.rcParams['figure.figsize'] = figsize
 
-errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
+errorp = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
@@ -36,7 +36,64 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [red, orange, yellow, green, blue, grape]
+color_list = [grey, red, orange, green, blue, grape]
+
+# %%
+def tau_c_sum_plot(f_range, d_range, fit_result):
+
+    plt.figure(figsize=figsize)
+    ax = plt.axes(aspect)
+    for sum_tau_cut in range(f_range[0], f_range[1]):
+
+        fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+
+        plot_space = 0.05 # for fill_between plot
+
+        tmin = max(2, 2*sum_tau_cut) - 0.5
+
+        x_fill = np.arange(tmin, 15, plot_space)[:int(-1 / plot_space)]
+
+        pt2_fitter = fitter.pt2_fit_function(np.arange(tmin, 15, plot_space), fit_result.p)['pt2']
+
+        sum_A3_fitter = fitter.summation_same_can(np.arange(tmin, 15, plot_space), np.arange(tmin, 15, plot_space), fit_result.p)['sum_A3']
+
+        temp = []
+
+        for i in range(len(np.arange(tmin, 15, plot_space)) - int(1 / plot_space)):
+            temp.append(sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i])
+
+
+        y1 = np.array([val.mean for val in temp]) + np.array([val.sdev for val in temp])
+        y2 = np.array([val.mean for val in temp]) - np.array([val.sdev for val in temp])
+
+        ax.fill_between(x_fill, y1, y2, color=color_list[sum_tau_cut], alpha=0.3)
+
+    for sum_tau_cut in range(d_range[0], d_range[1]):
+
+        data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
+        
+        sum_data_list = []
+
+        tmin = max(2, 2*sum_tau_cut)
+
+        for t in range(tmin, 14):
+            sum_data_list.append(data_avg_dict_completed['sum_A3_fit_'+str(t)])
+
+        temp_mean = np.array([val.mean for val in sum_data_list])
+        temp_sdev = np.array([val.sdev for val in sum_data_list])
+
+        if sum_tau_cut == 1:
+            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label='tau c='+str(sum_tau_cut), marker='o', color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorp)
+
+        else:
+            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label='tau c='+str(sum_tau_cut), marker='o', color=color_list[sum_tau_cut], mfc='none', **errorp)
+
+    ax.set_ylim([1, 1.4])
+    ax.set_xlim([1, 17])
+    ax.legend(loc='upper right')
+    plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
+    plt.savefig(f"./new_plots/tau_c_sum_plot_{plot_range}.pdf", transparent=True)
+    plt.show()
 
 # %%
 #############################################
@@ -105,50 +162,10 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-#######################################################
-plt.figure(figsize=figsize)
-ax = plt.axes(aspect)
-for sum_tau_cut in range(0, 5):
+f_range = [0, 5]
+d_range = [0, 5]
 
-    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
-
-    plot_space = 0.05 # for fill_between plot
-    x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-1 / plot_space)]
-
-    pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['pt2']
-
-    sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
-
-    temp = []
-
-    for i in range(len(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)) - int(1 / plot_space)):
-        temp.append(sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i])
+tau_c_sum_plot(f_range, d_range, fit_result)
 
 
-    y1 = np.array([val.mean for val in temp]) + np.array([val.sdev for val in temp])
-    y2 = np.array([val.mean for val in temp]) - np.array([val.sdev for val in temp])
-
-    ax.fill_between(x_fill, y1, y2, color=color_list[sum_tau_cut+1], alpha=0.3)
-
-for sum_tau_cut in range(-1, 5):
-
-    data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
-    
-    sum_data_list = []
-
-    tmin = max(2, 2*sum_tau_cut)
-
-    for t in range(tmin, 14):
-        sum_data_list.append(data_avg_dict_completed['sum_A3_fit_'+str(t)])
-
-    temp_mean = np.array([val.mean for val in sum_data_list])
-    temp_sdev = np.array([val.sdev for val in sum_data_list])
-
-    ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label='tau c='+str(sum_tau_cut), marker='o', color=color_list[sum_tau_cut+1], **errorp)
-
-ax.set_ylim([1, 1.4])
-ax.set_xlim([1, 17])
-ax.legend(loc='upper right')
-plt.savefig(f"./new_plots/tau_c_sum_plot.pdf", transparent=True)
-plt.show()
 # %%
