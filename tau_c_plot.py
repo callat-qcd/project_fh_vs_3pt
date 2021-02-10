@@ -21,6 +21,8 @@ aspect=[0.15, 0.15, 0.8, 0.8]
 plt.rcParams['figure.figsize'] = figsize
 
 errorp = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
+textp = {"fontsize": 14}
+labelp = {"labelsize": 14}
 
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
@@ -83,14 +85,18 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         temp_sdev = np.array([val.sdev for val in sum_data_list])
 
         if sum_tau_cut == 1:
-            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label='tau c='+str(sum_tau_cut), marker='o', color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorp)
+            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker='o', color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorp)
 
         else:
-            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label='tau c='+str(sum_tau_cut), marker='o', color=color_list[sum_tau_cut], mfc='none', **errorp)
+            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker='o', color=color_list[sum_tau_cut], mfc='none', **errorp)
 
     ax.set_ylim([1, 1.4])
-    ax.set_xlim([1, 17])
-    ax.legend(loc='upper right')
+    ax.set_xlim([1, 18])
+    ax.set_xlabel(r'$t$', **textp)
+
+    ax.tick_params(axis='both', which='major', **labelp)
+
+    ax.legend(loc='upper right', **textp)
     plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
     plt.savefig(f"./new_plots/tau_c_sum_plot_{plot_range}.pdf", transparent=True)
     plt.show()
@@ -162,8 +168,8 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-f_range = [0, 5]
-d_range = [0, 5]
+f_range = [1, 6]
+d_range = [1, 6]
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 
