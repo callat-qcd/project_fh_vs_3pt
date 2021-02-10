@@ -173,5 +173,4 @@ d_range = [1, 6]
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 
-
 # %%
