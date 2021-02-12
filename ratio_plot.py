@@ -5,7 +5,6 @@ import numpy as np
 import gvar as gv  
 import os
 
-plt.rcParams.update({"text.usetex": True})
 import matplotlib as mpl
 mpl.pyplot.ion()
 #%matplotlib inline
@@ -30,13 +29,18 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-figsize = (7, 4)
-aspect=[0.15, 0.15, 0.8, 0.8]
-plt.rcParams['figure.figsize'] = figsize
+
+plt.rcParams.update({"text.usetex": True})
+fig_width = 6.75 # in inches, 2x as wide as APS column
+gr        = 1.618034333 # golden ratio
+fig_size  = (fig_width, fig_width / gr)
+plt_axes  = [0.15,0.15,0.845,0.845]
+fs_text   = 18 # font size of text
+fs_leg    = 16 # legend font size
+tick_size = 16 # tick size
+plt.rcParams['figure.figsize'] = fig_size
 
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
-labelp = {"labelsize": 14}
-textp = {"fontsize": 15}
 
 # %%
 def legend_without_duplicate_labels(ax):
@@ -494,8 +498,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
 
     ###### tra plot ######
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
 
     temp_mean = np.array([val.mean for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)])
@@ -514,31 +518,31 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
     elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.tick_params(direction='in', labelsize=tick_size)
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=fs_text)
 
     ax.set_ylim([-0.15, 0.15])
     ax.set_xlim([0, plot_xmax + 0.8])
 
-    ax.legend(loc='upper right')
+    ax.legend(loc='lower right', fontsize=fs_leg)
 
     plt.savefig(f"./new_plots/ratio_tra.pdf", transparent=True)
     plt.show()
 
 
     ###### sca plot ######
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)])
@@ -557,23 +561,23 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
     elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.tick_params(direction='in', labelsize=tick_size)
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=fs_text)
 
     ax.set_ylim([-0.15, 0.15])
     ax.set_xlim([0, plot_xmax + 0.8])
 
-    ax.legend(loc='upper right')
+    ax.legend(loc='lower right', fontsize=fs_leg)
 
     plt.savefig(f"./new_plots/ratio_sca.pdf", transparent=True)
     plt.show()
@@ -582,8 +586,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
 
     ###### 3pt/2pt plot ######
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
 
     pt2_es_fit = pt3_gA_all_fit - pt3_gA_gs_fit - pt3_gA_tra_fit - pt3_gA_sca_fit
     pt2_es_data = pt3_gA_all_data - pt3_gA_gs_data - pt3_gA_tra_data - pt3_gA_sca_data
@@ -595,12 +599,12 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sca')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sc')
 
 
     plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit]
     plot_data_list = [pt3_gA_tra_data, pt3_gA_sca_data, pt2_es_data]
-    label_list = ['3pt tra ', '3pt sca ', '2pt es ']
+    label_list = ['3pt tr ', '3pt sc ', '2pt es ']
     color_list = [blue, red, grape]
 
     for i in range(len(plot_fit_list)):
@@ -612,25 +616,25 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         temp_sdev = np.array([val.sdev for val in plot_data_list[i] / pt3_gA_gs_data])
         ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
     elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.tick_params(direction='in', labelsize=tick_size)
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, '3pt / 2pt', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.10, r'$R^{\rm es}(t_{\rm sep}, \tau=t_{\rm sep}/2) / g_{00}$', fontsize=fs_text)
     elif div_2pt == False:
-        ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=fs_text)
 
     ax.set_ylim([-0.15, 0.15])
     ax.set_xlim([0, plot_xmax + 0.8])
 
-    ax.legend(loc='upper right')
+    ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
 
     plt.savefig(f"./new_plots/ratio_pt3_pt2.pdf", transparent=True)
     plt.show()
@@ -640,8 +644,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
 
     ###### sum-sub plot ######
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
 
     pt2_es_fit = sum_gA_all_fit - sum_gA_gs_fit - sum_gA_tra_fit - sum_gA_sca_fit
     pt2_es_data = sum_gA_all_data - sum_gA_gs_data - sum_gA_tra_data - sum_gA_sca_data
@@ -653,12 +657,12 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sca')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sc')
 
 
     plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit]
     plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data]
-    label_list = ['sum tra ', 'sum sca ', '2pt es ']
+    label_list = ['sum tr ', 'sum sc ', '2pt es ']
     color_list = [blue, red, grape]
 
     for i in range(len(plot_fit_list)):
@@ -670,22 +674,22 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         temp_sdev = np.array([val.sdev for val in plot_data_list[i] / sum_gA_gs_data])
         ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
     elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
-    ax.text(20 * omega_imp_a09, 0.10, 'sum sub', fontsize=15)
+    ax.tick_params(direction='in', labelsize=tick_size)
+    ax.text(20 * omega_imp_a09, 0.10, r'${\rm FH}^{\rm es}(t_{\rm sep}) / g_{00}$', fontsize=fs_text)
     ax.set_ylim([-0.15, 0.15])
     ax.set_xlim([0, plot_xmax + 0.8])
 
 
-    ax.legend(loc='upper right')
+    ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
 
     plt.savefig(f"./new_plots/ratio_sum_sub.pdf", transparent=True)
     plt.show()
@@ -694,9 +698,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     
 
     ###### compare plot ######
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
-
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
 
     temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit]) 
     temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
@@ -719,18 +722,18 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
     if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
     elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", **textp)
+        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.08, '3pt / 2pt', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.08, '3pt / 2pt', fontsize=fs_text)
     elif div_2pt == False:
-        ax.text(20 * omega_imp_a09, 0.08, '3pt', fontsize=15)
+        ax.text(20 * omega_imp_a09, 0.08, '3pt', fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
-    ax.text(20 * omega_imp_a09, 0.1, 'tau cut: '+str(sum_tau_cut_plot), fontsize=15)
-    # ax.set_ylim([1, 1.4])
+    ax.tick_params(direction='in', labelsize=tick_size)
+    ax.text(20 * omega_imp_a09, 0.1, 'tau cut: '+str(sum_tau_cut_plot), fontsize=fs_text)
+
     ax.set_ylim([-0.15, 0.15])
     ax.set_xlim([0, plot_xmax + 0.8])
 

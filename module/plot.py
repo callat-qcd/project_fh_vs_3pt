@@ -26,8 +26,16 @@ color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow
 
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
 
-figsize = (7, 4)
-aspect=[0.15, 0.15, 0.8, 0.8]
+plt.rcParams.update({"text.usetex": True})
+fig_width = 6.75 # in inches, 2x as wide as APS column
+gr        = 1.618034333 # golden ratio
+fig_size  = (fig_width, fig_width / gr)
+plt_axes  = [0.15,0.15,0.845,0.845]
+fs_text   = 18 # font size of text
+fs_leg    = 16 # legend font size
+tick_size = 16 # tick size
+plt.rcParams['figure.figsize'] = fig_size
+
 #gridspec = {'height_ratios': [3, 1], 'left': 0.05, 'right': 0.95, 'bottom': 0.05, 'top': 0.95}
 gridspec_tmin = {'height_ratios': [3, 1, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
@@ -61,8 +69,6 @@ zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
 oveff_label = r"$O^V_{\textrm{eff}}$"
 
-plt.rcParams['figure.figsize'] = figsize
-
 omega_imp_a09 = 0.08730 # converse lattice to fm
 
 # %%
@@ -93,8 +99,8 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         m0_eff.append(temp.mean)
         m0_eff_err.append(temp.sdev)
 
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, np.array(m0_eff), yerr=np.array(m0_eff_err), marker='o', color="k", **errorp)
     
     if fit_result != None and fitter != None:
@@ -138,8 +144,8 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         meff = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
         zeff.append(data_avg_dict['pt2_tsep_'+str(i)]*np.exp(meff*i))
     
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, [i.mean for i in zeff], yerr=[i.sdev for i in zeff], marker='o', color="k", **errorp)
  
     if fit_result != None and fitter != None:
@@ -253,8 +259,8 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
                 gV_fit_err['tsep_'+str(i)].append(temp2.sdev)
             
         
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
         if plot_in_fm == False:
             x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
@@ -277,24 +283,26 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
             gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
             ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
 
+    ax.tick_params(direction='in', labelsize=tick_size)
+
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
-        ax.set_xlabel(tau_label, **textp)
+        ax.set_xlabel(tau_label, fontsize=fs_text)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_tau_label, **textp)
+        ax.set_xlabel(fm_tau_label, fontsize=fs_text)
 
-    ax.set_ylim([1, 1.3])
-    ax.set_ylabel(oaeff_label, **textp)
+    ax.set_ylim(1.0, 1.349)
+    ax.set_ylabel(oaeff_label, fontsize=fs_text)
     #
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/oaeff{plot_type}.pdf", transparent=True)
     plt.show()
     
     
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
         if plot_in_fm == False:
             x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
@@ -418,8 +426,8 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     print(sdev_demo)
 #########################################
 
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
         if plot_in_fm == False:
             x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
@@ -549,8 +557,8 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     print(sdev_demo)
 #########################################
 
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
         if plot_in_fm == False:
             x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
@@ -628,8 +636,8 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         gV.append(temp2.mean)
         gV_err.append(temp2.sdev)
 
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color="k", **errorp)
     # print(gA)
     # print(gA_err)
@@ -674,8 +682,8 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     plt.savefig(f"./new_plots/soaeff{plot_type}.pdf", transparent=True)
     plt.show()
     
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, np.array(gV), yerr=np.array(gV_err), marker='o', color="k", **errorp)
     # print(gV)
     # print(gV_err)
@@ -740,8 +748,8 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         gA_err.append(temp1.sdev)
 
 ##################### fit on data
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
 
     if sum_nstates == pt2_nstates:
@@ -977,8 +985,8 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
         gA_err.append(temp1.sdev)
 
 ##################### fit on data
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
     ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
 
     if sum_nstates == pt2_nstates:

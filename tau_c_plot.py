@@ -16,13 +16,17 @@ from module.fit import Fit
 from module.prior_setting import prior_ho_width_1 
 prior = prior_ho_width_1
 
-figsize = (7, 4)
-aspect=[0.15, 0.15, 0.8, 0.8]
-plt.rcParams['figure.figsize'] = figsize
+plt.rcParams.update({"text.usetex": True})
+fig_width = 6.75 # in inches, 2x as wide as APS column
+gr        = 1.618034333 # golden ratio
+fig_size  = (fig_width, fig_width / gr)
+plt_axes  = [0.15,0.15,0.845,0.845]
+fs_text   = 18 # font size of text
+fs_leg    = 16 # legend font size
+tick_size = 16 # tick size
+plt.rcParams['figure.figsize'] = fig_size
 
 errorp = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
-textp = {"fontsize": 14}
-labelp = {"labelsize": 14}
 
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
@@ -43,8 +47,8 @@ color_list = [grey, red, orange, green, blue, grape]
 # %%
 def tau_c_sum_plot(f_range, d_range, fit_result):
 
-    plt.figure(figsize=figsize)
-    ax = plt.axes(aspect)
+    plt.figure(figsize=fig_size)
+    ax = plt.axes(plt_axes)
     for sum_tau_cut in range(f_range[0], f_range[1]):
 
         fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
@@ -52,16 +56,17 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         plot_space = 0.05 # for fill_between plot
 
         tmin = max(2, 2*sum_tau_cut) - 0.5
+        tmax = 23
 
-        x_fill = np.arange(tmin, 15, plot_space)[:int(-1 / plot_space)]
+        x_fill = np.arange(tmin, tmax, plot_space)[:int(-1 / plot_space)]
 
-        pt2_fitter = fitter.pt2_fit_function(np.arange(tmin, 15, plot_space), fit_result.p)['pt2']
+        pt2_fitter = fitter.pt2_fit_function(np.arange(tmin, tmax, plot_space), fit_result.p)['pt2']
 
-        sum_A3_fitter = fitter.summation_same_can(np.arange(tmin, 15, plot_space), np.arange(tmin, 15, plot_space), fit_result.p)['sum_A3']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(tmin, tmax, plot_space), np.arange(tmin, tmax, plot_space), fit_result.p)['sum_A3']
 
         temp = []
 
-        for i in range(len(np.arange(tmin, 15, plot_space)) - int(1 / plot_space)):
+        for i in range(len(np.arange(tmin, tmax, plot_space)) - int(1 / plot_space)):
             temp.append(sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i])
 
 
@@ -90,13 +95,13 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         else:
             ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker='o', color=color_list[sum_tau_cut], mfc='none', **errorp)
 
-    ax.set_ylim([1, 1.4])
-    ax.set_xlim([1, 18])
-    ax.set_xlabel(r'$t$', **textp)
+    ax.set_ylim(1.0, 1.349)
+    ax.set_xlim([1, 23])
+    ax.set_xlabel(r'$t$', fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.tick_params(direction='in', labelsize=tick_size)
 
-    ax.legend(loc='upper right', **textp)
+    ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
     plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
     plt.savefig(f"./new_plots/tau_c_sum_plot_{plot_range}.pdf", transparent=True)
     plt.show()
@@ -168,8 +173,8 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-f_range = [1, 6]
-d_range = [1, 6]
+f_range = [0, 2]
+d_range = [0, 2]
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 
