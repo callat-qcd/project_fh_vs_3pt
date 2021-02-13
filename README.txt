@@ -4,6 +4,8 @@ In order to use database:
 1 run "pip install espressodb"
 2 please download "fh_db-db.sqlite" file from [https://drive.google.com/file/d/1JpksWCjo0sZDMfOSm7ojQKNv5VDNWHXi/view?usp=sharing], and put it at same path as this txt file. 
 3 change the "NAME" in "db-config.yaml" file to the correct path of "fh_db-db.sqlite" file
+4 run "python manage.py makemigrations"
+5 run "python manage.py migrate"
 
 Data files: "a09m310_e_gA_srcs0-15.h5", "FK_Fpi_data.h5" should be put at the same path as this txt file.
 

@@ -16,6 +16,7 @@ from module.plot import tmin_plot
 from module.plot import tmin_div_plot
 from module.plot import tmin_late_plot
 from module.plot import tmax_plot
+from module.plot import tmax_scattered_plot
 from module.plot import tau_cut_plot
 
 # labels
@@ -25,10 +26,11 @@ c3pt_tmin = r"$C_{\textrm{3pt}}\ t_{\textrm{min}}$"
 c3pt_tmax = r"$C_{\textrm{3pt}}\ t_{\textrm{max}}$"
 csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
 csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
+c_tmax = r"$t_{\textrm{max}}$"
 q_label = r"$Q$"
 w_label = r"$w$"
-oa00_label = r"$O^A_{00}$"
-ov00_label = r"$O^V_{00}$"
+oa00_label = r"$\mathring{g}_A$"
+ov00_label = r"$\mathring{g}_V$"
 e0_label = r"$E_{0}$"
 z0_label = r"$z_{0}$"
 nstate_label = r"$n_{\textrm{states}}$"
@@ -39,7 +41,7 @@ zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
 oveff_label = r"$O^V_{\textrm{eff}}$"
 
-gA_ylim=[1.205, 1.32]
+gA_ylim=[1.0, 1.349]
 gV_ylim=[1.0051, 1.03]
 E0_ylim=[0.484, 0.497]
 
@@ -182,4 +184,60 @@ n = 5
 fit_name = '23s'
 
 tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim)
+# %%
+####################################
+########## 23s 3pt/sum tmax #############
+#####################################
+t_range = [6, 16]
+best_n = 5
+best_t = 15
+
+tmax_name = '3pt' # varying tmax is not so interesting as tmin 
+fit_name = '23s'
+save_name = 'both'
+xlabel = c_tmax
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', fit_type='continuous', include_2pt=True, include_3pt=True, include_sum=True,
+pt2_tmin=3, pt2_tmax=18, pt2_nstates=5,
+pt3_A3_tsep_min=3, id_num=2,
+sum_A3_tsep_min=3, sum_tau_cut=1, sum_nstates=5)
+
+tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
+# %%
+####################################
+########## 23s 3pt/sum even tmax #############
+#####################################
+t_list = [8, 10, 12, 14]
+best_n = 5
+
+tmax_name = '3pt' # varying tmax is not so interesting as tmin 
+fit_name = '23s'
+save_name = 'both_even'
+xlabel = c_tmax
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
+pt2_nstates=5,
+id_num=2,
+sum_tau_cut=1, sum_nstates=5)
+
+tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
+# %%
+####################################
+########## 23s 3pt/sum odd tmax #############
+#####################################
+t_list = [7, 9, 11, 13]
+best_n = 5
+
+tmax_name = '3pt' # varying tmax is not so interesting as tmin 
+fit_name = '23s'
+save_name = 'both_odd'
+xlabel = c_tmax
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
+pt2_nstates=5,
+id_num=3,
+sum_tau_cut=1, sum_nstates=5)
+
+tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
+
 # %%

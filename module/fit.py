@@ -267,30 +267,38 @@ class Fit():
             val['pt3_V4'] = self.pt3_fit_function(pt3_tsep_A3, pt3_tsep_V4, pt3_tau_A3, pt3_tau_V4, p)['pt3_V4']
 
         if self.include_sum == True:
-            sum_tsep_A3 = x['sum_A3']
-            sum_tsep_V4 = x['sum_V4']
+            gap_a = x['sum_A3'][1] - x['sum_A3'][0]
+            gap_v = x['sum_V4'][1] - x['sum_V4'][0]
 
-            sum_tsep_A3_fit_1 = sum_tsep_A3
-            sum_tsep_V4_fit_1 = sum_tsep_V4
+            sum_tsep_A3_fit_1 = x['sum_A3'][:-1]
+            sum_tsep_V4_fit_1 = x['sum_V4'][:-1]
 
-            sum_tsep_A3_fit_2 = sum_tsep_A3 + 1
-            sum_tsep_V4_fit_2 = sum_tsep_V4 + 1
+            sum_tsep_A3_fit_2 = x['sum_A3'][1:]
+            sum_tsep_V4_fit_2 = x['sum_V4'][1:]
 
-            pt2_t_A3_fit_1 = sum_tsep_A3
-            pt2_t_V4_fit_1 = sum_tsep_V4
+            pt2_t_A3_fit_1 = sum_tsep_A3_fit_1
+            pt2_t_V4_fit_1 = sum_tsep_V4_fit_1
 
-            pt2_t_A3_fit_2 = sum_tsep_A3 + 1
-            pt2_t_V4_fit_2 = sum_tsep_V4 + 1
+            pt2_t_A3_fit_2 = sum_tsep_A3_fit_2
+            pt2_t_V4_fit_2 = sum_tsep_V4_fit_2
 
             if self.pt2_nstates != self.sum_nstates:
                 val['sum_A3'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p, self.sum_nstates)['pt2']) # using same nstates in the ratio
 
+                val['sum_A3'] = val['sum_A3'] / gap_a
+
                 val['sum_V4'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p, self.sum_nstates)['pt2'])
+
+                val['sum_V4'] = val['sum_V4'] / gap_v
   
             if self.pt2_nstates == self.sum_nstates:
                 val['sum_A3'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p)['pt2'])
 
+                val['sum_A3'] = val['sum_A3'] / gap_a
+
                 val['sum_V4'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p)['pt2'])
+
+                val['sum_V4'] = val['sum_V4'] / gap_v
 
         return val
 
@@ -348,8 +356,13 @@ class Fit():
             for t in sum_V4:
                 sum_V4_factor.append(data_avg_dict['sum_V4_fit_'+str(t)])
 
-            t_tsep_tau['sum_A3'] = sum_A3
-            t_tsep_tau['sum_V4'] = sum_V4
+            sum_A3 = [t for t in sum_A3]
+            sum_A3.append(2*sum_A3[-1] - sum_A3[-2])
+            t_tsep_tau['sum_A3'] = np.array(sum_A3)
+
+            sum_V4 = [t for t in sum_V4]
+            sum_V4.append(2*sum_V4[-1] - sum_V4[-2])
+            t_tsep_tau['sum_V4'] = np.array(sum_V4)
 
             Amp['sum_A3'] = np.array(sum_A3_factor)
             Amp['sum_V4'] = np.array(sum_V4_factor)

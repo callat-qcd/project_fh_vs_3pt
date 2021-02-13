@@ -98,7 +98,6 @@ class Prepare_data():
 
         return data_avg_dict
 
-
     def add_sum_data(self, data_avg_dict, sum_tau_cut):
         if sum_tau_cut == -1: # sum full tau
             for i in range(self.pt3_data_range[0], self.pt3_data_range[1]):
@@ -132,5 +131,55 @@ class Prepare_data():
                 data_avg_dict['sum_A3_fit_'+str(i)] = (data_avg_dict['sum_A3_tsep_' + str(i+1)]/data_avg_dict['pt2_tsep_'+str(i+1)]) - (data_avg_dict['sum_A3_tsep_' + str(i)]/data_avg_dict['pt2_tsep_'+str(i)])
 
                 data_avg_dict['sum_V4_fit_'+str(i)] = (data_avg_dict['sum_V4_tsep_' + str(i+1)]/data_avg_dict['pt2_tsep_'+str(i+1)]) - (data_avg_dict['sum_V4_tsep_' + str(i)]/data_avg_dict['pt2_tsep_'+str(i)])
+
+            return data_avg_dict
+
+    def add_sum_data_scattered(self, data_avg_dict, sum_tau_cut, sum_tsep):
+        sum_tsep = [t for t in sum_tsep]
+        sum_tsep.append(2*sum_tsep[-1] - sum_tsep[-2]) # the last element 
+        if sum_tau_cut == -1: # sum full tau
+            for i in range(self.pt3_data_range[0], self.pt3_data_range[1]):
+                data_avg_dict['sum_A3_tsep_' + str(i)] = gv.gvar(0, 0)
+                data_avg_dict['sum_V4_tsep_' + str(i)] = gv.gvar(0, 0)
+
+                for j in range(len(data_avg_dict['pt3_A3_tsep_3'])): # do the summation
+                    data_avg_dict['sum_A3_tsep_' + str(i)] += data_avg_dict['pt3_A3_tsep_' + str(i)][j]
+                    data_avg_dict['sum_V4_tsep_' + str(i)] += data_avg_dict['pt3_V4_tsep_' + str(i)][j]
+
+            for i in range(len(sum_tsep)-1): # use ratio form to do the fit
+                # fit_14 will use tsep_15 here, so the tsep range of sum part should not be bigger than 13
+                t1 = sum_tsep[i]
+                t2 = sum_tsep[i+1]
+                data_avg_dict['sum_A3_fit_'+str(t1)] = (
+                    (data_avg_dict['sum_A3_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_A3_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
+                    ) / (t2 - t1)
+
+                data_avg_dict['sum_V4_fit_'+str(t1)] = (
+                    (data_avg_dict['sum_V4_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_V4_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
+                    ) / (t2 - t1)
+
+            return data_avg_dict
+
+
+        else:
+            for i in range(self.pt3_data_range[0], self.pt3_data_range[1]):
+                data_avg_dict['sum_A3_tsep_' + str(i)] = gv.gvar(0, 0)
+                data_avg_dict['sum_V4_tsep_' + str(i)] = gv.gvar(0, 0)
+
+                for j in range(sum_tau_cut, i-sum_tau_cut+1): # do the summation
+                    data_avg_dict['sum_A3_tsep_' + str(i)] += data_avg_dict['pt3_A3_tsep_' + str(i)][j]
+                    data_avg_dict['sum_V4_tsep_' + str(i)] += data_avg_dict['pt3_V4_tsep_' + str(i)][j]
+
+            for i in range(len(sum_tsep)-1): # use ratio form to do the fit
+                # fit_14 will use tsep_15 here, so the tsep range of sum part should not be bigger than 13
+                t1 = sum_tsep[i]
+                t2 = sum_tsep[i+1]
+                data_avg_dict['sum_A3_fit_'+str(t1)] = (
+                    (data_avg_dict['sum_A3_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_A3_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
+                    ) / (t2 - t1)
+
+                data_avg_dict['sum_V4_fit_'+str(t1)] = (
+                    (data_avg_dict['sum_V4_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_V4_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
+                    ) / (t2 - t1)
 
             return data_avg_dict
