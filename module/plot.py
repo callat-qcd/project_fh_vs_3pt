@@ -122,13 +122,13 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
     x_lim = [2, 25]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
+        ax.set_xlabel(t_label, fontsize=fs_text)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, **textp)
+        ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
     ax.set_ylim([0.45, 0.62])
-    ax.set_ylabel(meff_label, **textp)        
+    ax.set_ylabel(meff_label, fontsize=fs_text)        
     
     ax.tick_params(axis='both', which='major', **labelp)
 
@@ -2142,9 +2142,10 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.rcParams['ytick.direction'] = 'in'
 
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(oa00_label, fontsize=fs_text)
     ax1.set_ylim(gA_ylim)
-    ax1.tick_params(axis='both', which='major', **labelp)
+
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     ax1.errorbar(np.array(x)-1, np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
 
@@ -2153,7 +2154,7 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     ax1.errorbar(np.array([best_t])-1, np.array([value['gA'][best_t_]]), yerr=np.array([value['gA_err'][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
 
 
-    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylabel(q_label, fontsize=fs_text)
     ax2.set_ylim([0, 1.1])
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
@@ -2162,11 +2163,11 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     # best fit
     ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
 
+    ax2.tick_params(direction='in', labelsize=tick_size)
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
-    ax2.tick_params(axis='both', which='major', **labelp)
+    plt.xlabel(xlabel, fontsize=fs_text)
+    plt.xlim([4.5, 14.5])
     plt.tight_layout(pad=30, rect=plt_axes)
 
     if save_name != None:
@@ -2184,9 +2185,9 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     plt.rcParams['ytick.direction'] = 'in'
 
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
-    ax1.set_ylabel(ov00_label, **textp)
+    ax1.set_ylabel(ov00_label, fontsize=fs_text)
     ax1.set_ylim(gV_ylim)
-    ax1.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     ax1.errorbar(np.array(x)-1, np.array(value['gV']), yerr=np.array(value['gV_err']), marker='o', color=color_list[best_n-2], **errorp)
 
@@ -2204,11 +2205,11 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
     # best fit
     ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
 
+    ax2.tick_params(direction='in', labelsize=tick_size)
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
+    plt.xlabel(xlabel, fontsize=fs_text)
     plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
-    ax2.tick_params(axis='both', which='major', **labelp)
     plt.tight_layout(pad=30, rect=plt_axes)
 
     if save_name != None:
@@ -2248,10 +2249,10 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
 
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
+    plt.xlabel(xlabel, fontsize=fs_text)
     plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(direction='in', labelsize=tick_size)
+    ax2.tick_params(direction='in', labelsize=tick_size)
     plt.tight_layout(pad=30, rect=plt_axes)
 
     if save_name != None:
@@ -2344,12 +2345,13 @@ def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV
     # best fit
     ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
 
+    ax2.tick_params(direction='in', labelsize=tick_size)
 
     plt.subplots_adjust(wspace=0, hspace=0)
     #plt.xlabel('$tau\ cut$', **textp)
     plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
     plt.xlim([-0.5, 4.5])
-    ax2.tick_params(axis='both', which='major', **labelp)
+    
     plt.tight_layout(pad=30, rect=plt_axes)
     plt.savefig("./new_plots/"+fit_name+"_E0_tins.pdf", transparent=True)
 
@@ -2402,30 +2404,30 @@ def tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_y
     # gA - tmax
     fig=plt.figure(figsize=fig_size)
     plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
 
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(oa00_label, fontsize=fs_text)
     ax1.set_ylim(gA_ylim)
-    ax1.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     ax1.errorbar(np.array(x), np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
 
-    ax1.fill_between(np.arange(t_list[0] - 0.5, t_list[-1] + 1.5, 1), (gA_mean + gA_sdev) * np.ones([t_list[-1] - t_list[0] + 2]), (gA_mean - gA_sdev) * np.ones([t_list[-1] - t_list[0] + 2]), color=color_list[best_n-2], alpha=0.2)
+    ax1.fill_between(np.arange(4.5, 15.5, 1), (gA_mean + gA_sdev) * np.ones([11]), (gA_mean - gA_sdev) * np.ones([11]), color=color_list[best_n-2], alpha=0.2)
 
 
-    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylabel(q_label, fontsize=fs_text)
     ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(t_list[0] - 0.5, t_list[-1] + 1.5, 1), 0.1 * np.ones([t_list[-1] - t_list[0] + 2]), 'r--')
+    ax2.plot(np.arange(4.5, 15.5, 1), 0.1 * np.ones([11]), 'r--')
 
     ax2.scatter(np.array(x), np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
 
+    ax2.tick_params(direction='in', labelsize=tick_size)
+
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_list[0] - 0.5, t_list[-1] + 0.5])
-    ax2.tick_params(axis='both', which='major', **labelp)
+    plt.xlabel(xlabel, fontsize=fs_text)
+    plt.xlim([4.5, 14.5])
+    
     plt.tight_layout(pad=30, rect=plt_axes)
 
     if save_name != None:
