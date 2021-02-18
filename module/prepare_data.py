@@ -146,17 +146,15 @@ class Prepare_data():
                     data_avg_dict['sum_A3_tsep_' + str(i)] += data_avg_dict['pt3_A3_tsep_' + str(i)][j]
                     data_avg_dict['sum_V4_tsep_' + str(i)] += data_avg_dict['pt3_V4_tsep_' + str(i)][j]
 
-            for i in range(len(sum_tsep)-1): # use ratio form to do the fit
-                # fit_14 will use tsep_15 here, so the tsep range of sum part should not be bigger than 13
-                t1 = sum_tsep[i]
-                t2 = sum_tsep[i+1]
-                data_avg_dict['sum_A3_fit_'+str(t1)] = (
-                    (data_avg_dict['sum_A3_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_A3_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
-                    ) / (t2 - t1)
+            gap = sum_tsep[1] - sum_tsep[0]
+            for t in range(self.pt3_data_range[0], self.pt3_data_range[1]-gap):
+                data_avg_dict['sum_A3_fit_'+str(t)] = (
+                    (data_avg_dict['sum_A3_tsep_' + str(t+gap)]/data_avg_dict['pt2_tsep_'+str(t+gap)]) - (data_avg_dict['sum_A3_tsep_' + str(t)]/data_avg_dict['pt2_tsep_'+str(t)])
+                    ) / gap
 
-                data_avg_dict['sum_V4_fit_'+str(t1)] = (
-                    (data_avg_dict['sum_V4_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_V4_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
-                    ) / (t2 - t1)
+                data_avg_dict['sum_V4_fit_'+str(t)] = (
+                    (data_avg_dict['sum_V4_tsep_' + str(t+gap)]/data_avg_dict['pt2_tsep_'+str(t+gap)]) - (data_avg_dict['sum_V4_tsep_' + str(t)]/data_avg_dict['pt2_tsep_'+str(t)])
+                    ) / gap
 
             return data_avg_dict
 
@@ -170,16 +168,15 @@ class Prepare_data():
                     data_avg_dict['sum_A3_tsep_' + str(i)] += data_avg_dict['pt3_A3_tsep_' + str(i)][j]
                     data_avg_dict['sum_V4_tsep_' + str(i)] += data_avg_dict['pt3_V4_tsep_' + str(i)][j]
 
-            for i in range(len(sum_tsep)-1): # use ratio form to do the fit
-                # fit_14 will use tsep_15 here, so the tsep range of sum part should not be bigger than 13
-                t1 = sum_tsep[i]
-                t2 = sum_tsep[i+1]
-                data_avg_dict['sum_A3_fit_'+str(t1)] = (
-                    (data_avg_dict['sum_A3_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_A3_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
-                    ) / (t2 - t1)
+            gap = sum_tsep[1] - sum_tsep[0]
+            for t in range(self.pt3_data_range[0], self.pt3_data_range[1]-gap):
+                data_avg_dict['sum_A3_fit_'+str(t)] = (
+                    (data_avg_dict['sum_A3_tsep_' + str(t+gap)]/data_avg_dict['pt2_tsep_'+str(t+gap)]) - (data_avg_dict['sum_A3_tsep_' + str(t)]/data_avg_dict['pt2_tsep_'+str(t)])
+                    ) / gap
 
-                data_avg_dict['sum_V4_fit_'+str(t1)] = (
-                    (data_avg_dict['sum_V4_tsep_' + str(t2)]/data_avg_dict['pt2_tsep_'+str(t2)]) - (data_avg_dict['sum_V4_tsep_' + str(t1)]/data_avg_dict['pt2_tsep_'+str(t1)])
-                    ) / (t2 - t1)
+                data_avg_dict['sum_V4_fit_'+str(t)] = (
+                    (data_avg_dict['sum_V4_tsep_' + str(t+gap)]/data_avg_dict['pt2_tsep_'+str(t+gap)]) - (data_avg_dict['sum_V4_tsep_' + str(t)]/data_avg_dict['pt2_tsep_'+str(t)])
+                    ) / gap
+
 
             return data_avg_dict

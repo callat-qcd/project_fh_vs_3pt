@@ -21,8 +21,8 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
         pt2_range = [pt2_t[0], pt2_t[-1]]
 
-        pt3_A3_t = [3, 5, 5, 7, 7, 7]
-        pt3_A3_tau = [1, 1, 2, 1, 2, 3]
+        pt3_A3_t = [3, 5, 5, 7, 7, 7, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 13]
+        pt3_A3_tau = [1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 2, 3, 4, 5, 6]
 
         pt3_A3_range = [pt3_A3_t[0], pt3_A3_t[-1]]
         pt3_V4_range = pt3_A3_range
@@ -33,7 +33,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
         pt3_A3 = [np.array(pt3_A3_t), np.array(pt3_A3_tau)]
         pt3_V4 = [np.array(pt3_V4_t), np.array(pt3_V4_tau)]
 
-        sum_A3 = np.array([3, 5])
+        sum_A3 = np.array([3, 5, 7, 9, 11])
         sum_V4 = sum_A3 
 
         sum_A3_range = [sum_A3[0], sum_A3[-1]]
@@ -166,7 +166,7 @@ include_sum = True
 sum_tau_cut = 1
 id_num = 3
 
-fit_type = "continuous" 
+fit_type = "scattered" 
 save = False
 
 ##################################################################################################################
@@ -231,7 +231,7 @@ t_list = []
 tau_list = []
 
 for t in range(3, 15): # 15 -> 6
-    if t % 2 == 1:
+    if t % 2 == 0:
         if t in range(2, 11):
             for tau in range(1, int(t/2)+1):
                 t_list.append(t)

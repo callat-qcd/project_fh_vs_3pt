@@ -22,8 +22,8 @@ from module.plot import plot_pt3_no_tra
 from module.plot import plot_pt3_no_sca
 from module.plot import plot_sum_no_tra
 from module.plot import plot_sum_no_sca
-from module.prior_setting import prior_for_plot ## notice here
-prior = prior_for_plot
+from module.prior_setting import prior_ho_width_1 ## notice here
+prior = prior_ho_width_1
 
 # %% ########## best fit: ############
 # 2pt + 3pt + sum
@@ -63,8 +63,9 @@ data_avg_dict = prepare_data.read_data_with_average()
 pt2_t = np.array([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
 pt2_nstates = 5
 
-pt3_A3_t = [3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14]
-pt3_A3_tau = [1, 1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 7]
+pt3_A3_t = [4, 4, 6, 6, 6, 8, 8, 8, 8, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14]
+
+pt3_A3_tau = [1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 7]
 pt3_V4_t = pt3_A3_t
 pt3_V4_tau = pt3_A3_tau
 
@@ -72,7 +73,7 @@ pt3_A3 = [np.array(pt3_A3_t), np.array(pt3_A3_tau)]
 pt3_V4 = [np.array(pt3_V4_t), np.array(pt3_V4_tau)]
 pt3_nstates = pt2_nstates
 
-sum_A3 = np.array([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+sum_A3 = np.array([4, 6, 8, 10, 12])
 sum_V4 = sum_A3 
 sum_nstates = 5
 sum_tau_cut = 1
@@ -86,7 +87,7 @@ save = False
 
 #######################################################
 
-data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
+data_avg_dict_completed = prepare_data.add_sum_data_scattered(data_avg_dict, sum_tau_cut, sum_A3)
 
 
 if use_p0 == False:
@@ -119,7 +120,7 @@ best_p0 = {key: fit_result.p[key].mean for key in fit_result.p}
 #print(fit_result.format(100)) 
 print(fit_result)
 
-
+# %%
 ########## plot fit and data ###########
 
 print('plot of 2pt+3pt+sum best fit')
@@ -130,21 +131,21 @@ print('plot of 2pt+3pt+sum best fit')
 
 # plot_sum(pt3_data_range, data_avg_dict_completed)
 
-plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s", True) # if you just want to plot data, cut the last two parameters: fit_result and fitter
+#plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s", True) # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
 plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
 
-plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
+#plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
 
-plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
+#plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
 
 plot_sum(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s", True) #if you just want to plot data, cut the last three parameters
 
-plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s", True)
+#plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s", True)
 
-plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s", True)
+#plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, "_23s", True)
 
-# # %%
+# %%
 # #############################
 # ### 2pt+sum best fit
 # #############################
