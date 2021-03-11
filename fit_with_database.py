@@ -166,7 +166,7 @@ include_sum = True
 sum_tau_cut = 1
 id_num = 3
 
-fit_type = "scattered" 
+fit_type = "continuous" 
 save = False
 
 ##################################################################################################################
@@ -213,7 +213,7 @@ elif fit_type == "continuous":
                 for sum_nstates in sum_nstates_list:
                     print('#################################################')
                     times += 1
-                    pt3_nstates = pt2_nstates ##
+                    pt3_nstates = sum_nstates ## pt3_nstates = pt2_nstates
 
                     sum_A3_range = [pt3_A3_range[0], pt3_A3_range[1]-1]
                     print(sum_A3_range)
