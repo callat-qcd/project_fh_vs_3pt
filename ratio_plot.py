@@ -531,7 +531,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     if div_2pt == True:
         ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=fs_text)
 
-    ax.set_ylim([-0.15, 0.15])
+    ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])
 
     ax.legend(loc='lower right', fontsize=fs_leg)
@@ -574,7 +574,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     if div_2pt == True:
         ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=fs_text)
 
-    ax.set_ylim([-0.15, 0.15])
+    ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])
 
     ax.legend(loc='lower right', fontsize=fs_leg)
@@ -595,11 +595,11 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey,edgecolor='white', hatch='/', alpha=0.5, label='3pt')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey, edgecolor='white', hatch='/', alpha=0.5, label='3pt')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sc')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None', edgecolor=grey, hatch='\\', alpha=0.8, label='2pt+sc')
 
 
     plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit]
@@ -627,11 +627,11 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     ax.tick_params(direction='in', labelsize=tick_size)
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, r'$R^{\rm es}(t_{\rm sep}, \tau=t_{\rm sep}/2) / g_{00}$', fontsize=fs_text)
+        ax.text(20 * omega_imp_a09, 0.06, r'$\frac{C^{\rm es}_{3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {g_{00}}$', fontsize=30)
     elif div_2pt == False:
         ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=fs_text)
 
-    ax.set_ylim([-0.15, 0.15])
+    ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])
 
     ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
@@ -657,7 +657,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=red,edgecolor=grape, hatch='\\', alpha=0.5, label='2pt+sc')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', alpha=0.8, label='2pt+sc')
 
 
     plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit]
@@ -684,8 +684,8 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
-    ax.text(20 * omega_imp_a09, 0.10, r'${\rm FH}^{\rm es}(t_{\rm sep}) / g_{00}$', fontsize=fs_text)
-    ax.set_ylim([-0.15, 0.15])
+    ax.text(20 * omega_imp_a09, 0.06, r'$\frac{{\rm FH}^{\rm es}(t_{\rm sep}, \tau_c=1)} {g_{00}}$', fontsize=30)
+    ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])
 
 
