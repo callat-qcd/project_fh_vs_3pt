@@ -31,7 +31,8 @@ fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
 plt_axes  = [0.15,0.15,0.845,0.845]
-fs_text   = 16 # font size of text
+fs_text   = 18 # font size of text
+fs_text_gA = 20 # font size for gA
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
@@ -124,7 +125,7 @@ plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-ax1.set_ylabel(oa00_label, fontsize=fs_text)
+ax1.set_ylabel(oa00_label, fontsize=fs_text_gA)
 ax1.set_ylim(gA_ylim)
 
 ax1.tick_params(direction='in', labelsize=tick_size)
@@ -158,7 +159,7 @@ ax2.scatter(np.array([14]), np.array([best_Q]), marker='o', c=color_list[nstate-
 ax2.tick_params(direction='in', labelsize=tick_size)
 
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xlabel(c_tmin+'\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ '+c_tmax, fontsize=fs_text)
+plt.xlabel(c_tmin+'\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ '+c_tmax, fontsize=fs_text, labelpad=1.5)
 plt.xlim([1.5, 14.5])
 plt.tight_layout(pad=30, rect=plt_axes)
 

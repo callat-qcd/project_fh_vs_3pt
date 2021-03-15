@@ -22,11 +22,15 @@ gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
 plt_axes  = [0.15,0.15,0.845,0.845]
 fs_text   = 18 # font size of text
+fs_text_gA = 20
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
 
 errorp = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
+
+oa00_label = r"$\mathring{g}_A^{\textrm{FH}}(t_{\textrm{sep}})$"
+tsep_label = r'$t_{\textrm{sep}}$'
 
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
@@ -97,7 +101,8 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
 
     ax.set_ylim(1.0, 1.349)
     ax.set_xlim([1, 23])
-    ax.set_xlabel(r'$t$', fontsize=fs_text)
+    ax.set_ylabel(oa00_label, fontsize=fs_text_gA)
+    ax.set_xlabel(tsep_label, fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
 
@@ -173,8 +178,8 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-f_range = [0, 2]
-d_range = [0, 2]
+f_range = [1, 6] # tau_c range of fit part
+d_range = [1, 6] # tau_c range of data part
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 

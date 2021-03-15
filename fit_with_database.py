@@ -231,7 +231,7 @@ t_list = []
 tau_list = []
 
 for t in range(3, 15): # 15 -> 6
-    if t % 2 == 0:
+    if t % 2 == 0 or t % 2 == 1:
         if t in range(2, 11):
             for tau in range(1, int(t/2)+1):
                 t_list.append(t)

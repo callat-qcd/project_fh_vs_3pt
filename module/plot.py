@@ -55,7 +55,7 @@ csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
 csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
 q_label = r"$Q$"
 w_label = r"$w$"
-oa00_label = r"$\mathring{g}_A$"
+oa00_label = r"$\mathring{g}_A^{\textrm eff}(t_{\textrm{sep}}, \tau)$"
 ov00_label = r"$\mathring{g}_V$"
 e0_label = r"$E_{0}$"
 z0_label = r"$z_{0}$"
@@ -280,10 +280,10 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
             ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
 
         elif i%2 == 1:
-            ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=grey, **errorp)# tau cut = 1
+            ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
 
         if fit_result != None and fitter != None:
-            if i%2 == 0:
+            if i%2 == 0 or i%2 == 1:
                 gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
                 gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
                 ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
@@ -299,7 +299,7 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
         ax.set_xlabel(fm_tau_label, fontsize=fs_text)
 
     ax.set_ylim(1.0, 1.349)
-    ax.set_ylabel(oaeff_label, fontsize=fs_text)
+    ax.set_ylabel(oa00_label, fontsize=fs_text)
     #
     #plt.tight_layout(pad=0, rect=aspect)
     plt.savefig(f"./new_plots/oaeff{plot_type}.pdf", transparent=True)

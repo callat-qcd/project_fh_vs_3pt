@@ -126,6 +126,8 @@ mpi = mpi_array.mean() # read the mass of pion from the data file
 mN = 0.49 # this is the mass of proton, you can use best fit results of E0 as the mass of proton here
 L = 32 #this is the size of the box
 
+print(mpi)
+
 # %%
 red = "#FF6F6F"
 peach = "#FF9E6F"
@@ -344,11 +346,13 @@ ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE1_li
 ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE2_list), yerr=np.array(swE2err_list),marker='s', color=peach, **errorp)
 ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE3_list), yerr=np.array(swE3err_list),marker='P', color=peach, **errorp)
 
+# id 1
 ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E0_list), yerr=np.array(id1E0err_list),marker='o', color=green, label='id1', **errorp)
 ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E1_list), yerr=np.array(id1E1err_list),marker='^', color=green, **errorp)
 ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E2_list), yerr=np.array(id1E2err_list),marker='s', color=green, **errorp)
 ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E3_list), yerr=np.array(id1E3err_list),marker='P', color=green, **errorp)
 
+# id 2
 ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E0_list), yerr=np.array(id2E0err_list),marker='o', color=blue, label='id2', **errorp)
 ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E1_list), yerr=np.array(id2E1err_list),marker='^', color=blue, **errorp)
 ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E2_list), yerr=np.array(id2E2err_list),marker='s', color=blue, **errorp)
@@ -454,6 +458,10 @@ plt.fill_between(np.array([1.0, 1.5]), E_prior_list[2]+Eerr_prior_list[2], E_pri
 
 plt.fill_between(np.array([1.5, 2.0]), E_prior_list[3]+Eerr_prior_list[3], E_prior_list[3]-Eerr_prior_list[3], color=blue, alpha=0.5, zorder=2)
 
+print(E_fit_list)
+print(Eerr_fit_list)
+print(E_prior_list)
+print(Eerr_prior_list)
 
 # theoretical prediction
 plot_range = np.array([-0.5, 2.5])
