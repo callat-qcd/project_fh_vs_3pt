@@ -41,7 +41,7 @@ zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
 oveff_label = r"$O^V_{\textrm{eff}}$"
 
-gA_ylim=[1.0, 1.349]
+gA_ylim=[1.01, 1.349]
 gV_ylim=[1.0051, 1.03]
 E0_ylim=[0.484, 0.497]
 
@@ -219,6 +219,8 @@ situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0
 pt2_nstates=5,
 id_num=2,
 sum_tau_cut=1, sum_nstates=5)
+
+print(situation_list)
 
 tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
 # %%

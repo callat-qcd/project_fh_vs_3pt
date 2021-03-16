@@ -56,6 +56,7 @@ csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
 q_label = r"$Q$"
 w_label = r"$w$"
 oa00_label = r"$\mathring{g}_A^{\textrm eff}(t_{\textrm{sep}}, \tau)$"
+ga_label = r"$\mathring{g}_A$"
 ov00_label = r"$\mathring{g}_V$"
 e0_label = r"$E_{0}$"
 z0_label = r"$z_{0}$"
@@ -2435,7 +2436,7 @@ def tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_y
     plt.rcParams['figure.figsize'] = fig_size
 
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, fontsize=fs_text)
+    ax1.set_ylabel(ga_label, fontsize=fs_text)
     ax1.set_ylim(gA_ylim)
     ax1.tick_params(direction='in', labelsize=tick_size)
 

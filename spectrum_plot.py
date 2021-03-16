@@ -168,6 +168,8 @@ E2_list = []
 E2err_list = []
 E3_list = []
 E3err_list = []
+E4_list = []
+E4err_list = []
 
 Q_list = []
 log_list = []
@@ -193,6 +195,9 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     
     E3_list.append((data_and_results['params']['dE3'] + data_and_results['params']['dE2'] + data_and_results['params']['dE1'] + data_and_results['params']['E0']).mean)
     E3err_list.append((data_and_results['params']['dE3'] + data_and_results['params']['dE2'] + data_and_results['params']['dE1'] + data_and_results['params']['E0']).sdev)
+
+    E4_list.append((data_and_results['params']['dE4'] + data_and_results['params']['dE3'] + data_and_results['params']['dE2'] + data_and_results['params']['dE1'] + data_and_results['params']['E0']).mean)
+    E4err_list.append((data_and_results['params']['dE4'] + data_and_results['params']['dE3'] + data_and_results['params']['dE2'] + data_and_results['params']['dE1'] + data_and_results['params']['E0']).sdev)
     
     Q_list.append(situation.Q_value)
     log_list.append(situation.log_GBF)
@@ -427,7 +432,10 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     E1 = data_and_results['prior']['E0'] + np.exp(data_and_results['prior']['log(dE1)'])
     E2 = data_and_results['prior']['E0'] + np.exp(data_and_results['prior']['log(dE1)']) + np.exp(data_and_results['prior']['log(dE2)'])
     E3 = data_and_results['prior']['E0'] + np.exp(data_and_results['prior']['log(dE1)']) + np.exp(data_and_results['prior']['log(dE2)']) + np.exp(data_and_results['prior']['log(dE3)'])
+    E4 = data_and_results['prior']['E0'] + np.exp(data_and_results['prior']['log(dE1)']) + np.exp(data_and_results['prior']['log(dE2)']) + np.exp(data_and_results['prior']['log(dE3)']) + np.exp(data_and_results['prior']['log(dE4)'])
 
+print(E4.mean)
+print(E4.sdev)
     
 for En in [E0, E1, E2, E3]:#, E4, E5, E6]:
     E_prior_list.append(En.mean)
@@ -462,6 +470,9 @@ print(E_fit_list)
 print(Eerr_fit_list)
 print(E_prior_list)
 print(Eerr_prior_list)
+
+print(E4_list[0])
+print(E4err_list[0])
 
 # theoretical prediction
 plot_range = np.array([-0.5, 2.5])
