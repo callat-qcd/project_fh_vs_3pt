@@ -32,6 +32,7 @@ gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
 plt_axes  = [0.15,0.15,0.845,0.845]
 fs_text   = 18 # font size of text
+fs_text_gA = 20 # font size of ga label
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
@@ -2436,7 +2437,7 @@ def tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_y
     plt.rcParams['figure.figsize'] = fig_size
 
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(ga_label, fontsize=fs_text)
+    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
     ax1.set_ylim(gA_ylim)
     ax1.tick_params(direction='in', labelsize=tick_size)
 
