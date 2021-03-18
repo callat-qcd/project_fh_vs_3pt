@@ -26,7 +26,7 @@ c3pt_tmin = r"$C_{\textrm{3pt}}\ t_{\textrm{min}}$"
 c3pt_tmax = r"$C_{\textrm{3pt}}\ t_{\textrm{max}}$"
 csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
 csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
-c_tmax = r"$t_{\textrm{max}}$"
+c_tmax = r"$t_{\rm sep}^{\rm max}$"
 q_label = r"$Q$"
 w_label = r"$w$"
 oa00_label = r"$\mathring{g}_A$"
@@ -219,8 +219,6 @@ situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0
 pt2_nstates=5,
 id_num=2,
 sum_tau_cut=1, sum_nstates=5)
-
-print(situation_list)
 
 tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
 # %%

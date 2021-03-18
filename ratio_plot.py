@@ -627,7 +627,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     ax.tick_params(direction='in', labelsize=tick_size)
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.06, r'$\frac{C^{\rm es}_{3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {g_{00}}$', fontsize=30)
+        ax.text(20 * omega_imp_a09, 0.06, r'$\frac{R^{\rm es}_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {\mathring{g}_A}$', fontsize=30)
     elif div_2pt == False:
         ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=fs_text)
 
@@ -684,7 +684,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
-    ax.text(20 * omega_imp_a09, 0.06, r'$\frac{{\rm FH}^{\rm es}(t_{\rm sep}, \tau_c=1)} {g_{00}}$', fontsize=30)
+    ax.text(20 * omega_imp_a09, 0.06, r'$\frac{{\rm FH}^{\rm es}_{A_3}(t_{\rm sep}, \tau_c=1)} {\mathring{g}_A}$', fontsize=30)
     ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])
 

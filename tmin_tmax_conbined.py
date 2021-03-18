@@ -45,8 +45,8 @@ errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 
 
 oa00_label = r"$\mathring{g}_A$"
-c_tmax = r"$t_{\textrm{sep}}^{\textrm{max}}$"
-c_tmin = r"$t_{\textrm{sep}}^{\textrm{min}}$"
+c_tmax = r"$t_{\rm sep}^{\rm max}$"
+c_tmin = r"$t_{\rm sep}^{\rm min}$"
 q_label = r"$Q$"
 
 gA_ylim=[1.01, 1.349]
