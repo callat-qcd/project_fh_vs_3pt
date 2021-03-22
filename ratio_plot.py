@@ -497,90 +497,90 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
 
 
-    ###### tra plot ######
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
+    # ###### tra plot ######
+    # fig = plt.figure(figsize=fig_size)
+    # ax  = plt.axes(plt_axes)
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)]) 
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt tra')
+    # temp_mean = np.array([val.mean for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)]) 
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_fit / pt3_gA_gs_fit)])
+    # ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt tra')
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
+    # temp_mean = np.array([val.mean for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_tra_data / pt3_gA_gs_data)])
+    # ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
-    temp_mean = np.array([val.mean for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum tra')
+    # temp_mean = np.array([val.mean for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_tra_fit / sum_gA_gs_fit)])
+    # ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum tra')
 
-    temp_mean = np.array([val.mean for val in (sum_gA_tra_data / sum_gA_gs_data)])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_tra_data / sum_gA_gs_data)])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
+    # temp_mean = np.array([val.mean for val in (sum_gA_tra_data / sum_gA_gs_data)])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_tra_data / sum_gA_gs_data)])
+    # ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
-    if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
+    # if plot_in_fm == False:
+    #     ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
+    # elif plot_in_fm == True:
+    #     ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(direction='in', labelsize=tick_size)
-    if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=fs_text)
+    # ax.tick_params(direction='in', labelsize=tick_size)
+    # if div_2pt == True:
+    #     ax.text(20 * omega_imp_a09, 0.10, 'tra', fontsize=fs_text)
 
-    ax.set_ylim([-0.151, 0.149])
-    ax.set_xlim([0, plot_xmax + 0.8])
+    # ax.set_ylim([-0.151, 0.149])
+    # ax.set_xlim([0, plot_xmax + 0.8])
 
-    ax.legend(loc='lower right', fontsize=fs_leg)
+    # ax.legend(loc='lower right', fontsize=fs_leg)
 
-    plt.savefig(f"./new_plots/ratio_tra.pdf", transparent=True)
-    plt.show()
+    # plt.savefig(f"./new_plots/ratio_tra.pdf", transparent=True)
+    # plt.show()
 
 
-    ###### sca plot ######
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
+    # ###### sca plot ######
+    # fig = plt.figure(figsize=fig_size)
+    # ax  = plt.axes(plt_axes)
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)]) 
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt sca')
+    # temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)]) 
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit / pt3_gA_gs_fit)])
+    # ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt sca')
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
+    # temp_mean = np.array([val.mean for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_data / pt3_gA_gs_data)])
+    # ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
-    temp_mean = np.array([val.mean for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum sca')
+    # temp_mean = np.array([val.mean for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit / sum_gA_gs_fit)])
+    # ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum sca')
 
-    temp_mean = np.array([val.mean for val in (sum_gA_sca_data / sum_gA_gs_data)])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_sca_data / sum_gA_gs_data)])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
+    # temp_mean = np.array([val.mean for val in (sum_gA_sca_data / sum_gA_gs_data)])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_sca_data / sum_gA_gs_data)])
+    # ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
     
 
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
 
-    if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
+    # if plot_in_fm == False:
+    #     ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
+    # elif plot_in_fm == True:
+    #     ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    ax.tick_params(direction='in', labelsize=tick_size)
-    if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=fs_text)
+    # ax.tick_params(direction='in', labelsize=tick_size)
+    # if div_2pt == True:
+    #     ax.text(20 * omega_imp_a09, 0.10, 'sca', fontsize=fs_text)
 
-    ax.set_ylim([-0.151, 0.149])
-    ax.set_xlim([0, plot_xmax + 0.8])
+    # ax.set_ylim([-0.151, 0.149])
+    # ax.set_xlim([0, plot_xmax + 0.8])
 
-    ax.legend(loc='lower right', fontsize=fs_leg)
+    # ax.legend(loc='lower right', fontsize=fs_leg)
 
-    plt.savefig(f"./new_plots/ratio_sca.pdf", transparent=True)
-    plt.show()
+    # plt.savefig(f"./new_plots/ratio_sca.pdf", transparent=True)
+    # plt.show()
 
 
 
@@ -595,7 +595,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey, edgecolor='white', hatch='/', alpha=0.5, label='3pt')
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey, edgecolor='white', hatch='\ ', alpha=0.5, label='3pt')
 
     temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
@@ -653,7 +653,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey,edgecolor='white', hatch='/', alpha=0.5, label='sum')
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey,edgecolor='white', hatch='\ ', alpha=0.5, label='fh')
 
     temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
     temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
@@ -662,7 +662,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit]
     plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data]
-    label_list = ['sum tr ', 'sum sc ', '2pt es ']
+    label_list = ['fh tr ', 'fh sc ', '2pt es ']
     color_list = [blue, red, grape]
 
     for i in range(len(plot_fit_list)):
@@ -697,50 +697,50 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     
 
-    ###### compare plot ######
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
+    # ###### compare plot ######
+    # fig = plt.figure(figsize=fig_size)
+    # ax  = plt.axes(plt_axes)
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit]) 
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
-    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt')
+    # temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit]) 
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    # ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=orange, alpha=0.3, label='3pt')
 
-    temp_mean = np.array([val.mean for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
-    ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
+    # temp_mean = np.array([val.mean for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
+    # temp_sdev = np.array([val.sdev for val in (pt3_gA_all_data - pt3_gA_gs_data) / pt3_gA_gs_data])
+    # ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=orange, **errorp)
 
-    temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
-    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum')
+    # temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    # ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=blue, alpha=0.3, label='sum')
 
-    temp_mean = np.array([val.mean for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
-    temp_sdev = np.array([val.sdev for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
-    ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
+    # temp_mean = np.array([val.mean for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
+    # temp_sdev = np.array([val.sdev for val in (sum_gA_all_data - sum_gA_gs_data) / sum_gA_gs_data])
+    # ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=blue, **errorp)
 
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
-    ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0., color='k', linestyle='-', linewidth=1)
+    # ax.plot(pt3_tsep_fit, np.ones(linspace_num) * 0.01, color=red, linestyle='--', linewidth=1)
+    # ax.plot(pt3_tsep_fit, np.ones(linspace_num) * -0.01, color=red, linestyle='--', linewidth=1)
 
-    if plot_in_fm == False:
-        ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
+    # if plot_in_fm == False:
+    #     ax.set_xlabel(r"$t_{\rm sep}$", fontsize=fs_text)
+    # elif plot_in_fm == True:
+    #     ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
-    if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.08, '3pt / 2pt', fontsize=fs_text)
-    elif div_2pt == False:
-        ax.text(20 * omega_imp_a09, 0.08, '3pt', fontsize=fs_text)
+    # if div_2pt == True:
+    #     ax.text(20 * omega_imp_a09, 0.08, '3pt / 2pt', fontsize=fs_text)
+    # elif div_2pt == False:
+    #     ax.text(20 * omega_imp_a09, 0.08, '3pt', fontsize=fs_text)
 
-    ax.tick_params(direction='in', labelsize=tick_size)
-    ax.text(20 * omega_imp_a09, 0.1, 'tau cut: '+str(sum_tau_cut_plot), fontsize=fs_text)
+    # ax.tick_params(direction='in', labelsize=tick_size)
+    # ax.text(20 * omega_imp_a09, 0.1, 'tau cut: '+str(sum_tau_cut_plot), fontsize=fs_text)
 
-    ax.set_ylim([-0.15, 0.15])
-    ax.set_xlim([0, plot_xmax + 0.8])
+    # ax.set_ylim([-0.15, 0.15])
+    # ax.set_xlim([0, plot_xmax + 0.8])
 
-    legend_without_duplicate_labels(ax)
+    # legend_without_duplicate_labels(ax)
 
-    plt.savefig(f"./new_plots/ratio_compare.pdf", transparent=True)
-    plt.show()
+    # plt.savefig(f"./new_plots/ratio_compare.pdf", transparent=True)
+    # plt.show()
 
     print(sum_gA_gs_fit)
     print(pt3_gA_gs_fit)
