@@ -161,10 +161,10 @@ print([i.mean for i in data_avg_dict['pt3_A3_tsep_10']])
 use_p0 = False
 include_2pt = True
 include_3pt = True
-include_sum = True
+include_sum = False
 
 sum_tau_cut = 1
-id_num = 3
+id_num = 1
 
 fit_type = "continuous" 
 save = False
@@ -190,17 +190,17 @@ elif fit_type == "continuous":
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(1, int(t/2)+1)
 
     for t in range(11, 15):
-        pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1)
-        pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
+        pt3_tau_dict['A3_tsep'+str(t)] = np.arange(1, int(t/2)+1) # for 23 fit, start from 1
+        pt3_tau_dict['V4_tsep'+str(t)] = np.arange(1, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
-    pt2_nstates_list = [nstates for nstates in range(5, 6)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
+    pt2_nstates_list = [nstates for nstates in range(4, 8)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_nstates_list = [nstates for nstates in range(5, 6)] # pt2_nstates = pt3_nstates
 
-    #sum_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
+    sum_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
     #sum_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
     sum_nstates_list = [nstates for nstates in range(5, 6)]
 
@@ -209,19 +209,19 @@ elif fit_type == "continuous":
     for pt2_range in pt2_range_list:
         for pt2_nstates in pt2_nstates_list:
             for pt3_A3_range in pt3_A3_range_list:
-                #for sum_A3_range in sum_A3_range_list:
-                for sum_nstates in sum_nstates_list:
-                    print('#################################################')
-                    times += 1
-                    pt3_nstates = sum_nstates ## pt3_nstates = pt2_nstates
+                for sum_A3_range in sum_A3_range_list:
+                    for sum_nstates in sum_nstates_list:
+                        print('#################################################')
+                        times += 1
+                        pt3_nstates = pt2_nstates ## pt3_nstates = pt2_nstates
 
-                    sum_A3_range = [pt3_A3_range[0], pt3_A3_range[1]-1]
-                    print(sum_A3_range)
+                        #sum_A3_range = [pt3_A3_range[0], pt3_A3_range[1]-1]
+                        print(sum_A3_range)
 
-                    pt3_V4_range = pt3_A3_range ##
-                    sum_V4_range = sum_A3_range ##
+                        pt3_V4_range = pt3_A3_range ##
+                        sum_V4_range = sum_A3_range ##
 
-                    fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
+                        fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
     print('total '+str(times)+' fits')
 #########################################################
 

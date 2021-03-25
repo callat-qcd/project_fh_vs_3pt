@@ -10,10 +10,10 @@ import hashlib
 # %%
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
-peach = "#FF9E6F"
-orange = "#FFBC6F" # nstates = 3
+peach = "#FF9E6F" # nstates = 3
+orange = "#FFBC6F" # nstates = 4
 sunkist = "#FFDF6F"
-yellow = "#FFEE6F" # nstates = 4
+yellow = "#FFEE6F" 
 lime = "#CBF169"
 green = "#5CD25C" # nstates = 5
 turquoise = "#4AAB89"
@@ -22,7 +22,8 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red]
+# color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
+color_list = [red, peach, orange, green, blue, violet] # for stability plots
 
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
 
@@ -38,12 +39,12 @@ tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
 
 #gridspec = {'height_ratios': [3, 1], 'left': 0.05, 'right': 0.95, 'bottom': 0.05, 'top': 0.95}
-gridspec_tmin = {'height_ratios': [3, 1, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
+gridspec_tmin = {'height_ratios': [4, 1, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
 gridspec_prior_width = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
-textp = {"fontsize": 14}
-labelp = {"labelsize": 14}
+textp = {"fontsize": 18}
+labelp = {"labelsize": 18}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 
@@ -134,7 +135,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
     
     ax.tick_params(axis='both', which='major', **labelp)
 
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/meff{plot_type}.pdf", transparent=True)
     plt.show()
     
@@ -186,7 +187,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     ax.tick_params(axis='both', which='major', **labelp)
     
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/zeff{plot_type}.pdf", transparent=True)
     plt.show()
 
@@ -302,8 +303,8 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
 
     ax.set_ylim(1.0, 1.349)
     ax.set_ylabel(oa00_label, fontsize=fs_text)
-    #
-    #plt.tight_layout(pad=0, rect=aspect)
+    
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/oaeff{plot_type}.pdf", transparent=True)
     plt.show()
     
@@ -342,8 +343,8 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     
     ax.set_ylim([1.0, 1.15])
     ax.set_ylabel(oveff_label, **textp)
-    #
-    #plt.tight_layout(pad=0, rect=aspect)
+    
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/oveff{plot_type}.pdf", transparent=True)
     plt.show()
 
@@ -471,8 +472,8 @@ def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
-    #
-    #plt.tight_layout(pad=0, rect=aspect)
+    
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/oaeff{plot_type}_ntra.pdf", transparent=True)
     plt.show()
 
@@ -602,8 +603,8 @@ def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result
     ax.set_ylim([1, 1.3])
     ax.set_ylabel(oaeff_label, **textp)
     ax.tick_params(axis='both', which='major', **labelp)
-    #
-    #plt.tight_layout(pad=0, rect=aspect)
+    
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/oaeff{plot_type}_nsca.pdf", transparent=True)
     plt.show()
 
@@ -709,7 +710,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     ax.set_ylim(1.0, 1.349)
     ax.set_ylabel(oaeff_label, fontsize=fs_text)
     
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/soaeff{plot_type}.pdf", transparent=True)
     plt.show()
     
@@ -736,7 +737,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     ax.set_ylim([1.0, 1.1])
     ax.set_ylabel(oveff_label, **textp)
     
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/soveff{plot_type}.pdf", transparent=True)
     plt.show()
 
@@ -976,7 +977,7 @@ def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     ax.tick_params(axis='both', which='major', **labelp)
     ax.text(2.7, 1.35, r'$ntra$', fontsize=15)
     
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/soaeff{plot_type}_ntra.pdf", transparent=True)
     plt.show()
 
@@ -1218,7 +1219,7 @@ def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter,
     ax.tick_params(axis='both', which='major', **labelp)
     ax.text(2.7, 1.35, r'$nsca$', fontsize=15)
     
-    #plt.tight_layout(pad=0, rect=aspect)
+    plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/soaeff{plot_type}_nsca.pdf", transparent=True)
     plt.show()
 
@@ -1299,7 +1300,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     #####################################################################################
     # gA - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1307,12 +1308,12 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
 
 
     # ax1
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
     ax1.set_ylim(gA_ylim)
 
 
     for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], **errorp)
+        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label='ncol='+str(n), **errorp)
 
     ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gA'][best_n][best_t_]+value['gA_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_n][best_t - t_range[0]]-value['gA_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
 
@@ -1321,10 +1322,11 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     print("Best fit")
     print(np.array([value['gA'][best_n][best_t_]]), np.array([value['gA_err'][best_n][best_t_]]))
     
+    ax1.legend()
     
     # ax2
     ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
+    ax2.set_ylim([0.01, 1.1])
 
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
@@ -1337,7 +1339,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     
     # ax3
     ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
+    ax3.set_ylim([0.01, 1.1])
     
     ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
     
@@ -1363,8 +1365,10 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     plt.xlabel(xlabel, **textp)
     plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
     ax1.tick_params(axis='both', which='major', **labelp)
+    ax2.tick_params(axis='both', which='major', **labelp)
+    ax3.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_gA-'+tmin_name+'_tmin.pdf', transparent=True)
     
@@ -1372,7 +1376,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     #####################################################################################
     # gV - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1439,7 +1443,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     ax2.tick_params(axis='both', which='major', **labelp)
     ax2.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_gV-'+tmin_name+'_tmin.pdf', transparent=True)
 
@@ -1447,7 +1451,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     #####################################################################################
     # E0 - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1512,7 +1516,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     ax2.tick_params(axis='both', which='major', **labelp)
     ax3.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
 
@@ -1573,7 +1577,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     #####################################################################################
     # gA - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1627,7 +1631,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     ax1.tick_params(axis='both', which='major', **labelp)
     ax2.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_gA-'+tmin_name+'_tmin.pdf', transparent=True)
     
@@ -1635,7 +1639,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     #####################################################################################
     # gV - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1687,7 +1691,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     ax1.tick_params(axis='both', which='major', **labelp)
     ax2.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_gV-'+tmin_name+'_tmin.pdf', transparent=True)
 
@@ -1695,7 +1699,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     #####################################################################################
     # E0 - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = fig_size
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
 
@@ -1743,7 +1747,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     ax1.tick_params(axis='both', which='major', **labelp)
     ax2.tick_params(axis='both', which='major', **labelp)
 
-    plt.tight_layout(pad=30, rect=aspect)
+    plt.tight_layout(pad=30, rect=plt_axes)
 
     plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
 
@@ -2295,14 +2299,17 @@ def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_yl
 def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim):
     #####################gA
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
     ax1.set_ylim(gA_ylim)
 
     ax1.errorbar(np.arange(0, 5), np.array(A3), yerr=np.array(A3_err), marker='o', color=color_list[n-2], **errorp)
 
-    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[2] + A3_err[2])*np.ones([6]), (A3[2] - A3_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
+    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[1] + A3_err[1])*np.ones([6]), (A3[1] - A3_err[1])*np.ones([6]), color=color_list[n-2], alpha=0.2)
+
+    best_i = 0
+
     # best fit
-    ax1.errorbar(np.array([1]), np.array([A3[1]]), yerr=np.array([A3_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+    ax1.errorbar(np.array([best_i]), np.array([A3[best_i]]), yerr=np.array([A3_err[best_i]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
 
 
     ax2.set_ylabel(q_label, **textp)
@@ -2312,13 +2319,15 @@ def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV
     ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
 
     # best fit
-    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
+    ax2.scatter(np.array([best_i]), np.array([Q[best_i]]), marker='o', c=color_list[n-2])
 
 
     plt.subplots_adjust(wspace=0, hspace=0)
     #plt.xlabel('$tau\ cut$', **textp)
-    plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
+    #plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$\rm tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
+    plt.xticks([0, 1, 2, 3, 4], [r'$\rm tau\ cut$', r'$+1$', r'$+2$', r'$+3$', r'$+4$'])
     plt.xlim([-0.5, 4.5])
+    ax1.tick_params(axis='both', which='major', **labelp)
     ax2.tick_params(axis='both', which='major', **labelp)
     plt.tight_layout(pad=30, rect=plt_axes)
     plt.savefig("./new_plots/"+fit_name+"_gA_tins.pdf", transparent=True)

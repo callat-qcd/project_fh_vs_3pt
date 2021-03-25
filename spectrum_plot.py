@@ -146,12 +146,14 @@ color_list = [violet, green, fuschia, yellow, blue, orange, turquoise, red]
 
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
-gridspec_tmin = {'height_ratios': [3, 1, 1], 'left': 0.1, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
-figsize = (7, 4)
-aspect=[0.15, 0.15, 0.8, 0.8]
-textp = {"fontsize": 14}
-labelp = {"labelsize": 14}
-labelsize = {'size': 15}
+gridspec_tmin = {'height_ratios': [1, 1], 'width_ratios':[1, 1, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95, 'hspace':0.4, 'wspace':0.7}
+fig_width = 6.75 # in inches, 2x as wide as APS column
+gr        = 1.618034333 # golden ratio
+figsize  = (fig_width, fig_width / gr)
+aspect=[0.15,0.15,0.845,0.845]
+textp = {"fontsize": 18}
+labelp = {"labelsize": 18}
+labelsize = {'size': 18}
 
 plt.rcParams.update({"text.usetex": True})
 
@@ -329,92 +331,147 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     
     print('id2logGBF: ' + str(situation.log_GBF))
     
+
+##############################################################################    
 # plot fit results of En
 fig=plt.figure()
 plt.rcParams['figure.figsize'] = figsize
 plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin) 
+fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(ncols=3, nrows=2, gridspec_kw=gridspec_tmin) 
 
-ax1.set_ylabel(r"$E_n$", **textp)
+ax1.set_ylabel(r"$E_0$", **textp)
+ax1.yaxis.set_label_coords(0, 1)
+ax2.set_ylabel(r"$E_1$", **textp)
+ax2.yaxis.set_label_coords(0, 1)
+ax3.set_ylabel(r"$E_2$", **textp)
+ax3.yaxis.set_label_coords(0, 1)
+ax4.set_ylabel(r"$E_3$", **textp)
+ax4.yaxis.set_label_coords(0, 1)
 
 # harmonic oscillator
 ax1.errorbar(np.array(tmin_list), np.array(E0_list), yerr=np.array(E0err_list), marker='o', color=red, label='ho', **errorp)
-ax1.errorbar(np.array(tmin_list), np.array(E1_list), yerr=np.array(E1err_list), marker='^', color=red, **errorp)
-ax1.errorbar(np.array(tmin_list), np.array(E2_list), yerr=np.array(E2err_list), marker='s', color=red, **errorp)
-ax1.errorbar(np.array(tmin_list), np.array(E3_list), yerr=np.array(E3err_list), marker='P', color=red, **errorp)
+ax2.errorbar(np.array(tmin_list), np.array(E1_list), yerr=np.array(E1err_list), marker='^', color=red, **errorp)
+ax3.errorbar(np.array(tmin_list), np.array(E2_list), yerr=np.array(E2err_list), marker='s', color=red, **errorp)
+ax4.errorbar(np.array(tmin_list), np.array(E3_list), yerr=np.array(E3err_list), marker='P', color=red, **errorp)
 
 # square well
 ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE0_list), yerr=np.array(swE0err_list),marker='o', color=peach, label='sw', **errorp)
-ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE1_list), yerr=np.array(swE1err_list),marker='^', color=peach, **errorp)
-ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE2_list), yerr=np.array(swE2err_list),marker='s', color=peach, **errorp)
-ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE3_list), yerr=np.array(swE3err_list),marker='P', color=peach, **errorp)
+ax2.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE1_list), yerr=np.array(swE1err_list),marker='^', color=peach, **errorp)
+ax3.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE2_list), yerr=np.array(swE2err_list),marker='s', color=peach, **errorp)
+ax4.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE3_list), yerr=np.array(swE3err_list),marker='P', color=peach, **errorp)
 
 # id 1
 ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E0_list), yerr=np.array(id1E0err_list),marker='o', color=green, label='id1', **errorp)
-ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E1_list), yerr=np.array(id1E1err_list),marker='^', color=green, **errorp)
-ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E2_list), yerr=np.array(id1E2err_list),marker='s', color=green, **errorp)
-ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E3_list), yerr=np.array(id1E3err_list),marker='P', color=green, **errorp)
+ax2.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E1_list), yerr=np.array(id1E1err_list),marker='^', color=green, **errorp)
+ax3.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E2_list), yerr=np.array(id1E2err_list),marker='s', color=green, **errorp)
+ax4.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E3_list), yerr=np.array(id1E3err_list),marker='P', color=green, **errorp)
 
 # id 2
 ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E0_list), yerr=np.array(id2E0err_list),marker='o', color=blue, label='id2', **errorp)
-ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E1_list), yerr=np.array(id2E1err_list),marker='^', color=blue, **errorp)
-ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E2_list), yerr=np.array(id2E2err_list),marker='s', color=blue, **errorp)
-ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E3_list), yerr=np.array(id2E3err_list),marker='P', color=blue, **errorp)
+ax2.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E1_list), yerr=np.array(id2E1err_list),marker='^', color=blue, **errorp)
+ax3.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E2_list), yerr=np.array(id2E2err_list),marker='s', color=blue, **errorp)
+ax4.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E3_list), yerr=np.array(id2E3err_list),marker='P', color=blue, **errorp)
 
 # best fit
 ax1.errorbar(np.array(tmin_list[0]), np.array(E0_list[0]), yerr=np.array(E0err_list[0]), marker='o', mfc=red, color=red, **errorb)
-ax1.errorbar(np.array(tmin_list[0]), np.array(E1_list[0]), yerr=np.array(E1err_list[0]), marker='^', mfc=red, color=red, **errorb)
-ax1.errorbar(np.array(tmin_list[0]), np.array(E2_list[0]), yerr=np.array(E2err_list[0]), marker='s', mfc=red, color=red, **errorb)
-ax1.errorbar(np.array(tmin_list[0]), np.array(E3_list[0]), yerr=np.array(E3err_list[0]), marker='P', mfc=red, color=red, **errorb)
+ax2.errorbar(np.array(tmin_list[0]), np.array(E1_list[0]), yerr=np.array(E1err_list[0]), marker='^', mfc=red, color=red, **errorb)
+ax3.errorbar(np.array(tmin_list[0]), np.array(E2_list[0]), yerr=np.array(E2err_list[0]), marker='s', mfc=red, color=red, **errorb)
+ax4.errorbar(np.array(tmin_list[0]), np.array(E3_list[0]), yerr=np.array(E3err_list[0]), marker='P', mfc=red, color=red, **errorb)
 
 ax1.fill_between(np.arange(2.5, 8.5, 1), (E0_list[0]+E0err_list[0])*np.ones([6]), (E0_list[0]-E0err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax1.fill_between(np.arange(2.5, 8.5, 1), (E1_list[0]+E1err_list[0])*np.ones([6]), (E1_list[0]-E1err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax1.fill_between(np.arange(2.5, 8.5, 1), (E2_list[0]+E2err_list[0])*np.ones([6]), (E2_list[0]-E2err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax1.fill_between(np.arange(2.5, 8.5, 1), (E3_list[0]+E3err_list[0])*np.ones([6]), (E3_list[0]-E3err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax2.fill_between(np.arange(2.5, 8.5, 1), (E1_list[0]+E1err_list[0])*np.ones([6]), (E1_list[0]-E1err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax3.fill_between(np.arange(2.5, 8.5, 1), (E2_list[0]+E2err_list[0])*np.ones([6]), (E2_list[0]-E2err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax4.fill_between(np.arange(2.5, 8.5, 1), (E3_list[0]+E3err_list[0])*np.ones([6]), (E3_list[0]-E3err_list[0])*np.ones([6]), color=red, alpha=0.2)
 
 
-# ax2
-ax2.set_ylabel(r"$Q$", **textp)
-ax2.set_ylim([0, 1.1])
-ax2.plot(np.arange(2.5, 8.5, 1), 0.1 * np.ones([6]), 'r--')
+# ax5
+ax5.set_ylabel(r"$Q$", **textp)
+ax5.yaxis.set_label_coords(0, 1)
+ax5.set_ylim([0.01, 1.2])
+ax5.plot(np.arange(2.5, 8.5, 1), 0.1 * np.ones([6]), 'r--')
 
-ax2.scatter(np.array(tmin_list), np.array(Q_list), marker='o', c='', edgecolors=red)
-ax2.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swQ_list), marker='o', c='', edgecolors=peach)
-ax2.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1Q_list), marker='o', c='', edgecolors=green)
-ax2.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2Q_list), marker='o', c='', edgecolors=blue)
+ax5.scatter(np.array(tmin_list), np.array(Q_list), marker='o', c='', edgecolors=red)
+ax5.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swQ_list), marker='o', c='', edgecolors=peach)
+ax5.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1Q_list), marker='o', c='', edgecolors=green)
+ax5.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2Q_list), marker='o', c='', edgecolors=blue)
 
 # best fit
-ax2.scatter(np.array(tmin_list[0]), np.array(Q_list[0]), marker='o', c=red, edgecolors=red)
+ax5.scatter(np.array(tmin_list[0]), np.array(Q_list[0]), marker='o', c=red, edgecolors=red)
 
-# ax3
-ax3.set_ylabel(r"$w$", **textp)
-ax3.set_ylim([0, 1.1])
+# ax6
+ax6.set_ylabel(r"$w$", **textp)
+ax6.yaxis.set_label_coords(0, 1)
+ax6.set_ylim([0.01, 1.2])
 
-ax3.plot(np.arange(2.5, 8.5, 1), 0.3 * np.ones([6]), 'r--')
+ax6.plot(np.arange(2.5, 8.5, 1), 0.3 * np.ones([6]), 'r--')
 
 w_list = [0.7591742989696858, 0.0017540544417473593, 1, 0.008397830121424019, 0.03593942605030466]
 sww_list = [1, 1, 0.6273322515434925, 1, 1]
 id1w_list = [4.4597223650273686e-08, 4.1640568963641826e-08, 1.0574320691685268e-07, 1.6622175012779632e-07, 2.0924988449570086e-07]
 id2w_list = [3.21556125844409e-15, 2.69591162005402e-15, 3.8414543732742373e-16, 4.1399535039242913e-16, 1.157588012901151e-15]
 
-ax3.scatter(np.array(tmin_list), np.array(w_list), marker='o', c='', edgecolors=red)
-ax3.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(sww_list), marker='o', c='', edgecolors=peach)
-ax3.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1w_list), marker='o', c='', edgecolors=green)
-ax3.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2w_list), marker='o', c='', edgecolors=blue)
+ax6.scatter(np.array(tmin_list), np.array(w_list), marker='o', c='', edgecolors=red)
+ax6.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(sww_list), marker='o', c='', edgecolors=peach)
+ax6.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1w_list), marker='o', c='', edgecolors=green)
+ax6.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2w_list), marker='o', c='', edgecolors=blue)
 
+const = 0.197/0.09 # lattice to GeV
+#ax1.set_xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+ax1.set_xlim([2.5, 7.5])
+ax1.set_ylim([0.483, 0.4949])
+ax7 = ax1.twinx()
+ax7.set_ylim([0.483*const, 0.4949*const])
+ax7.set_ylabel(r"$GeV$", fontsize=14)
+ax7.yaxis.set_label_coords(1.05, 1)
+#ax2.set_xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+ax2.set_xlim([2.5, 7.5])
+ax2.set_ylim([0.63, 0.88])
+ax8 = ax2.twinx()
+ax8.set_ylim([0.63*const, 0.88*const])
+ax8.set_ylabel(r"$GeV$", fontsize=14)
+ax8.yaxis.set_label_coords(1.05, 1)
+#ax3.set_xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+ax3.set_xlim([2.5, 7.5])
+ax3.set_ylim([0.85, 1.6])
+ax9 = ax3.twinx()
+ax9.set_ylim([0.85*const, 1.6*const])
+ax9.set_ylabel(r"$GeV$", fontsize=14)
+ax9.yaxis.set_label_coords(1.05, 1)
+#ax4.set_xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+ax4.set_xlim([2.5, 7.5])
+ax4.set_ylim([1.3, 1.95])
+ax10 = ax4.twinx()
+ax10.set_ylim([1.3*const, 1.95*const])
+ax10.set_ylabel(r"$GeV$", fontsize=14)
+ax10.yaxis.set_label_coords(1.05, 1)
 
-plt.subplots_adjust(wspace=0, hspace=0)
-plt.xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
-plt.xlim([2.5, 7.5])
+ax5.set_xlabel(r"$t_{\rm sep}^{\rm min}:C_2$", **textp)
+ax5.set_xlim([2.5, 7.5])
+#ax6.set_xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+ax6.set_xlim([2.5, 7.5])
+
 ax1.tick_params(axis='both', which='major', **labelp)
 ax2.tick_params(axis='both', which='major', **labelp)
 ax3.tick_params(axis='both', which='major', **labelp)
+ax4.tick_params(axis='both', which='major', **labelp)
+ax5.tick_params(axis='both', which='major', **labelp)
+ax6.tick_params(axis='both', which='major', **labelp)
+ax7.tick_params(axis='both', which='major', **labelp)
+ax8.tick_params(axis='both', which='major', **labelp)
+ax9.tick_params(axis='both', which='major', **labelp)
+ax10.tick_params(axis='both', which='major', **labelp)
 
+plt.subplots_adjust(wspace=0, hspace=0)
 plt.tight_layout(pad=30, rect=aspect)
 
 plt.savefig('./new_plots/spec_23s_2pttmin.pdf', transparent=True)
+
+#################################################################################
+
+
+
 
 # %%
 # read the prior of En from the database
@@ -508,4 +565,93 @@ plt.legend(loc='upper right')
 #plt.title('a09_23s_E1_best_fit', size=18)
 plt.savefig('./new_plots/'+'23s_spec_oh.pdf', transparent=True)
 plt.show()
+
+
 # %%
+'''
+fig=plt.figure()
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin) 
+
+ax1.set_ylabel(r"$E_n$", **textp)
+
+# harmonic oscillator
+ax1.errorbar(np.array(tmin_list), np.array(E0_list), yerr=np.array(E0err_list), marker='o', color=red, label='ho', **errorp)
+ax1.errorbar(np.array(tmin_list), np.array(E1_list), yerr=np.array(E1err_list), marker='^', color=red, **errorp)
+ax1.errorbar(np.array(tmin_list), np.array(E2_list), yerr=np.array(E2err_list), marker='s', color=red, **errorp)
+ax1.errorbar(np.array(tmin_list), np.array(E3_list), yerr=np.array(E3err_list), marker='P', color=red, **errorp)
+
+# square well
+ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE0_list), yerr=np.array(swE0err_list),marker='o', color=peach, label='sw', **errorp)
+ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE1_list), yerr=np.array(swE1err_list),marker='^', color=peach, **errorp)
+ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE2_list), yerr=np.array(swE2err_list),marker='s', color=peach, **errorp)
+ax1.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE3_list), yerr=np.array(swE3err_list),marker='P', color=peach, **errorp)
+
+# id 1
+ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E0_list), yerr=np.array(id1E0err_list),marker='o', color=green, label='id1', **errorp)
+ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E1_list), yerr=np.array(id1E1err_list),marker='^', color=green, **errorp)
+ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E2_list), yerr=np.array(id1E2err_list),marker='s', color=green, **errorp)
+ax1.errorbar(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1E3_list), yerr=np.array(id1E3err_list),marker='P', color=green, **errorp)
+
+# id 2
+ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E0_list), yerr=np.array(id2E0err_list),marker='o', color=blue, label='id2', **errorp)
+ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E1_list), yerr=np.array(id2E1err_list),marker='^', color=blue, **errorp)
+ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E2_list), yerr=np.array(id2E2err_list),marker='s', color=blue, **errorp)
+ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E3_list), yerr=np.array(id2E3err_list),marker='P', color=blue, **errorp)
+
+# best fit
+ax1.errorbar(np.array(tmin_list[0]), np.array(E0_list[0]), yerr=np.array(E0err_list[0]), marker='o', mfc=red, color=red, **errorb)
+ax1.errorbar(np.array(tmin_list[0]), np.array(E1_list[0]), yerr=np.array(E1err_list[0]), marker='^', mfc=red, color=red, **errorb)
+ax1.errorbar(np.array(tmin_list[0]), np.array(E2_list[0]), yerr=np.array(E2err_list[0]), marker='s', mfc=red, color=red, **errorb)
+ax1.errorbar(np.array(tmin_list[0]), np.array(E3_list[0]), yerr=np.array(E3err_list[0]), marker='P', mfc=red, color=red, **errorb)
+
+ax1.fill_between(np.arange(2.5, 8.5, 1), (E0_list[0]+E0err_list[0])*np.ones([6]), (E0_list[0]-E0err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax1.fill_between(np.arange(2.5, 8.5, 1), (E1_list[0]+E1err_list[0])*np.ones([6]), (E1_list[0]-E1err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax1.fill_between(np.arange(2.5, 8.5, 1), (E2_list[0]+E2err_list[0])*np.ones([6]), (E2_list[0]-E2err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax1.fill_between(np.arange(2.5, 8.5, 1), (E3_list[0]+E3err_list[0])*np.ones([6]), (E3_list[0]-E3err_list[0])*np.ones([6]), color=red, alpha=0.2)
+
+
+# ax2
+ax2.set_ylabel(r"$Q$", **textp)
+ax2.set_ylim([0, 1.1])
+ax2.plot(np.arange(2.5, 8.5, 1), 0.1 * np.ones([6]), 'r--')
+
+ax2.scatter(np.array(tmin_list), np.array(Q_list), marker='o', c='', edgecolors=red)
+ax2.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swQ_list), marker='o', c='', edgecolors=peach)
+ax2.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1Q_list), marker='o', c='', edgecolors=green)
+ax2.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2Q_list), marker='o', c='', edgecolors=blue)
+
+# best fit
+ax2.scatter(np.array(tmin_list[0]), np.array(Q_list[0]), marker='o', c=red, edgecolors=red)
+
+# ax3
+ax3.set_ylabel(r"$w$", **textp)
+ax3.set_ylim([0, 1.1])
+
+ax3.plot(np.arange(2.5, 8.5, 1), 0.3 * np.ones([6]), 'r--')
+
+w_list = [0.7591742989696858, 0.0017540544417473593, 1, 0.008397830121424019, 0.03593942605030466]
+sww_list = [1, 1, 0.6273322515434925, 1, 1]
+id1w_list = [4.4597223650273686e-08, 4.1640568963641826e-08, 1.0574320691685268e-07, 1.6622175012779632e-07, 2.0924988449570086e-07]
+id2w_list = [3.21556125844409e-15, 2.69591162005402e-15, 3.8414543732742373e-16, 4.1399535039242913e-16, 1.157588012901151e-15]
+
+ax3.scatter(np.array(tmin_list), np.array(w_list), marker='o', c='', edgecolors=red)
+ax3.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(sww_list), marker='o', c='', edgecolors=peach)
+ax3.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1w_list), marker='o', c='', edgecolors=green)
+ax3.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2w_list), marker='o', c='', edgecolors=blue)
+
+
+plt.subplots_adjust(wspace=0, hspace=0)
+plt.xlabel(r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$", **textp)
+plt.xlim([2.5, 7.5])
+ax1.tick_params(axis='both', which='major', **labelp)
+ax2.tick_params(axis='both', which='major', **labelp)
+ax3.tick_params(axis='both', which='major', **labelp)
+
+plt.tight_layout(pad=30, rect=aspect)
+
+plt.savefig('./new_plots/spec_23s_2pttmin.pdf', transparent=True)
+'''

@@ -20,11 +20,11 @@ from module.plot import tmax_scattered_plot
 from module.plot import tau_cut_plot
 
 # labels
-c2pt_tmin = r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$"
+c2pt_tmin = r"$t_{\rm sep}^{\rm min}:C_2$"
 c2pt_tmax = r"$C_{\textrm{2pt}}\ t_{\textrm{max}}$"
-c3pt_tmin = r"$C_{\textrm{3pt}}\ t_{\textrm{min}}$"
+c3pt_tmin = r"$t_{\rm sep}^{\rm min}:C_3$"
 c3pt_tmax = r"$C_{\textrm{3pt}}\ t_{\textrm{max}}$"
-csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
+csum_tmin = r"$t_{\rm sep}^{\rm min}:FH$"
 csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
 c_tmax = r"$t_{\rm sep}^{\rm max}$"
 q_label = r"$Q$"
@@ -240,4 +240,71 @@ sum_tau_cut=1, sum_nstates=5)
 
 tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name)
 
+
+# %%
+####################################
+########## 23 2pt tmin #############
+#####################################
+n_range=[4, 8]
+t_range=[3, 8]
+best_n=5
+best_t=3
+
+nstate_name='2pt'
+tmin_name='2pt'
+
+fit_name='23'
+xlabel=c2pt_tmin
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=False, 
+pt2_tmax=18,
+pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=5,
+sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
+
+tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
+
+
+# %%
+####################################
+########## 23 3pt tmin #############
+#####################################
+n_range=[4, 8]
+t_range=[3, 8]
+best_n=5
+best_t=3
+
+nstate_name='3pt'
+tmin_name='3pt_gA'
+
+fit_name='23'
+xlabel=c3pt_tmin
+
+situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=True, include_sum=False, 
+pt2_tmin=3, pt2_tmax=18,
+pt3_A3_tsep_max=15, id_num=4,
+sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
+
+tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel)
+
+
+
+# %%
+####################################
+########## 23 tau cut #############
+#####################################
+# taucut, taucut+1, taucut+2, taucut+3, taucut+4
+
+E0 = [0.4906, 0.4899, 0.4912, 0.4910, 0.4907]
+E0_err = [0.0020, 0.0022, 0.0023, 0.0025, 0.0025]
+A3 = [1.260, 1.259, 1.254, 1.251, 1.265]
+A3_err = [0.023, 0.022, 0.023, 0.025, 0.030]
+V4 = [1.0229, 1.0212, 1.0220, 1.0261, 1.0197]
+V4_err = [0.0021, 0.0024, 0.0035, 0.0052, 0.0061]
+Q = [0.74, 0.55, 0.7, 0.34, 0.27]
+
+n = 5
+
+fit_name = '23'
+
+tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim)
 # %%
