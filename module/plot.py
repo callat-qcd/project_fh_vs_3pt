@@ -1313,7 +1313,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
 
 
     for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label='ncol='+str(n), **errorp)
+        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label='nstates='+str(n), **errorp)
 
     ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gA'][best_n][best_t_]+value['gA_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_n][best_t - t_range[0]]-value['gA_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
 
@@ -1322,7 +1322,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     print("Best fit")
     print(np.array([value['gA'][best_n][best_t_]]), np.array([value['gA_err'][best_n][best_t_]]))
     
-    ax1.legend()
+    ax1.legend(ncol=4, loc='lower center')
     
     # ax2
     ax2.set_ylabel(q_label, **textp)
