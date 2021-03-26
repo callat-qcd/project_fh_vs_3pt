@@ -22,8 +22,8 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-# color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
-color_list = [red, peach, orange, green, blue, violet] # for stability plots
+color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
+# color_list = [red, peach, orange, green, blue, violet] # for stability plots
 
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
 
@@ -31,7 +31,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.845,0.845]
+plt_axes  = [0.15,0.15,0.8,0.7]
 fs_text   = 18 # font size of text
 fs_text_gA = 20 # font size of ga label
 fs_leg    = 16 # legend font size
@@ -57,14 +57,14 @@ csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
 csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
 q_label = r"$Q$"
 w_label = r"$w$"
-oa00_label = r"$\mathring{g}_A^{\textrm eff}(t_{\textrm{sep}}, \tau)$"
+oa00_label = r"$R_{A_3}(t_{\rm sep}, \tau)$"
 ga_label = r"$\mathring{g}_A$"
 ov00_label = r"$\mathring{g}_V$"
 e0_label = r"$E_{0}$"
 z0_label = r"$z_{0}$"
 nstate_label = r"$n_{\textrm{states}}$"
 t_label = r"$t_{\rm sep}$"
-tau_label = r"$\tau - t_{\rm sep}/2$"
+tau_label = r"$a(\tau - t_{\rm sep})/2$"
 fm_t_label = r"$t_{\rm sep} / {\rm fm}$"
 fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
 meff_label = r"$m_{\textrm{eff}}$"
@@ -291,8 +291,6 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
                 gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
                 ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
 
-    ax.tick_params(direction='in', labelsize=tick_size)
-
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
@@ -300,6 +298,13 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_tau_label, fontsize=fs_text)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim(x_lim)
+    ax1.set_xlabel(tau_label, fontsize=fs_text)
+
+    ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     ax.set_ylim(1.0, 1.349)
     ax.set_ylabel(oa00_label, fontsize=fs_text)

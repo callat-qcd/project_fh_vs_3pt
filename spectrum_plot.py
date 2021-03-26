@@ -146,10 +146,10 @@ color_list = [violet, green, fuschia, yellow, blue, orange, turquoise, red]
 
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
-gridspec_tmin = {'height_ratios': [2.5, 2, 2, 2, 2, 1, 1], 'left': 0.15, 'right': 0.88, 'bottom': 0.1, 'top': 0.95, 'hspace':0}
+gridspec_tmin = {'height_ratios': [2, 2, 2, 2, 2, 1.5, 1.5], 'left': 0.15, 'right': 0.88, 'bottom': 0.1, 'top': 0.95, 'hspace':0}
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
-figsize  = (fig_width, fig_width)
+figsize  = (fig_width, fig_width * 1.2)
 aspect=[0.15, 0.15, 0.845, 0.845]
 textp = {"fontsize": 18}
 labelp = {"labelsize": 18}

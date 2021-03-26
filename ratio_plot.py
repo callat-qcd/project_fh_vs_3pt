@@ -34,7 +34,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.845,0.845]
+plt_axes  = [0.15,0.15,0.8,0.7]
 fs_text   = 18 # font size of text
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
@@ -625,7 +625,13 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     elif plot_in_fm == True:
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
+    ax1 = ax.twiny()
+    ax1.set_xlim([0, 3.8 / omega_imp_a09])
+    ax1.set_xlabel(r"$at_{\rm sep}$", fontsize=fs_text)
+
     ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
+
     if div_2pt == True:
         ax.text(20 * omega_imp_a09, 0.06, r'$\frac{R^{\rm es}_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {\mathring{g}_A}$', fontsize=30)
     elif div_2pt == False:
@@ -683,7 +689,13 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
     elif plot_in_fm == True:
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
+    ax1 = ax.twiny()
+    ax1.set_xlim([0, 3.8 / omega_imp_a09])
+    ax1.set_xlabel(r"$at_{\rm sep}$", fontsize=fs_text)
+
     ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
+
     ax.text(20 * omega_imp_a09, 0.06, r'$\frac{{\rm FH}^{\rm es}_{A_3}(t_{\rm sep}, \tau_c=1)} {\mathring{g}_A}$', fontsize=30)
     ax.set_ylim([-0.151, 0.149])
     ax.set_xlim([0, plot_xmax + 0.8])

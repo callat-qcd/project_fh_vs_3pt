@@ -20,17 +20,18 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.845,0.845]
+plt_axes  = [0.15,0.15,0.8,0.7]
 fs_text   = 18 # font size of text
 fs_text_gA = 20
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
 
-errorp = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
+errorp = {"markersize": 7, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 
-oa00_label = r"$\mathring{g}_A^{\textrm{FH}}(t_{\textrm{sep}})$"
-tsep_label = r'$t_{\textrm{sep}}$'
+oa00_label = r"${\rm FH}_{A_3}(t_{\rm sep}, \tau_c)$"
+tsep_label = r'$at_{\textrm{sep}}$'
+tsep_fm_label = r'$t_{\textrm{sep}} / {\rm fm}$'
 
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
@@ -47,6 +48,9 @@ violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
 color_list = [grey, red, orange, green, blue, grape]
+marker_list = ['x', 'o', '^', 's', 'P', '*']
+
+omega_imp_a09 = 0.08730 # converse lattice to fm
 
 # %%
 def tau_c_sum_plot(f_range, d_range, fit_result):
@@ -77,7 +81,7 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         y1 = np.array([val.mean for val in temp]) + np.array([val.sdev for val in temp])
         y2 = np.array([val.mean for val in temp]) - np.array([val.sdev for val in temp])
 
-        ax.fill_between(x_fill, y1, y2, color=color_list[sum_tau_cut], alpha=0.3)
+        ax.fill_between(x_fill * omega_imp_a09, y1, y2, color=color_list[sum_tau_cut], alpha=0.3)
 
     for sum_tau_cut in range(d_range[0], d_range[1]):
 
@@ -94,17 +98,22 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         temp_sdev = np.array([val.sdev for val in sum_data_list])
 
         if sum_tau_cut == 1:
-            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker='o', color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorp)
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorp)
 
         else:
-            ax.errorbar(np.arange(tmin, 14), temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker='o', color=color_list[sum_tau_cut], mfc='none', **errorp)
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], mfc='none', **errorp)
 
     ax.set_ylim(1.0, 1.349)
-    ax.set_xlim([1, 23])
+    ax.set_xlim([1 * omega_imp_a09, 23 * omega_imp_a09])
     ax.set_ylabel(oa00_label, fontsize=fs_text_gA)
-    ax.set_xlabel(tsep_label, fontsize=fs_text)
+    ax.set_xlabel(tsep_fm_label, fontsize=fs_text)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim([1, 23])
+    ax1.set_xlabel(tsep_label, fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
     plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
@@ -182,5 +191,7 @@ f_range = [1, 6] # tau_c range of fit part
 d_range = [1, 6] # tau_c range of data part
 
 tau_c_sum_plot(f_range, d_range, fit_result)
+
+# %%
 
 # %%
