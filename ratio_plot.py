@@ -627,7 +627,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     ax1 = ax.twiny()
     ax1.set_xlim([0, 3.8 / omega_imp_a09])
-    ax1.set_xlabel(r"$at_{\rm sep}$", fontsize=fs_text)
+    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)
@@ -691,7 +691,7 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
 
     ax1 = ax.twiny()
     ax1.set_xlim([0, 3.8 / omega_imp_a09])
-    ax1.set_xlabel(r"$at_{\rm sep}$", fontsize=fs_text)
+    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)

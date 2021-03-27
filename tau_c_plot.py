@@ -30,7 +30,7 @@ plt.rcParams['figure.figsize'] = fig_size
 errorp = {"markersize": 7, "linestyle": "none", "capsize": 3, "elinewidth": 1}
 
 oa00_label = r"${\rm FH}_{A_3}(t_{\rm sep}, \tau_c)$"
-tsep_label = r'$at_{\textrm{sep}}$'
+tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
 tsep_fm_label = r'$t_{\textrm{sep}} / {\rm fm}$'
 
 grey = "#808080" # nstates = 1
@@ -187,8 +187,8 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-f_range = [1, 6] # tau_c range of fit part
-d_range = [1, 6] # tau_c range of data part
+f_range = [0, 2] # tau_c range of fit part
+d_range = [0, 2] # tau_c range of data part
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 

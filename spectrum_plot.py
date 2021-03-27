@@ -356,11 +356,11 @@ plt.rcParams['ytick.direction'] = 'in'
 
 fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7) = plt.subplots(7, 1, sharex = True, gridspec_kw=gridspec_tmin) 
 
-ax1.set_ylabel(r"$aE_4$", **textp)
-ax2.set_ylabel(r"$aE_3$", **textp)
-ax3.set_ylabel(r"$aE_2$", **textp)
-ax4.set_ylabel(r"$aE_1$", **textp)
-ax5.set_ylabel(r"$aE_0$", **textp)
+ax1.set_ylabel(r"$a_{09}E_4$", **textp)
+ax2.set_ylabel(r"$a_{09}E_3$", **textp)
+ax3.set_ylabel(r"$a_{09}E_2$", **textp)
+ax4.set_ylabel(r"$a_{09}E_1$", **textp)
+ax5.set_ylabel(r"$a_{09}E_0$", **textp)
 
 # square well
 ax5.errorbar(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(swE0_list), yerr=np.array(swE0err_list),marker='o', color=peach, **errorp)
