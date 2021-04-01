@@ -10,21 +10,21 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true" # for jupyter to use database
 plt.rcParams.update({"text.usetex": True})
 
 # %%
-grey = "#808080" 
-red = "#FF6F6F" # nstates = 8
-peach = "#FF9E6F" # nstates = 7
-orange = "#FFBC6F" # nstates = 6
+grey = "#808080" # nstates = 1
+red = "#FF6F6F" # nstates = 2
+peach = "#FF9E6F" # nstates = 3
+orange = "#FFBC6F" # nstates = 4
 sunkist = "#FFDF6F"
 yellow = "#FFEE6F" 
-lime = "#CBF169" 
-green = "#5CD25C" 
-turquoise = "#4AAB89" # nstates = 5
-blue = "#508EAD" # nstates = 4
-grape = "#635BB1" # nstates = 3
-violet = "#7C5AB8"
-fuschia = "#C3559F" # nstates = 2
+lime = "#CBF169"
+green = "#5CD25C" # nstates = 5
+turquoise = "#4AAB89"
+blue = "#508EAD" # nstates = 6
+grape = "#635BB1"
+violet = "#7C5AB8" # nstates = 7
+fuschia = "#C3559F"
 
-color_list = [fuschia, grape, blue, turquoise, orange, peach, red]
+color_list = [red, peach, orange, green, blue, violet] # for stability plots
 
 plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
@@ -165,5 +165,7 @@ plt.tight_layout(pad=30, rect=plt_axes)
 
 
 plt.savefig('./new_plots/'+fit_name+'_gA-both_tmin_tmax_conbined.pdf', transparent=True)
+
+# %%
 
 # %%

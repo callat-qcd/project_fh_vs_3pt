@@ -103,6 +103,13 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
         else:
             ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], mfc='none', **errorp)
 
+    # plot best fit result of ga
+    best_x = np.linspace(1 * omega_imp_a09, 23 * omega_imp_a09, 100)
+    best_y1 = (fit_result.p['A3_00'].mean + fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+    best_y2 = (fit_result.p['A3_00'].mean - fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+
+    ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
+
     ax.set_ylim(1.0, 1.349)
     ax.set_xlim([1 * omega_imp_a09, 23 * omega_imp_a09])
     ax.set_ylabel(oa00_label, fontsize=fs_text_gA)
@@ -187,8 +194,8 @@ fit_result = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, 
 print(fit_result)
 
 # %%
-f_range = [0, 2] # tau_c range of fit part
-d_range = [0, 2] # tau_c range of data part
+f_range = [1, 6] # tau_c range of fit part
+d_range = [1, 6] # tau_c range of data part
 
 tau_c_sum_plot(f_range, d_range, fit_result)
 

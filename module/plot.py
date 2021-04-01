@@ -291,6 +291,13 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
                 gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
                 ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
 
+    # plot best fit result of ga
+    best_x = np.linspace(-6.5*omega_imp_a09, 6.5*omega_imp_a09, 100)
+    best_y1 = (fit_result.p['A3_00'].mean + fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+    best_y2 = (fit_result.p['A3_00'].mean - fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+
+    ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
+
     x_lim = [-6.5, 6.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)

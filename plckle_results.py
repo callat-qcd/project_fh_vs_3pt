@@ -89,4 +89,23 @@ gv.dump(fit_result, 'fit_result.pickle')
 new_result = gv.load('fit_result.pickle')
 # %%
 print(new_result)
+
+
+
+
+
+# %% example of using gv.dump
+import gvar as gv
+
+a = dict()
+a['1'] = 1
+a['2'] = 2
+a['3'] = 3
+
+gv.dump(a, 'test')
+
+# %%
+b = gv.load('test')
+print(type(b))
+print(b)
 # %%

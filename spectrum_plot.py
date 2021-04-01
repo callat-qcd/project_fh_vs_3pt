@@ -206,6 +206,7 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     
     print('hologGBF: ' + str(situation.log_GBF))
 
+print(tmin_list)
     
 tmin_list = []    
     
@@ -252,6 +253,8 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     swlog_list.append(situation.log_GBF)
     
     print('swlogGBF: ' + str(situation.log_GBF))
+
+print(tmin_list)
     
 tmin_list = []    
     
@@ -299,6 +302,8 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     
     print('id1logGBF: ' + str(situation.log_GBF))
 
+print(tmin_list)
+
 tmin_list = []    
     
 id2E0_list = []
@@ -345,7 +350,8 @@ sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5):
     id2log_list.append(situation.log_GBF)
     
     print('id2logGBF: ' + str(situation.log_GBF))
-    
+
+print(tmin_list)
 
 ##############################################################################    
 # plot fit results of En
@@ -391,17 +397,17 @@ ax2.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E3_l
 ax1.errorbar(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2E4_list), yerr=np.array(id2E4err_list),marker='P', color=blue, label='$1/n^2$', **errorp)
 
 # best fit
-ax5.errorbar(np.array(tmin_list[0]), np.array(E0_list[0]), yerr=np.array(E0err_list[0]), marker='o', mfc=red, color=red, **errorb)
-ax4.errorbar(np.array(tmin_list[0]), np.array(E1_list[0]), yerr=np.array(E1err_list[0]), marker='^', mfc=red, color=red, **errorb)
-ax3.errorbar(np.array(tmin_list[0]), np.array(E2_list[0]), yerr=np.array(E2err_list[0]), marker='s', mfc=red, color=red, **errorb)
-ax2.errorbar(np.array(tmin_list[0]), np.array(E3_list[0]), yerr=np.array(E3err_list[0]), marker='P', mfc=red, color=red, **errorb)
-ax1.errorbar(np.array(tmin_list[0]), np.array(E4_list[0]), yerr=np.array(E4err_list[0]), marker='P', mfc=red, color=red, **errorb)
+ax5.errorbar(np.array(tmin_list[4]), np.array(E0_list[4]), yerr=np.array(E0err_list[4]), marker='o', mfc=red, color=red, **errorb)
+ax4.errorbar(np.array(tmin_list[4]), np.array(E1_list[4]), yerr=np.array(E1err_list[4]), marker='^', mfc=red, color=red, **errorb)
+ax3.errorbar(np.array(tmin_list[4]), np.array(E2_list[4]), yerr=np.array(E2err_list[4]), marker='s', mfc=red, color=red, **errorb)
+ax2.errorbar(np.array(tmin_list[4]), np.array(E3_list[4]), yerr=np.array(E3err_list[4]), marker='P', mfc=red, color=red, **errorb)
+ax1.errorbar(np.array(tmin_list[4]), np.array(E4_list[4]), yerr=np.array(E4err_list[4]), marker='P', mfc=red, color=red, **errorb)
 
-ax5.fill_between(np.arange(2.5, 8.5, 1), (E0_list[0]+E0err_list[0])*np.ones([6]), (E0_list[0]-E0err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax4.fill_between(np.arange(2.5, 8.5, 1), (E1_list[0]+E1err_list[0])*np.ones([6]), (E1_list[0]-E1err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax3.fill_between(np.arange(2.5, 8.5, 1), (E2_list[0]+E2err_list[0])*np.ones([6]), (E2_list[0]-E2err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax2.fill_between(np.arange(2.5, 8.5, 1), (E3_list[0]+E3err_list[0])*np.ones([6]), (E3_list[0]-E3err_list[0])*np.ones([6]), color=red, alpha=0.2)
-ax1.fill_between(np.arange(2.5, 8.5, 1), (E4_list[0]+E4err_list[0])*np.ones([6]), (E4_list[0]-E4err_list[0])*np.ones([6]), color=red, alpha=0.2)
+ax5.fill_between(np.arange(2.5, 8.5, 1), (E0_list[4]+E0err_list[4])*np.ones([6]), (E0_list[4]-E0err_list[4])*np.ones([6]), color=red, alpha=0.2)
+ax4.fill_between(np.arange(2.5, 8.5, 1), (E1_list[4]+E1err_list[4])*np.ones([6]), (E1_list[4]-E1err_list[4])*np.ones([6]), color=red, alpha=0.2)
+ax3.fill_between(np.arange(2.5, 8.5, 1), (E2_list[4]+E2err_list[4])*np.ones([6]), (E2_list[4]-E2err_list[4])*np.ones([6]), color=red, alpha=0.2)
+ax2.fill_between(np.arange(2.5, 8.5, 1), (E3_list[4]+E3err_list[4])*np.ones([6]), (E3_list[4]-E3err_list[4])*np.ones([6]), color=red, alpha=0.2)
+ax1.fill_between(np.arange(2.5, 8.5, 1), (E4_list[4]+E4err_list[4])*np.ones([6]), (E4_list[4]-E4err_list[4])*np.ones([6]), color=red, alpha=0.2)
 
 const = 0.197/0.09 # lattice to GeV
 
@@ -449,7 +455,7 @@ ax6.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1Q_lis
 ax6.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2Q_list), marker='o', c='', edgecolors=blue)
 
 # best fit
-ax6.scatter(np.array(tmin_list[0]), np.array(Q_list[0]), marker='o', c=red, edgecolors=red)
+ax6.scatter(np.array(tmin_list[4]), np.array(Q_list[4]), marker='o', c=red, edgecolors=red)
 
 # ax7
 ax7.set_ylabel(r"$w$", **textp)
@@ -457,15 +463,26 @@ ax7.set_ylim([0, 1.2])
 ax7.set_yticks([0, 0.75])
 ax7.plot(np.arange(2.5, 8.5, 1), 0.3 * np.ones([6]), 'r--')
 
-w_list = [0.7591742989696858, 0.0017540544417473593, 1, 0.008397830121424019, 0.03593942605030466]
-sww_list = [1, 1, 0.6273322515434925, 1, 1]
-id1w_list = [4.4597223650273686e-08, 4.1640568963641826e-08, 1.0574320691685268e-07, 1.6622175012779632e-07, 2.0924988449570086e-07]
-id2w_list = [3.21556125844409e-15, 2.69591162005402e-15, 3.8414543732742373e-16, 4.1399535039242913e-16, 1.157588012901151e-15]
+log_list_3 = [ li[4] for li in [log_list, swlog_list, id1log_list, id2log_list]]
+log_list_4 = [ li[3] for li in [log_list, swlog_list, id1log_list, id2log_list]]
+log_list_5 = [ li[2] for li in [log_list, swlog_list, id1log_list, id2log_list]]
+log_list_6 = [ li[1] for li in [log_list, swlog_list, id1log_list, id2log_list]]
+log_list_7 = [ li[0] for li in [log_list, swlog_list, id1log_list, id2log_list]]
+
+log_max_list = [max(log_list_7), max(log_list_6), max(log_list_5), max(log_list_4), max(log_list_3)]
+
+w_list = [ np.exp(log_list[i] - log_max_list[i]) for i in range(5) ]
+sww_list = [ np.exp(swlog_list[i] - log_max_list[i]) for i in range(5) ]
+id1w_list = [ np.exp(id1log_list[i] - log_max_list[i]) for i in range(5) ]
+id2w_list = [ np.exp(id2log_list[i] - log_max_list[i]) for i in range(5) ]
 
 ax7.scatter(np.array(tmin_list), np.array(w_list), marker='o', c='', edgecolors=red)
 ax7.scatter(np.array(tmin_list)-0.1 * np.ones(len(tmin_list)), np.array(sww_list), marker='o', c='', edgecolors=peach)
 ax7.scatter(np.array(tmin_list)+0.1 * np.ones(len(tmin_list)), np.array(id1w_list), marker='o', c='', edgecolors=green)
 ax7.scatter(np.array(tmin_list)+0.2 * np.ones(len(tmin_list)), np.array(id2w_list), marker='o', c='', edgecolors=blue)
+
+# best fit
+ax7.scatter(np.array(tmin_list[4]), np.array(w_list[4]), marker='o', c=red, edgecolors=red)
 
 
 ax6.tick_params(axis='both', which='major', **labelp)
@@ -482,6 +499,48 @@ plt.savefig('./new_plots/spec_23s_2pttmin.pdf', transparent=True)
 
 #################################################################################
 
+##### dump all posteriors into a dict ######
+###### note that tmin_list = [7, 6, 5, 4, 3], so append from i=4 to i=0
+spectrum_posterior = dict()
+spectrum_posterior['SqW'] = dict()
+spectrum_posterior['SqW']['E0'] = [gv.gvar(swE0_list[4-i], swE0err_list[4-i]) for i in range(5)]
+spectrum_posterior['SqW']['E1'] = [gv.gvar(swE1_list[4-i], swE1err_list[4-i]) for i in range(5)]
+spectrum_posterior['SqW']['E2'] = [gv.gvar(swE2_list[4-i], swE2err_list[4-i]) for i in range(5)]
+spectrum_posterior['SqW']['E3'] = [gv.gvar(swE3_list[4-i], swE3err_list[4-i]) for i in range(5)]
+spectrum_posterior['SqW']['E4'] = [gv.gvar(swE4_list[4-i], swE4err_list[4-i]) for i in range(5)]
+spectrum_posterior['SqW']['Q'] = [swQ_list[4-i] for i in range(5)]
+spectrum_posterior['SqW']['w'] = [sww_list[4-i] for i in range(5)]
+
+spectrum_posterior['HO'] = dict()
+spectrum_posterior['HO']['E0'] = [gv.gvar(E0_list[4-i], E0err_list[4-i]) for i in range(5)]
+spectrum_posterior['HO']['E1'] = [gv.gvar(E1_list[4-i], E1err_list[4-i]) for i in range(5)]
+spectrum_posterior['HO']['E2'] = [gv.gvar(E2_list[4-i], E2err_list[4-i]) for i in range(5)]
+spectrum_posterior['HO']['E3'] = [gv.gvar(E3_list[4-i], E3err_list[4-i]) for i in range(5)]
+spectrum_posterior['HO']['E4'] = [gv.gvar(E4_list[4-i], E4err_list[4-i]) for i in range(5)]
+spectrum_posterior['HO']['Q'] = [Q_list[4-i] for i in range(5)]
+spectrum_posterior['HO']['w'] = [w_list[4-i] for i in range(5)]
+
+spectrum_posterior['1/n'] = dict()
+spectrum_posterior['1/n']['E0'] = [gv.gvar(id1E0_list[4-i], id1E0err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n']['E1'] = [gv.gvar(id1E1_list[4-i], id1E1err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n']['E2'] = [gv.gvar(id1E2_list[4-i], id1E2err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n']['E3'] = [gv.gvar(id1E3_list[4-i], id1E3err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n']['E4'] = [gv.gvar(id1E4_list[4-i], id1E4err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n']['Q'] = [id1Q_list[4-i] for i in range(5)]
+spectrum_posterior['1/n']['w'] = [id1w_list[4-i] for i in range(5)]
+
+spectrum_posterior['1/n2'] = dict()
+spectrum_posterior['1/n2']['E0'] = [gv.gvar(id2E0_list[4-i], id2E0err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n2']['E1'] = [gv.gvar(id2E1_list[4-i], id2E1err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n2']['E2'] = [gv.gvar(id2E2_list[4-i], id2E2err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n2']['E3'] = [gv.gvar(id2E3_list[4-i], id2E3err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n2']['E4'] = [gv.gvar(id2E4_list[4-i], id2E4err_list[4-i]) for i in range(5)]
+spectrum_posterior['1/n2']['Q'] = [id2Q_list[4-i] for i in range(5)]
+spectrum_posterior['1/n2']['w'] = [id2w_list[4-i] for i in range(5)]
+
+print(spectrum_posterior)
+
+gv.dump(spectrum_posterior, 'spectrum_posterior')
 
 
 
