@@ -22,8 +22,8 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
-# color_list = [red, peach, orange, green, blue, violet] # for stability plots
+# color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
+color_list = [red, peach, orange, green, blue, violet] # for stability plots
 
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
 
@@ -31,7 +31,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.8,0.7]
+plt_axes  = [0.15,0.18,0.8,0.65]
 fs_text   = 18 # font size of text
 fs_text_gA = 20 # font size of ga label
 fs_leg    = 16 # legend font size
@@ -65,12 +65,13 @@ z0_label = r"$z_{0}$"
 nstate_label = r"$n_{\textrm{states}}$"
 t_label = r"$t_{\rm sep}$"
 tau_label = r"$(\tau - t_{\rm sep}/2) / a_{09}$"
-fm_t_label = r"$t_{\rm sep} / {\rm fm}$"
+fm_t_label = r'$t_{\textrm{sep}} / {\rm fm}$'
 fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
 meff_label = r"$m_{\textrm{eff}}$"
 zeff_label = r"$z_{\textrm{eff}}$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
 oveff_label = r"$O^V_{\textrm{eff}}$"
+tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
 
 omega_imp_a09 = 0.08730 # converse lattice to fm
 
@@ -132,8 +133,13 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     ax.set_ylim([0.45, 0.62])
     ax.set_ylabel(meff_label, fontsize=fs_text)        
-    
-    ax.tick_params(axis='both', which='major', **labelp)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim(x_lim)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text)
+
+    ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
 
     plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/meff{plot_type}.pdf", transparent=True)
@@ -179,13 +185,17 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlabel(t_label, **textp)
     elif plot_in_fm == True:
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, **textp)
+        ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
     ax.set_ylim([0, 3E-7])
     ax.set_ylabel(zeff_label, **textp)
 
+    ax1 = ax.twiny()
+    ax1.set_xlim(x_lim)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text)
 
-    ax.tick_params(axis='both', which='major', **labelp)
+    ax.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(direction='in', labelsize=tick_size)
     
     plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/zeff{plot_type}.pdf", transparent=True)
@@ -633,7 +643,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     gV_fit_err = []
     
     plot_space = 0.05
-    gap = 2 # summation(t+gap) - summation(t)
+    gap = 1 # summation(t+gap) - summation(t)
 
     if plot_in_fm == False:
         x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-gap)
@@ -679,8 +689,8 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
             gA_even.append(gA[i])
             gA_err_even.append(gA_err[i])
 
-    ax.errorbar(np.array(x_odd) * omega_imp_a09, np.array(gA_odd), yerr=np.array(gA_err_odd), marker='o', color=grey, **errorp)
-    ax.errorbar(np.array(x_even) * omega_imp_a09, np.array(gA_even), yerr=np.array(gA_err_even), marker='o', color=blue, mfc=blue, **errorb)
+    ax.errorbar(np.array(x_odd) * omega_imp_a09, np.array(gA_odd), yerr=np.array(gA_err_odd), marker='o', color='k', **errorp)
+    ax.errorbar(np.array(x_even) * omega_imp_a09, np.array(gA_even), yerr=np.array(gA_err_even), marker='o', color='k', **errorp)#mfc=blue, **errorb)
 
     # print(gA)
     # print(gA_err)
@@ -708,10 +718,14 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
         
         ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
-    
-    ax.tick_params(direction='in', labelsize=tick_size)
 
     x_lim = [1.5, 13.5]
+    ax1 = ax.twiny()
+    ax1.set_xlim(x_lim)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text)
+    ax.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(axis='both', which='major', **labelp)
+    
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
         ax.set_xlabel(t_label, fontsize=fs_text)
@@ -720,7 +734,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
     ax.set_ylim(1.0, 1.349)
-    ax.set_ylabel(oaeff_label, fontsize=fs_text)
+    ax.set_ylabel(ga_label, fontsize=20)
     
     plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/soaeff{plot_type}.pdf", transparent=True)

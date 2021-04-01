@@ -161,7 +161,7 @@ print([i.mean for i in data_avg_dict['pt3_A3_tsep_10']])
 use_p0 = False
 include_2pt = True
 include_3pt = True
-include_sum = False
+include_sum = True
 
 sum_tau_cut = 1
 id_num = 1
@@ -190,11 +190,11 @@ elif fit_type == "continuous":
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(1, int(t/2)+1)
 
     for t in range(11, 15):
-        pt3_tau_dict['A3_tsep'+str(t)] = np.arange(1, int(t/2)+1) # for 23 fit, start from 1
-        pt3_tau_dict['V4_tsep'+str(t)] = np.arange(1, int(t/2)+1)
+        pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1) # for 23 fit, start from 1
+        pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
-    pt2_nstates_list = [nstates for nstates in range(4, 8)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
+    pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]

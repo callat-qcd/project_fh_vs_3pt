@@ -37,19 +37,26 @@ fuschia = "#C3559F"
 # style
 
 figsize = (7, 4)
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.18, 'top': 0.95}
 q_label = r"$Q$"
-oa00_label = r"$O^A_{00}$"
+oa00_label = r"$\mathring{g}_A$"
 ov00_label = r"$O^V_{00}$"
-gA_ylim=[1.1, 1.30]
+c2pt_tmin = r"$t_{\rm sep}^{\rm min}:C_2$"
+gA_ylim=[1.01, 1.349]
 gV_ylim=[1.0051, 1.03]
-textp = {"fontsize": 14}
-labelp = {"labelsize": 14}
+textp = {"fontsize": 18}
+labelp = {"labelsize": 18}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
-aspect=[0.15, 0.15, 0.8, 0.8]
+aspect=[0.15, 0.18, 0.8, 0.8]
 
 plt.rcParams['figure.figsize'] = figsize
+
+def legend_without_duplicate_labels(ax):
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique), loc='lower center', ncol=3, fontsize=14)
+
 
 # %%
 ### 2pt+3pt [10, 12, 14]  # tau cut + 1
@@ -354,19 +361,21 @@ plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-ax1.set_ylabel(oa00_label, **textp)
+ax1.set_ylabel(oa00_label, fontsize=20)
 ax1.set_ylim(gA_ylim)
 ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(4):
-    ax1.errorbar(np.array([i]), np.array(A3[i]), yerr=np.array(A3_err[i]), marker='o', color=blue, **errorp, label='tau cut')
-    ax1.errorbar(np.array([i-0.2]), np.array(A3_m1[i]), yerr=np.array(A3_err_m1[i]), marker='o', color=green, **errorp, label='tau cut-1')
-    ax1.errorbar(np.array([i+0.2]), np.array(A3_p1[i]), yerr=np.array(A3_err_p1[i]), marker='o', color=peach, **errorp, label='tau cut+1')
+    ax1.errorbar(np.array([i-0.2]), np.array(A3_m1[i]), yerr=np.array(A3_err_m1[i]), marker='^', color=green, **errorp, label=r'$\tau_c = \tau_c^{\rm opt} -1$')
+    ax1.errorbar(np.array([i]), np.array(A3[i]), yerr=np.array(A3_err[i]), marker='o', color=blue, **errorp, label=r'$\tau_c = \tau_c^{\rm opt}$')
+    ax1.errorbar(np.array([i+0.2]), np.array(A3_p1[i]), yerr=np.array(A3_err_p1[i]), marker='x', color=peach, **errorp, label=r'$\tau_c = \tau_c^{\rm opt} +1$')
     
 ax1.errorbar(np.array([1]), np.array(A3[1]), yerr=np.array(A3_err[1]), marker='o', mfc=blue, color=blue, **errorb)
     
 ax1.fill_between(x = [-1, 4], y1 = [y1a, y1a], y2 = [y2a, y2a], alpha = 0.3, color=yellow)
 ax1.fill_between(x = [-1, 4], y1 = A3[1]+A3_err[1], y2 = A3[1]-A3_err[1], alpha = 0.3, color=blue)
+
+legend_without_duplicate_labels(ax1)
 
 print( A3[1])
 print( A3_err[1])
@@ -383,7 +392,8 @@ for i in range(4):
 ax2.scatter(np.array([1]), np.array(Q[1]), marker='o', c=blue, edgecolors=blue)
 
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.xticks([0, 1, 2, 3], [r'$1\ state$', r'$2\ states$', r'$3\ states$', r'$4\ states$'])
+plt.xticks([0, 1, 2, 3], [r'$1$', r'$2$', r'$3$', r'$4$'])
+plt.xlabel(r'$\rm nstates$', **textp)
 plt.xlim([-0.5, 3.5])
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
@@ -395,14 +405,14 @@ plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
-ax1.set_ylabel(ov00_label, **textp)
+ax1.set_ylabel(ov00_label, fontsize=20)
 ax1.set_ylim(gV_ylim)
 ax1.tick_params(axis='both', which='major', **labelp)
 
 for i in range(4):
     ax1.errorbar(np.array([i]), np.array(V4[i]), yerr=np.array(V4_err[i]), marker='o', color=blue, **errorp, label='tau cut')
-    ax1.errorbar(np.array([i-0.2]), np.array(V4_m1[i]), yerr=np.array(V4_err_m1[i]), marker='o', color=green, **errorp, label='tau cut-1')
-    ax1.errorbar(np.array([i+0.2]), np.array(V4_p1[i]), yerr=np.array(V4_err_p1[i]), marker='o', color=peach, **errorp, label='tau cut+1')
+    ax1.errorbar(np.array([i-0.2]), np.array(V4_m1[i]), yerr=np.array(V4_err_m1[i]), marker='^', color=green, **errorp, label='tau cut-1')
+    ax1.errorbar(np.array([i+0.2]), np.array(V4_p1[i]), yerr=np.array(V4_err_p1[i]), marker='x', color=peach, **errorp, label='tau cut+1')
     
 ax1.errorbar(np.array([1]), np.array(V4[1]), yerr=np.array(V4_err[1]), marker='o', mfc=blue, color=blue, **errorb)
     
@@ -531,7 +541,7 @@ plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
-ax1.set_ylabel(oa00_label, **textp)
+ax1.set_ylabel(oa00_label, fontsize=20)
 ax1.set_ylim(gA_ylim)
 ax1.tick_params(axis='both', which='major', **labelp)
 
@@ -555,6 +565,7 @@ ax2.scatter(np.array([7]), np.array(tQ[1]), marker='o', c=blue, edgecolors=blue)
 plt.subplots_adjust(wspace=0, hspace=0)
 #plt.xlabel('2pt tmin')
 plt.xlim([5.5, 11.5])
+plt.xlabel(c2pt_tmin, **textp)
 ax2.tick_params(axis='both', which='major', **labelp)
 plt.tight_layout(pad=30, rect=aspect)
 fig.savefig("./new_plots/ga_23_late_tsep_101214_2pttmin.pdf", transparent=True)
