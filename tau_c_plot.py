@@ -20,7 +20,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.8,0.7]
+plt_axes  = [0.12,0.15,0.87,0.83]
 fs_text   = 18 # font size of text
 fs_text_gA = 20
 fs_leg    = 16 # legend font size
@@ -114,10 +114,12 @@ def tau_c_sum_plot(f_range, d_range, fit_result):
     ax.set_xlim([1 * omega_imp_a09, 23 * omega_imp_a09])
     ax.set_ylabel(oa00_label, fontsize=fs_text_gA)
     ax.set_xlabel(tsep_fm_label, fontsize=fs_text)
+    ax.text(0.525, 1.295, tsep_label, fontsize=fs_text)
 
     ax1 = ax.twiny()
     ax1.set_xlim([1, 23])
-    ax1.set_xlabel(tsep_label, fontsize=fs_text)
+    # ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-30, loc='left')
+    ax1.tick_params(axis="x", pad=-20)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)

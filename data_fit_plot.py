@@ -131,9 +131,9 @@ print('plot of 2pt+3pt+sum best fit')
 
 # plot_sum(pt3_data_range, data_avg_dict_completed)
 
-plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s", True) # if you just want to plot data, cut the last two parameters: fit_result and fitter
+#plot_pt2(pt2_data_range, data_avg_dict_completed, fit_result, fitter, "_23s", True) # if you just want to plot data, cut the last two parameters: fit_result and fitter
 
-# plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
+#plot_pt3(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
 
 #plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, 1, fit_result, fitter, "_23s", True)
 

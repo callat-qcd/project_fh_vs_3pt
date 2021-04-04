@@ -34,7 +34,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.8,0.7]
+plt_axes  = [0.12,0.15,0.87,0.83]
 fs_text   = 18 # font size of text
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
@@ -626,19 +626,20 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
     ax1 = ax.twiny()
-    ax1.set_xlim([0, 3.8 / omega_imp_a09])
-    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text)
+    ax1.set_xlim([0.01 / omega_imp_a09, 3.8 / omega_imp_a09])
+    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text, labelpad=-35)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(axis="x", pad=-20)
 
     if div_2pt == True:
-        ax.text(20 * omega_imp_a09, 0.06, r'$\frac{R^{\rm es}_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {\mathring{g}_A}$', fontsize=30)
+        ax.text(20 * omega_imp_a09, 0.02, r'$\frac{R^{\rm es}_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {\mathring{g}_A}$', fontsize=27)
     elif div_2pt == False:
         ax.text(20 * omega_imp_a09, 0.10, '3pt', fontsize=fs_text)
 
     ax.set_ylim([-0.151, 0.149])
-    ax.set_xlim([0, plot_xmax + 0.8])
+    ax.set_xlim([0.01, plot_xmax + 0.8])
 
     ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)
 
@@ -690,15 +691,16 @@ def ratio_plot(pt3_data_range, plot_gap, pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_
         ax.set_xlabel(r"$t_{\rm sep} / {\rm fm}$", fontsize=fs_text)
 
     ax1 = ax.twiny()
-    ax1.set_xlim([0, 3.8 / omega_imp_a09])
-    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text)
+    ax1.set_xlim([0.01 / omega_imp_a09, 3.8 / omega_imp_a09])
+    ax1.set_xlabel(r"$t_{\rm sep} / a_{09}$", fontsize=fs_text, labelpad=-35)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(axis="x", pad=-20)
 
-    ax.text(20 * omega_imp_a09, 0.06, r'$\frac{{\rm FH}^{\rm es}_{A_3}(t_{\rm sep}, \tau_c=1)} {\mathring{g}_A}$', fontsize=30)
+    ax.text(20 * omega_imp_a09, 0.02, r'$\frac{{\rm FH}^{\rm es}_{A_3}(t_{\rm sep}, \tau_c=1)} {\mathring{g}_A}$', fontsize=27)
     ax.set_ylim([-0.151, 0.149])
-    ax.set_xlim([0, plot_xmax + 0.8])
+    ax.set_xlim([0.01, plot_xmax + 0.8])
 
 
     ax.legend(loc='lower right', ncol=3, columnspacing=0, handletextpad=0.1, fontsize=fs_leg)

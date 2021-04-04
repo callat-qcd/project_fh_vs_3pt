@@ -30,14 +30,14 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.15,0.845,0.845]
+plt_axes  = [0.12,0.15,0.87,0.83]
 fs_text   = 18 # font size of text
 fs_text_gA = 20 # font size for gA
 fs_leg    = 16 # legend font size
 tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
 
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
 textp = {"fontsize": 14}
 labelp = {"labelsize": 14}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}

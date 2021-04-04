@@ -1,2 +1,2 @@
 ENGINE: django.db.backends.sqlite3
-NAME: /home/greyyy/Desktop/git/project_fh_vs_3pt/fh_db-db.sqlite # change this to the correct path of "fh_db-db.sqlite" on your machine
+NAME: /home/greyyy/Desktop/git/project_fh_vs_3pt/fh_db-db1.sqlite # change this to the correct path of "fh_db-db.sqlite" on your machine

@@ -4,7 +4,7 @@ import gvar as gv
 
 
 def prior_for_plot(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05)
     prior['z0'] = gv.gvar(0.00032, 0.00016)
@@ -55,7 +55,7 @@ def prior_for_plot(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_1(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05)
     prior['z0'] = gv.gvar(0.00034, 0.00034)
@@ -104,7 +104,7 @@ def prior_ho_width_1(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_gs_01(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*0.1)
     prior['z0'] = gv.gvar(0.00034, 0.00034*0.1)
@@ -152,7 +152,7 @@ def prior_ho_width_gs_01(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_gs_05(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*0.5)
     prior['z0'] = gv.gvar(0.00034, 0.00034*0.5)
@@ -200,7 +200,7 @@ def prior_ho_width_gs_05(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_gs_2(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*2)
     prior['z0'] = gv.gvar(0.00034, 0.00034*2)
@@ -249,7 +249,7 @@ def prior_ho_width_gs_2(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_gs_10(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*10)
     prior['z0'] = gv.gvar(0.00034, 0.00034*10)
@@ -298,7 +298,7 @@ def prior_ho_width_gs_10(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_ge_01(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*0.1)
     prior['z0'] = gv.gvar(0.00034, 0.00034*0.1)
@@ -351,7 +351,7 @@ def prior_ho_width_ge_01(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_ge_05(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*0.5)
     prior['z0'] = gv.gvar(0.00034, 0.00034*0.5)
@@ -405,7 +405,7 @@ def prior_ho_width_ge_05(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_ge_2(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*2)
     prior['z0'] = gv.gvar(0.00034, 0.00034*2)
@@ -458,7 +458,7 @@ def prior_ho_width_ge_2(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_ge_10(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*10)
     prior['z0'] = gv.gvar(0.00034, 0.00034*10)
@@ -511,7 +511,7 @@ def prior_ho_width_ge_10(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_ge2_01(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05*0.1)
     prior['z0'] = gv.gvar(0.00034, 0.00034*0.1)
@@ -571,7 +571,7 @@ def prior_ho_width_ge2_01(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_ho_width_ge2_05(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     times = 0.5
 
@@ -632,7 +632,7 @@ def prior_ho_width_ge2_05(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_ge2_2(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     times = 2
 
@@ -693,7 +693,7 @@ def prior_ho_width_ge2_2(pt2_nstates, pt3_nstates, sum_nstates):
     return prior
 
 def prior_ho_width_ge2_10(pt2_nstates, pt3_nstates, sum_nstates):
-    prior = {}
+    prior = gv.BufferDict()
 
     times = 10
 
@@ -755,7 +755,7 @@ def prior_ho_width_ge2_10(pt2_nstates, pt3_nstates, sum_nstates):
 
 
 def prior_sw_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05)
     prior['z0'] = gv.gvar(0.00034, 0.00034)
@@ -804,7 +804,7 @@ def prior_sw_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
 
 
 def prior_id1_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05)
     prior['z0'] = gv.gvar(0.00034, 0.00034)
@@ -853,7 +853,7 @@ def prior_id1_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
 
 
 def prior_id2_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
-    prior = {}
+    prior = gv.BufferDict()
 
     prior['E0'] = gv.gvar(0.50, 0.05)
     prior['z0'] = gv.gvar(0.00034, 0.00034)

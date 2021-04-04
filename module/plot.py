@@ -6,6 +6,7 @@ import gvar as gv
 import lsqfit as lsf
 import math
 import hashlib
+from matplotlib.ticker import FormatStrFormatter
 
 # %%
 grey = "#808080" # nstates = 1
@@ -22,7 +23,7 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-# color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
+#color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
 color_list = [red, peach, orange, green, blue, violet] # for stability plots
 
 marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
@@ -31,7 +32,7 @@ plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
-plt_axes  = [0.15,0.18,0.8,0.65]
+plt_axes  = [0.12,0.15,0.87,0.83]
 fs_text   = 18 # font size of text
 fs_text_gA = 20 # font size of ga label
 fs_leg    = 16 # legend font size
@@ -39,10 +40,10 @@ tick_size = 16 # tick size
 plt.rcParams['figure.figsize'] = fig_size
 
 #gridspec = {'height_ratios': [3, 1], 'left': 0.05, 'right': 0.95, 'bottom': 0.05, 'top': 0.95}
-gridspec_tmin = {'height_ratios': [4, 1, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
-gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
-gridspec_prior_width = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.15, 'top': 0.95}
+gridspec_tmin = {'height_ratios': [4, 1, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+gridspec_prior_width = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
 textp = {"fontsize": 18}
 labelp = {"labelsize": 18}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
@@ -123,7 +124,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
             m0_eff_fit_y2.append(m0_eff_fit[i] - m0_eff_fit_err[i])
         ax.fill_between(x_fill, np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
             
-    x_lim = [2, 25]
+    x_lim = [2, 25.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
         ax.set_xlabel(t_label, fontsize=fs_text)
@@ -136,10 +137,12 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
+    ax1.tick_params(axis="x", pad=-20)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)
+    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.2f$'))
 
     plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/meff{plot_type}.pdf", transparent=True)
@@ -151,7 +154,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
 
     for i in range(pt2_data_range[0], pt2_data_range[1]-1):
         meff = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
-        zeff.append(data_avg_dict['pt2_tsep_'+str(i)]*np.exp(meff*i))
+        zeff.append(np.sqrt(data_avg_dict['pt2_tsep_'+str(i)]*np.exp(meff*i)))
     
     fig = plt.figure(figsize=fig_size)
     ax  = plt.axes(plt_axes)
@@ -166,7 +169,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         
         for idx, i in enumerate(range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space))):
             meff = gv.log(pt2_fitter[i] / pt2_fitter[i+ int(1/plot_space)])
-            zeff = pt2_fitter[i] * np.exp(meff*x[idx])
+            zeff = np.sqrt(pt2_fitter[i] * np.exp(meff*x[idx]))
             z0_eff_fit.append(zeff.mean)
             z0_eff_fit_err.append(zeff.sdev)
         
@@ -179,7 +182,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         
         ax.fill_between(x_fill, np.array(z0_eff_fit_y1), np.array(z0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
 
-    x_lim = [2, 25]
+    x_lim = [2, 25.5]
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
         ax.set_xlabel(t_label, **textp)
@@ -187,15 +190,18 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
-    ax.set_ylim([0, 3E-7])
+    ax.set_ylim([0, 6E-4])
     ax.set_ylabel(zeff_label, **textp)
 
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
 
     ax.tick_params(direction='in', labelsize=tick_size)
+    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.4f$'))
+
     ax1.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(axis="x", pad=-20)
     
     plt.tight_layout(pad=0, rect=plt_axes)
     plt.savefig(f"./new_plots/zeff{plot_type}.pdf", transparent=True)
@@ -318,10 +324,11 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
 
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tau_label, fontsize=fs_text)
+    ax1.set_xlabel(tau_label, fontsize=fs_text, labelpad=-35)
 
     ax.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(direction='in', labelsize=tick_size)
+    ax1.tick_params(axis="x", pad=-20)
 
     ax.set_ylim(1.0, 1.349)
     ax.set_ylabel(oa00_label, fontsize=fs_text)
@@ -722,9 +729,10 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     x_lim = [1.5, 13.5]
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text)
-    ax.tick_params(axis='both', which='major', **labelp)
-    ax1.tick_params(axis='both', which='major', **labelp)
+    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
+    ax1.tick_params(axis="x", pad=-20)
+    ax.tick_params(axis='both', which='major', direction='in', **labelp)
+    ax1.tick_params(axis='both', which='major', direction='in', **labelp)
     
     if plot_in_fm == False:
         ax.set_xlim(x_lim)
@@ -2332,7 +2340,7 @@ def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV
 
     ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[1] + A3_err[1])*np.ones([6]), (A3[1] - A3_err[1])*np.ones([6]), color=color_list[n-2], alpha=0.2)
 
-    best_i = 0
+    best_i = 1
 
     # best fit
     ax1.errorbar(np.array([best_i]), np.array([A3[best_i]]), yerr=np.array([A3_err[best_i]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
@@ -2350,11 +2358,12 @@ def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV
 
     plt.subplots_adjust(wspace=0, hspace=0)
     #plt.xlabel('$tau\ cut$', **textp)
-    #plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$\rm tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
-    plt.xticks([0, 1, 2, 3, 4], [r'$\rm tau\ cut$', r'$+1$', r'$+2$', r'$+3$', r'$+4$'])
+    plt.xticks([0, 1, 2, 3, 4], [r'$\tau_c^{\rm opt} - 1$', r'$\tau_c^{\rm opt}$', r'$\tau_c^{\rm opt} + 1$', r'$\tau_c^{\rm opt} + 2$', r'$\tau_c^{\rm opt} + 3$'])
+    #plt.xticks([0, 1, 2, 3, 4], [r'$\tau_c^{\rm opt}$', r'$\tau_c^{\rm opt} + 1$', r'$\tau_c^{\rm opt} + 2$', r'$\tau_c^{\rm opt} + 3$', r'$\tau_c^{\rm opt} + 4$'])
+    plt.xlabel(r'$\tau_c$', fontsize=20)
     plt.xlim([-0.5, 4.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(axis='both', which='major', direction='in', **labelp)
+    ax2.tick_params(axis='both', which='major', direction='in', **labelp)
     plt.tight_layout(pad=30, rect=plt_axes)
     plt.savefig("./new_plots/"+fit_name+"_gA_tins.pdf", transparent=True)
 

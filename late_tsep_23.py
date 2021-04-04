@@ -37,7 +37,7 @@ fuschia = "#C3559F"
 # style
 
 figsize = (7, 4)
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.95, 'bottom': 0.18, 'top': 0.95}
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
 q_label = r"$Q$"
 oa00_label = r"$\mathring{g}_A$"
 ov00_label = r"$O^V_{00}$"
@@ -48,7 +48,7 @@ textp = {"fontsize": 18}
 labelp = {"labelsize": 18}
 errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
 errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
-aspect=[0.15, 0.18, 0.8, 0.8]
+aspect=[0.12,0.15,0.87,0.83]
 
 plt.rcParams['figure.figsize'] = figsize
 
