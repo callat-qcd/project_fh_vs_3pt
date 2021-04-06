@@ -36,7 +36,9 @@ fuschia = "#C3559F"
 
 # style
 
-figsize = (7, 4)
+fig_width = 6.75 # in inches, 2x as wide as APS column
+gr        = 1.618034333 # golden ratio
+figsize  = (fig_width, fig_width / gr)
 gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
 q_label = r"$Q$"
 oa00_label = r"$\mathring{g}_A$"
