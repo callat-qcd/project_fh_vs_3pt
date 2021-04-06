@@ -69,7 +69,7 @@ tau_label = r"$(\tau - t_{\rm sep}/2) / a_{09}$"
 fm_t_label = r'$t_{\textrm{sep}} / {\rm fm}$'
 fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
 meff_label = r"$m_{\textrm{eff}}$"
-zeff_label = r"$z_{\textrm{eff}}$"
+zeff_label = r"$z_{\textrm{eff}} \times 10^3$"
 oaeff_label = r"$O^A_{\textrm{eff}}$"
 oveff_label = r"$O^V_{\textrm{eff}}$"
 tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
@@ -123,6 +123,9 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
             m0_eff_fit_y1.append(m0_eff_fit[i] + m0_eff_fit_err[i])
             m0_eff_fit_y2.append(m0_eff_fit[i] - m0_eff_fit_err[i])
         ax.fill_between(x_fill, np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
+
+        # grey band of prior
+        ax.fill_between(x_fill, np.ones(len(x_fill)) * (0.5-0.05), np.ones(len(x_fill)) * (0.5+0.05), color=grey, alpha=0.3, label='prior' )
             
     x_lim = [2, 25.5]
     if plot_in_fm == False:
@@ -132,7 +135,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
-    ax.set_ylim([0.45, 0.62])
+    ax.set_ylim([0.43, 0.62])
     ax.set_ylabel(meff_label, fontsize=fs_text)        
 
     ax1 = ax.twiny()
@@ -158,7 +161,7 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
     
     fig = plt.figure(figsize=fig_size)
     ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, [i.mean for i in zeff], yerr=[i.sdev for i in zeff], marker='o', color="k", **errorp)
+    ax.errorbar(x_errorbar, [i.mean * 1000 for i in zeff], yerr=[i.sdev * 1000 for i in zeff], marker='o', color="k", **errorp)
  
     if fit_result != None and fitter != None:
         z0_eff_fit = []
@@ -180,7 +183,10 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
             z0_eff_fit_y1.append(z0_eff_fit[i] + z0_eff_fit_err[i])
             z0_eff_fit_y2.append(z0_eff_fit[i] - z0_eff_fit_err[i])
         
-        ax.fill_between(x_fill, np.array(z0_eff_fit_y1), np.array(z0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
+        ax.fill_between(x_fill, np.array(z0_eff_fit_y1)*1000, np.array(z0_eff_fit_y2)*1000, color=blue, alpha=0.3, label='fit')
+
+        # grey band of prior
+        ax.fill_between(x_fill, np.ones(len(x_fill)) * 1000 * (0.00034-0.00034), np.ones(len(x_fill)) * 1000 * (0.00034+0.00034), color=grey, alpha=0.3, label='prior' )
 
     x_lim = [2, 25.5]
     if plot_in_fm == False:
@@ -190,15 +196,16 @@ def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_t
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
-    ax.set_ylim([0, 6E-4])
-    ax.set_ylabel(zeff_label, **textp)
+    ax.set_ylim([-0.2, 0.79])
+    # ax.ticklabel_format(axis='y', style='sci', scilimits=(-4,-6))
+    ax.set_ylabel(zeff_label, labelpad=-5, **textp)
 
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
     ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
 
     ax.tick_params(direction='in', labelsize=tick_size)
-    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.4f$'))
+    #ax.yaxis.set_major_formatter(FormatStrFormatter('$%.4f$'))
 
     ax1.tick_params(direction='in', labelsize=tick_size)
     ax1.tick_params(axis="x", pad=-20)
@@ -726,6 +733,9 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         
         ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
 
+        # grey band of prior
+        ax.fill_between(np.linspace(0, 1.2, 10), np.ones(10) * (1.2-0.2), np.ones(10) * (1.2+0.2), color=grey, alpha=0.3, label='prior' )
+
     x_lim = [1.5, 13.5]
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
@@ -741,7 +751,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
         ax.set_xlim([num*omega_imp_a09 for num in x_lim])
         ax.set_xlabel(fm_t_label, fontsize=fs_text)
 
-    ax.set_ylim(1.0, 1.349)
+    ax.set_ylim(0.9, 1.49)
     ax.set_ylabel(ga_label, fontsize=20)
     
     plt.tight_layout(pad=0, rect=plt_axes)
