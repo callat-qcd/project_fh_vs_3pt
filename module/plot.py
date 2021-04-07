@@ -1,14 +1,10 @@
-# %%
-import h5py as h5 
 import matplotlib.pyplot as plt
 import numpy as np 
-import gvar as gv  
-import lsqfit as lsf
-import math
-import hashlib
+import gvar as gv 
 from matplotlib.ticker import FormatStrFormatter
 
-# %%
+plt.rcParams.update({"text.usetex": True})
+
 grey = "#808080" # nstates = 1
 red = "#FF6F6F" # nstates = 2
 peach = "#FF9E6F" # nstates = 3
@@ -23,289 +19,165 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-#color_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
 color_list = [red, peach, orange, green, blue, violet] # for stability plots
+psychedelic_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
 
-marker_list = ["o" for _ in range(10)] #['v', 's', 'o', 'D', '^', 'X', 'P']
+marker_list = ['8', 'P', 'D', 's', 'o', '*']
 
-plt.rcParams.update({"text.usetex": True})
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
 fig_size  = (fig_width, fig_width / gr)
 plt_axes  = [0.12,0.15,0.87,0.83]
-fs_text   = 18 # font size of text
-fs_text_gA = 20 # font size of ga label
-fs_leg    = 16 # legend font size
-tick_size = 16 # tick size
+gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+gridspec_tmin = {'height_ratios': [4, 1, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.16, 'top': 0.98}
+gridspec_prior_width = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
+
 plt.rcParams['figure.figsize'] = fig_size
 
-#gridspec = {'height_ratios': [3, 1], 'left': 0.05, 'right': 0.95, 'bottom': 0.05, 'top': 0.95}
-gridspec_tmin = {'height_ratios': [4, 1, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
-gridspec_tmin_div = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
-gridspec_tmax = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
-gridspec_prior_width = {'height_ratios': [3, 1], 'left': 0.12, 'right': 0.99, 'bottom': 0.15, 'top': 0.98}
-textp = {"fontsize": 18}
-labelp = {"labelsize": 18}
-errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1}
-errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1}
+fs_p = {"fontsize": 18} # font size of text, label, ticks
+gA_fs_p = {"fontsize": 20} # font size of ga label
+ls_p = {"labelsize": 18}
+errorp = {"markersize": 5, "mfc": "none", "linestyle": "none", "capsize": 3, "elinewidth": 1} # circle
+errorb = {"markersize": 5, "linestyle": "none", "capsize": 3, "elinewidth": 1} # solid circle
 
-# labels
-c2pt_tmin = r"$C_{\textrm{2pt}}\ t_{\textrm{min}}$"
-c2pt_tmax = r"$C_{\textrm{2pt}}\ t_{\textrm{max}}$"
-c3pt_tmin = r"$C_{\textrm{3pt}}\ t_{\textrm{min}}$"
-c3pt_tmax = r"$C_{\textrm{3pt}}\ t_{\textrm{max}}$"
-csum_tmin = r"$C_{\textrm{sub}}\ t_{\textrm{min}}$"
-csum_tmax = r"$C_{\textrm{sub}}\ t_{\textrm{max}}$"
-q_label = r"$Q$"
-w_label = r"$w$"
-oa00_label = r"$R_{A_3}(t_{\rm sep}, \tau)$"
-ga_label = r"$\mathring{g}_A$"
-ov00_label = r"$\mathring{g}_V$"
-e0_label = r"$E_{0}$"
-z0_label = r"$z_{0}$"
-nstate_label = r"$n_{\textrm{states}}$"
-t_label = r"$t_{\rm sep}$"
-tau_label = r"$(\tau - t_{\rm sep}/2) / a_{09}$"
-fm_t_label = r'$t_{\textrm{sep}} / {\rm fm}$'
-fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
-meff_label = r"$m_{\textrm{eff}}$"
-zeff_label = r"$z_{\textrm{eff}}$"
-oaeff_label = r"$O^A_{\textrm{eff}}$"
-oveff_label = r"$O^V_{\textrm{eff}}$"
-tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
-
+linspace_num = 100 # bigger, more smoothy
+plot_space = 0.05 # tau_c_plot, m_z_plot
 omega_imp_a09 = 0.08730 # converse lattice to fm
 
-# %%
-def plot_pt2(pt2_data_range, data_avg_dict, fit_result=None, fitter=None, plot_type=None, plot_in_fm=False):
-    '''plot effective mass with 2pt data, you can also plot fit on data'''
-    m0_eff = []
-    m0_eff_err = []
-    m0_eff_fit = []
-    m0_eff_fit_err = []
-    
-    plot_space = 0.05 # smaller, more smoothy
+gA_ylim = [1.01, 1.349]
 
-    if plot_in_fm == False:
-        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1)
-        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
+# labels
+ra_label = r"$R_{A_3}(t_{\rm sep}, \tau)$"
+tau_label = r"$(\tau - t_{\rm sep}/2) / a_{09}$"
+fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
+fha_label = r"${\rm FH}_{A_3}(t_{\rm sep}, \tau_c)$"
+tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
+tsep_fm_label = r'$t_{\textrm{sep}} / {\rm fm}$'
+meff_label = r"$m_{\textrm{eff}}$"
+zeff_label = r"$z_{\textrm{eff}} \times 10^3$"
+ga_label = r"$\mathring{g}_A$"
+e0_label = r"$E_{0}$"
+q_label = r"$Q$"
+w_label = r"$w$"
 
-    elif plot_in_fm == True:
-        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1) * omega_imp_a09 
-        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)] * omega_imp_a09 
+tmax_label = r"$t_{\rm sep}^{\rm max}$"
+tmin_label = r"$t_{\rm sep}^{\rm min}$"
 
-    else:
-        x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1)
-        x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
-        print("Input error: plot_in_fm")
+def legend_without_duplicate_labels(ax, loc, ncol):
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique), loc=loc, ncol=ncol, handletextpad=0, columnspacing=0, **fs_p)
 
-    for i in range(pt2_data_range[0], pt2_data_range[1]-1):
-        temp = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
-        m0_eff.append(temp.mean)
-        m0_eff_err.append(temp.sdev)
-
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, np.array(m0_eff), yerr=np.array(m0_eff_err), marker='o', color="k", **errorp)
-    
-    if fit_result != None and fitter != None:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space), fit_result.p)['pt2']
-        
-        for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
-            temp = gv.log(pt2_fitter[i] / pt2_fitter[i+ int(1/plot_space)])
-            m0_eff_fit.append(temp.mean)
-            m0_eff_fit_err.append(temp.sdev)
-            
-        m0_eff_fit_y1 = []
-        m0_eff_fit_y2 = []
-
-        for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
-            m0_eff_fit_y1.append(m0_eff_fit[i] + m0_eff_fit_err[i])
-            m0_eff_fit_y2.append(m0_eff_fit[i] - m0_eff_fit_err[i])
-        ax.fill_between(x_fill, np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
-            
-    x_lim = [2, 25.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, fontsize=fs_text)
-
-    ax.set_ylim([0.45, 0.62])
-    ax.set_ylabel(meff_label, fontsize=fs_text)        
-
-    ax1 = ax.twiny()
-    ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
-    ax1.tick_params(axis="x", pad=-20)
-
-    ax.tick_params(direction='in', labelsize=tick_size)
-    ax1.tick_params(direction='in', labelsize=tick_size)
-    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.2f$'))
-
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/meff{plot_type}.pdf", transparent=True)
-    plt.show()
-    
-    
-    #zeff
-    zeff = []
-
-    for i in range(pt2_data_range[0], pt2_data_range[1]-1):
-        meff = gv.log(data_avg_dict['pt2_tsep_'+str(i)] / data_avg_dict['pt2_tsep_'+str(i+1)])
-        zeff.append(np.sqrt(data_avg_dict['pt2_tsep_'+str(i)]*np.exp(meff*i)))
-    
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, [i.mean for i in zeff], yerr=[i.sdev for i in zeff], marker='o', color="k", **errorp)
- 
-    if fit_result != None and fitter != None:
-        z0_eff_fit = []
-        z0_eff_fit_err = []
-    
-        x = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space), fit_result.p)['pt2']
-        
-        for idx, i in enumerate(range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space))):
-            meff = gv.log(pt2_fitter[i] / pt2_fitter[i+ int(1/plot_space)])
-            zeff = np.sqrt(pt2_fitter[i] * np.exp(meff*x[idx]))
-            z0_eff_fit.append(zeff.mean)
-            z0_eff_fit_err.append(zeff.sdev)
-        
-        z0_eff_fit_y1 = []
-        z0_eff_fit_y2 = []
-
-        for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
-            z0_eff_fit_y1.append(z0_eff_fit[i] + z0_eff_fit_err[i])
-            z0_eff_fit_y2.append(z0_eff_fit[i] - z0_eff_fit_err[i])
-        
-        ax.fill_between(x_fill, np.array(z0_eff_fit_y1), np.array(z0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
-
-    x_lim = [2, 25.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, fontsize=fs_text)
-
-    ax.set_ylim([0, 6E-4])
-    ax.set_ylabel(zeff_label, **textp)
-
-    ax1 = ax.twiny()
-    ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
-
-    ax.tick_params(direction='in', labelsize=tick_size)
-    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.4f$'))
-
-    ax1.tick_params(direction='in', labelsize=tick_size)
-    ax1.tick_params(axis="x", pad=-20)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/zeff{plot_type}.pdf", transparent=True)
-    plt.show()
-
-    # return [np.arange(pt2_data_range[0], pt2_data_range[1]-1), np.array(m0_eff), np.array(m0_eff_err)] # save this for data plot of half stat
-
-def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, fitter=None, plot_type=None, plot_in_fm=False):
-    '''plot form factor with 3pt data, you can also plot fit on data'''
+def moose_plot(data_avg_dict_completed, fit_result, fitter, pt3_data_range, tau_c_2, divide_n):
     gA = {}
     gA_err = {}
-    gV = {}
-    gV_err = {}
-    
     gA_fit = {}
     gA_fit_err = {}
-    gV_fit = {}
-    gV_fit_err = {}
-    
+
     gA_tsep = []
     gA_tau = []
     gV_tsep = []
     gV_tau = []
-    
-    plot_density = 100 # bigger, more smoothy
-    
-    for i in range(pt3_data_range[0], pt3_data_range[1]): ##
-            for j in np.linspace(tau_cut, i-tau_cut, plot_density):
-                gA_tsep.append(i)
-                gA_tau.append(j)
-                
-    for i in range(pt3_data_range[0], pt3_data_range[1]): ##
-            for j in np.linspace(tau_cut, i-tau_cut, plot_density):
-                gV_tsep.append(i)
-                gV_tau.append(j)
-                
-    for i in range(pt3_data_range[0], pt3_data_range[1]): ##
+
+    tau_c_1 = 1 # tau_c for tsep in range(2, divide_n)
+    # tau_c_2 : tau_c for tsep in range(divide_n, 15)
+
+    for i in pt3_data_range:
         gA['tsep_'+str(i)] = []
         gA_err['tsep_'+str(i)] = []
+
+        for j in range(tau_c_1, i - tau_c_1 + 1):
+            temp = ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][j] + data_avg_dict_completed['pt3_A3_tsep_'+str(i)][i-j] ) / (2 * data_avg_dict_completed['pt2_tsep_'+str(i)])
+
+            gA['tsep_'+str(i)].append(temp.mean)
+            gA_err['tsep_'+str(i)].append(temp.sdev)
+
+        for j in np.linspace(tau_c_1, i - tau_c_1, linspace_num):
+            gA_tsep.append(i)
+            gA_tau.append(j)
+            gV_tsep.append(i)
+            gV_tau.append(j)
+    
+    pt2_fitter = fitter.pt2_fit_function(np.array([t for t in pt3_data_range]), fit_result.p)['pt2']
+
+    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_A3']
+
+    index = 0
+
+    for i in pt3_data_range:
         gA_fit['tsep_'+str(i)] = []
         gA_fit_err['tsep_'+str(i)] = []
-        gV['tsep_'+str(i)] = []
-        gV_err['tsep_'+str(i)] = []
-        gV_fit['tsep_'+str(i)] = []
-        gV_fit_err['tsep_'+str(i)] = []
-        
-    for i in range(pt3_data_range[0], pt3_data_range[1]):
-        for j in range(tau_cut, i-tau_cut+1):
-            temp1 = ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][j] + data_avg_dict_completed['pt3_A3_tsep_'+str(i)][i-j] ) / (2 * data_avg_dict_completed['pt2_tsep_'+str(i)])
-            
-            gA['tsep_'+str(i)].append(temp1.mean)
-            gA_err['tsep_'+str(i)].append(temp1.sdev)
-            
-            temp2 = ( data_avg_dict_completed['pt3_V4_tsep_'+str(i)][j] + data_avg_dict_completed['pt3_V4_tsep_'+str(i)][i-j] ) / (2 * data_avg_dict_completed['pt2_tsep_'+str(i)])
-            
-            gV['tsep_'+str(i)].append(temp2.mean)
-            gV_err['tsep_'+str(i)].append(temp2.sdev)
-          
-    if fit_result != None and fitter != None:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-        pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_A3']
-        pt3_gV_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_V4']
-        index = 0
-        for i in range(pt3_data_range[0], pt3_data_range[1]):
-            for j in range(plot_density):
-                index = int((i-pt3_data_range[0])*plot_density + j)
+
+        for j in range(linspace_num):
+            index = int((i-pt3_data_range[0])*linspace_num + j)
                 
-                temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-                gA_fit['tsep_'+str(i)].append(temp1.mean)
-                gA_fit_err['tsep_'+str(i)].append(temp1.sdev)
-                
-                temp2 = pt3_gV_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-                gV_fit['tsep_'+str(i)].append(temp2.mean)
-                gV_fit_err['tsep_'+str(i)].append(temp2.sdev)
-            
-        
+            temp = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
+            gA_fit['tsep_'+str(i)].append(temp.mean)
+            gA_fit_err['tsep_'+str(i)].append(temp.sdev)
+
+    ########### here start a fig ###########
     fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
-        if plot_in_fm == False:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+    ax = plt.axes(plt_axes)
 
-        elif plot_in_fm == True:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
+    for i in pt3_data_range:
+        idx = i - 2 # psychedelic_list start from tsep = 2
+        color = psychedelic_list[idx]
 
-        else:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-            print("Input error: plot_in_fm")
+        x_errorbar = np.arange(tau_c_1 - i/2, i/2 - tau_c_1 + 1) * omega_imp_a09
+        x_fill = np.linspace(tau_c_1 - i/2, i/2 - tau_c_1, linspace_num) * omega_imp_a09
 
-        color = color_list[idx]
-        if i%2 == 0:
-            ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
+        if 2 < i < divide_n: 
+            ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)
 
-        elif i%2 == 1:
-            ax.errorbar(x_errorbar, np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
+            gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
+            gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
+            ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3)
 
-        if fit_result != None and fitter != None:
-            if i%2 == 0 or i%2 == 1:
-                gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
-                gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
-                ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1
+        elif i == 2:
+            ax.errorbar(np.array([0]), np.array(gA['tsep_' + str(i)]), yerr=np.array(gA_err['tsep_' + str(i)]), marker='s', color=grey, **errorp)
+
+        elif i >= divide_n:
+            for idx in range( len(x_errorbar) ):
+                if (tau_c_2 - i/2) * omega_imp_a09 <= x_errorbar[idx] <= (i/2 - tau_c_2) * omega_imp_a09:
+                    ax.errorbar(np.array(x_errorbar[idx]), np.array(gA['tsep_' + str(i)][idx]), yerr=np.array(gA_err['tsep_' + str(i)][idx]), marker='o', color=color, **errorp)
+
+                else:
+                    ax.errorbar(np.array(x_errorbar[idx]), np.array(gA['tsep_' + str(i)][idx]), yerr=np.array(gA_err['tsep_' + str(i)][idx]), marker='s', color=grey, **errorp)
+
+            gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
+            gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
+
+            x_fill_in = []
+            x_fill_out_1 = []
+            x_fill_out_2 = []
+
+            fit_y1_in = []
+            fit_y2_in = []
+            fit_y1_out_1 = []
+            fit_y2_out_1 = []
+            fit_y1_out_2 = []
+            fit_y2_out_2 = []
+
+            for idx in range( len(x_fill) ):
+                if (tau_c_2 - i/2) * omega_imp_a09 <= x_fill[idx] <= (i/2 - tau_c_2) * omega_imp_a09:
+                    x_fill_in.append(x_fill[idx])
+                    fit_y1_in.append(gA_fit_y1[idx])
+                    fit_y2_in.append(gA_fit_y2[idx])
+
+                elif (tau_c_2 - i/2) * omega_imp_a09 > x_fill[idx]:
+                    x_fill_out_1.append(x_fill[idx])
+                    fit_y1_out_1.append(gA_fit_y1[idx])
+                    fit_y2_out_1.append(gA_fit_y2[idx])
+
+                elif x_fill[idx] > (i/2 - tau_c_2) * omega_imp_a09:
+                    x_fill_out_2.append(x_fill[idx])
+                    fit_y1_out_2.append(gA_fit_y1[idx])
+                    fit_y2_out_2.append(gA_fit_y2[idx])
+
+            ax.fill_between(np.array(x_fill_in), np.array(fit_y1_in), np.array(fit_y2_in), color=color, alpha=0.3)
+            ax.fill_between(np.array(x_fill_out_1), np.array(fit_y1_out_1), np.array(fit_y2_out_1), color=grey, alpha=0.3)
+            ax.fill_between(np.array(x_fill_out_2), np.array(fit_y1_out_2), np.array(fit_y2_out_2), color=grey, alpha=0.3)
 
     # plot best fit result of ga
     best_x = np.linspace(-6.5*omega_imp_a09, 6.5*omega_imp_a09, 100)
@@ -315,364 +187,549 @@ def plot_pt3(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result=None, 
     ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
 
     x_lim = [-6.5, 6.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(tau_label, fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_tau_label, fontsize=fs_text)
+    ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+    ax.set_xlabel(fm_tau_label, **fs_p)
+    ax.set_ylim(gA_ylim)
+    ax.set_ylabel(ra_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+
+    ax_x = ax.twiny() # x-axis on the top
+    ax_x.set_xlim(x_lim)
+    ax_x.set_xlabel(tau_label, labelpad=-35, **fs_p)
+    ax_x.tick_params(direction='in', **ls_p)
+    ax_x.tick_params(axis="x", pad=-20)
+    plt.savefig(f"./new_plots/psychedelic_moose.pdf", transparent=True)
+    plt.show()
+
+def moose_23_late_plot(data_avg_dict_completed, fit_result, fitter, pt3_data_range):
+    gA = {}
+    gA_err = {}
+    gA_fit = {}
+    gA_fit_err = {}
+
+    gA_tsep = []
+    gA_tau = []
+    gV_tsep = []
+    gV_tau = []
+
+    tau_c_1 = 1 # tau_c for plot including grey part
+
+    for i in pt3_data_range:
+        gA['tsep_'+str(i)] = []
+        gA_err['tsep_'+str(i)] = []
+
+        for j in range(tau_c_1, i - tau_c_1 + 1):
+            temp = ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][j] + data_avg_dict_completed['pt3_A3_tsep_'+str(i)][i-j] ) / (2 * data_avg_dict_completed['pt2_tsep_'+str(i)])
+
+            gA['tsep_'+str(i)].append(temp.mean)
+            gA_err['tsep_'+str(i)].append(temp.sdev)
+
+        for j in np.linspace(tau_c_1, i - tau_c_1, linspace_num):
+            gA_tsep.append(i)
+            gA_tau.append(j)
+            gV_tsep.append(i)
+            gV_tau.append(j)
+    
+    pt2_fitter = fitter.pt2_fit_function(np.array([t for t in pt3_data_range]), fit_result.p)['pt2']
+
+    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), fit_result.p)['pt3_A3']
+
+    index = 0
+
+    for i in pt3_data_range:
+        gA_fit['tsep_'+str(i)] = []
+        gA_fit_err['tsep_'+str(i)] = []
+
+        for j in range(linspace_num):
+            index = int((i - pt3_data_range[0]) / 2 * linspace_num + j) # /2 because 12 - 10 = 2 but 12 is the second one
+                
+            temp = pt3_gA_fitter[index] / pt2_fitter[int( (i - pt3_data_range[0]) / 2) ]
+            gA_fit['tsep_'+str(i)].append(temp.mean)
+            gA_fit_err['tsep_'+str(i)].append(temp.sdev)
+
+    ########### here start a fig ###########
+    fig = plt.figure(figsize=fig_size)
+    ax = plt.axes(plt_axes)
+
+    for i in pt3_data_range:
+        idx = i - 2 # psychedelic_list start from tsep = 2
+
+        x_errorbar = np.arange(tau_c_1 - i/2, i/2 - tau_c_1 + 1) * omega_imp_a09
+        x_fill = np.linspace(tau_c_1 - i/2, i/2 - tau_c_1, linspace_num) * omega_imp_a09
+
+        if i == 10: 
+            tau_c_2 = 3.5
+            color = blue
+            marker = 'p'
+
+        elif i == 12:
+            tau_c_2 = 3.5
+            color = green
+            marker = 'D'
+
+        elif i == 14:
+            tau_c_2 = 4.5 # 5-0.5 to make color change at half way
+            color = red
+            marker = 'o'
+
+        for idx in range( len(x_errorbar) ):
+            if (tau_c_2 - i/2) * omega_imp_a09 <= x_errorbar[idx] <= (i/2 - tau_c_2) * omega_imp_a09:
+                ax.errorbar(np.array(x_errorbar[idx]), np.array(gA['tsep_' + str(i)][idx]), yerr=np.array(gA_err['tsep_' + str(i)][idx]), marker=marker, color=color, label=r'$t_{\rm sep} = %d$' %i , **errorp)
+
+            else:
+                ax.errorbar(np.array(x_errorbar[idx]), np.array(gA['tsep_' + str(i)][idx]), yerr=np.array(gA_err['tsep_' + str(i)][idx]), marker=marker, color=grey, **errorp)
+
+        gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
+        gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
+
+        x_fill_in = []
+        x_fill_out_1 = []
+        x_fill_out_2 = []
+
+        fit_y1_in = []
+        fit_y2_in = []
+        fit_y1_out_1 = []
+        fit_y2_out_1 = []
+        fit_y1_out_2 = []
+        fit_y2_out_2 = []
+
+        for idx in range( len(x_fill) ):
+            if (tau_c_2 - i/2) * omega_imp_a09 <= x_fill[idx] <= (i/2 - tau_c_2) * omega_imp_a09:
+                x_fill_in.append(x_fill[idx])
+                fit_y1_in.append(gA_fit_y1[idx])
+                fit_y2_in.append(gA_fit_y2[idx])
+
+            elif (tau_c_2 - i/2) * omega_imp_a09 > x_fill[idx]:
+                x_fill_out_1.append(x_fill[idx])
+                fit_y1_out_1.append(gA_fit_y1[idx])
+                fit_y2_out_1.append(gA_fit_y2[idx])
+
+            elif x_fill[idx] > (i/2 - tau_c_2) * omega_imp_a09:
+                x_fill_out_2.append(x_fill[idx])
+                fit_y1_out_2.append(gA_fit_y1[idx])
+                fit_y2_out_2.append(gA_fit_y2[idx])
+
+        ax.fill_between(np.array(x_fill_in), np.array(fit_y1_in), np.array(fit_y2_in), color=color, alpha=0.3)
+        ax.fill_between(np.array(x_fill_out_1), np.array(fit_y1_out_1), np.array(fit_y2_out_1), color=grey, alpha=0.3)
+        ax.fill_between(np.array(x_fill_out_2), np.array(fit_y1_out_2), np.array(fit_y2_out_2), color=grey, alpha=0.3)
+
+    # plot best fit result of ga
+    best_x = np.linspace(-6.5*omega_imp_a09, 6.5*omega_imp_a09, 100)
+    best_y1 = (fit_result.p['A3_00'].mean + fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+    best_y2 = (fit_result.p['A3_00'].mean - fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+
+    ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
+
+    x_lim = [-6.5, 6.5]
+    ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+    ax.set_xlabel(fm_tau_label, **fs_p)
+    ax.set_ylim(gA_ylim)
+    ax.set_ylabel(ra_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+
+    legend_without_duplicate_labels(ax, 'lower center', 3)
+
+    ax_x = ax.twiny() # x-axis on the top
+    ax_x.set_xlim(x_lim)
+    ax_x.set_xlabel(tau_label, labelpad=-35, **fs_p)
+    ax_x.tick_params(direction='in', **ls_p)
+    ax_x.tick_params(axis="x", pad=-20)
+    plt.savefig(f"./new_plots/psychedelic_moose_23_late.pdf", transparent=True)
+    plt.show()
+
+def tau_c_plot(file_path, f_range, d_range, fit_result): # fit range and data range
+    from module.prepare_data import Prepare_data
+    from module.fit import Fit
+    from module.prior_setting import prior_ho_width_1 
+    prior = prior_ho_width_1
+
+    file_name = 'a09m310_e_gA_srcs0-15_full_tau.h5'
+    pt2_nstates = 5
+    pt3_nstates = pt2_nstates
+    sum_nstates = 5
+    include_2pt = True
+    include_3pt = True
+    include_sum = True
+
+    pt2_data_range = [0, 96]
+    pt3_data_range = [2, 15]
+
+    prepare_data = Prepare_data(file_name, file_path, pt2_data_range, pt3_data_range)
+
+    data_avg_dict = prepare_data.read_data_with_average()
+
+    plt.figure(figsize=fig_size)
+    ax = plt.axes(plt_axes)
+    for sum_tau_cut in range(f_range[0], f_range[1]):
+        fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, include_2pt, include_3pt, include_sum)
+
+        tmin = max(2, 2*sum_tau_cut) - 0.5
+        tmax = 23
+
+        x_fill = np.arange(tmin, tmax, plot_space)[:int(-1 / plot_space)]
+
+        pt2_fitter = fitter.pt2_fit_function(np.arange(tmin, tmax, plot_space), fit_result.p)['pt2']
+
+        sum_A3_fitter = fitter.summation_same_can(np.arange(tmin, tmax, plot_space), np.arange(tmin, tmax, plot_space), fit_result.p)['sum_A3']
+
+        temp = []
+
+        for i in range(len(np.arange(tmin, tmax, plot_space)) - int(1 / plot_space)):
+            temp.append(sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i])
+
+
+        y1 = np.array([val.mean for val in temp]) + np.array([val.sdev for val in temp])
+        y2 = np.array([val.mean for val in temp]) - np.array([val.sdev for val in temp])
+
+        ax.fill_between(x_fill * omega_imp_a09, y1, y2, color=color_list[sum_tau_cut], alpha=0.3)
+
+    for sum_tau_cut in range(d_range[0], d_range[1]):
+
+        data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
+        
+        sum_data_list = []
+
+        tmin = max(2, 2*sum_tau_cut)
+
+        for t in range(tmin, 14):
+            sum_data_list.append(data_avg_dict_completed['sum_A3_fit_'+str(t)])
+
+        temp_mean = np.array([val.mean for val in sum_data_list])
+        temp_sdev = np.array([val.sdev for val in sum_data_list])
+
+        if sum_tau_cut == 1:
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorb)
+
+        else:
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], **errorp)
+
+    # plot best fit result of ga
+    best_x = np.linspace(1 * omega_imp_a09, 23 * omega_imp_a09, 100)
+    best_y1 = (fit_result.p['A3_00'].mean + fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+    best_y2 = (fit_result.p['A3_00'].mean - fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+
+    ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
+
+    ax.set_ylim(gA_ylim)
+    ax.set_xlim([1 * omega_imp_a09, 23 * omega_imp_a09])
+    ax.set_ylabel(fha_label, **gA_fs_p)
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+    ax.text(0.525, 1.295, tsep_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+    legend_without_duplicate_labels(ax, 'lower right', 3)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim([1, 23])
+    ax1.tick_params(axis="x", pad=-20)   
+    ax1.tick_params(direction='in', **ls_p)
+
+    plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
+    plt.savefig(f"./new_plots/tau_c_sum_plot_{plot_range}.pdf", transparent=True)
+    plt.show()
+
+def excited_states_plot(pt3_list, ratio_list):
+    [pt3_gA_tra_fit, pt3_gA_sca_fit, pt3_gA_gs_fit, pt3_gA_all_fit, pt3_gA_tra_data, pt3_gA_sca_data, pt3_gA_gs_data, pt3_gA_all_data] = pt3_list
+
+    [ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit, ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data] = ratio_list
+
+    plot_xmax = 3
+
+    pt3_tsep_start = 2
+    pt3_tsep_end = 15 # sum_end = pt3_end - 1
+
+    pt3_tsep_data = np.arange(pt3_tsep_start, pt3_tsep_end, 2) # errorbar do not need plot density
+
+    pt3_tsep_fit = np.linspace(0, 35, linspace_num) # till 3fm
+
+    plot_gap = (35 - 0) / (linspace_num - 1) 
+
+    sum_tsep_data = np.arange(pt3_tsep_start, pt3_tsep_end-1)
+
+    sum_tsep_fit = np.linspace(0, 35, linspace_num)[:-int(1/plot_gap)]
+
+    pt3_tsep_data = pt3_tsep_data * omega_imp_a09
+    pt3_tsep_fit = pt3_tsep_fit * omega_imp_a09
+    sum_tsep_data = sum_tsep_data * omega_imp_a09
+    sum_tsep_fit = sum_tsep_fit * omega_imp_a09
+
+
+    # transite ratio to sum-sub
+    sum_gA_tra_fit = []
+    sum_gA_sca_fit = []
+    sum_gA_gs_fit = []
+    sum_gA_all_fit = []
+
+    sum_list = [sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_all_fit]
+
+    ratio_list = [ratio_gA_tra_fit, ratio_gA_sca_fit, ratio_gA_gs_fit, ratio_gA_all_fit]
+
+    for i in range(len(sum_list)):
+        for t in range(len(sum_tsep_fit)):
+            temp = (ratio_list[i][t+int(1/plot_gap)] - ratio_list[i][t]) # here gA[t+1] - gA[t] != 1
+            sum_list[i].append(temp)
+
+    [sum_gA_tra_fit, sum_gA_sca_fit, sum_gA_gs_fit, sum_gA_all_fit] = [np.array(lis) for lis in sum_list]
+    
+
+    sum_gA_tra_data = []
+    sum_gA_sca_data = []
+    sum_gA_gs_data = []
+    sum_gA_all_data = []
+
+    sum_list = [sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, sum_gA_all_data]
+
+    ratio_list = [ratio_gA_tra_data, ratio_gA_sca_data, ratio_gA_gs_data, ratio_gA_all_data]
+
+    for i in range(len(sum_list)):
+        for t in range(len(sum_tsep_data)):
+            temp = (ratio_list[i][t+1] - ratio_list[i][t]) # here gA[t+1] - gA[t] != 1
+            sum_list[i].append(temp)
+
+    [sum_gA_tra_data, sum_gA_sca_data, sum_gA_gs_data, sum_gA_all_data] = [np.array(lis) for lis in sum_list]
+
+
+    ###### 3pt/2pt plot ######
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
+
+    pt2_es_fit = pt3_gA_all_fit - pt3_gA_gs_fit - pt3_gA_tra_fit - pt3_gA_sca_fit
+    pt2_es_data = pt3_gA_all_data - pt3_gA_gs_data - pt3_gA_tra_data - pt3_gA_sca_data
+
+
+    temp_mean = np.array([val.mean for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_all_fit - pt3_gA_gs_fit) / pt3_gA_gs_fit])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey, edgecolor='white', hatch='\ ', alpha=0.5, label=r'$\rm 3pt$')
+
+    temp_mean = np.array([val.mean for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (pt3_gA_sca_fit + pt2_es_fit) / pt3_gA_gs_fit])
+    ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None', edgecolor=grey, hatch='\\', alpha=0.8, label=r'$\rm 2pt+sc$')
+
+
+    plot_fit_list = [pt3_gA_tra_fit, pt3_gA_sca_fit, pt2_es_fit]
+    plot_data_list = [pt3_gA_tra_data, pt3_gA_sca_data, pt2_es_data]
+    label_list = [r'$\rm{3pt\ tr}$', r'$\rm{3pt\ sc}$', r'$\rm{2pt\ es}$']
+    color_list = [blue, red, grape]
+
+    for i in range(len(plot_fit_list)):
+        temp_mean = np.array([val.mean for val in plot_fit_list[i] / pt3_gA_gs_fit])
+        temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / pt3_gA_gs_fit])
+        ax.fill_between(pt3_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i])
+
+        temp_mean = np.array([val.mean for val in plot_data_list[i] / pt3_gA_gs_data])
+        temp_sdev = np.array([val.sdev for val in plot_data_list[i] / pt3_gA_gs_data])
+        ax.errorbar(pt3_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
+
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
+
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+
+    ax.text(20 * omega_imp_a09, 0.03, r'$\frac{R^{\rm es}_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)} {\mathring{g}_A}$', fontsize=27)
+
+    ax.set_ylim([-0.151, 0.149])
+    ax.set_xlim([0.01, plot_xmax + 0.8])
+
+    ax_x = ax.twiny()
+    ax_x.set_xlim([0.01 / omega_imp_a09, 3.8 / omega_imp_a09])
+    ax_x.set_xlabel(tsep_label, labelpad=-35, **fs_p)
+    ax_x.tick_params(direction='in', **ls_p)
+    ax_x.tick_params(axis="x", pad=-20)
+
+    legend_without_duplicate_labels(ax, 'lower right', 3)
+
+    plt.savefig(f"./new_plots/ratio_excited_states.pdf", transparent=True)
+    plt.show()
+
+
+    ###### sum-sub plot ######
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
+
+    pt2_es_fit = sum_gA_all_fit - sum_gA_gs_fit - sum_gA_tra_fit - sum_gA_sca_fit
+    pt2_es_data = sum_gA_all_data - sum_gA_gs_data - sum_gA_tra_data - sum_gA_sca_data
+
+
+    temp_mean = np.array([val.mean for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_all_fit - sum_gA_gs_fit) / sum_gA_gs_fit])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor=grey,edgecolor='white', hatch='\ ', alpha=0.5, label=r'$\rm fh$')
+
+    temp_mean = np.array([val.mean for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
+    temp_sdev = np.array([val.sdev for val in (sum_gA_sca_fit + pt2_es_fit) / sum_gA_gs_fit])
+    ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, facecolor='None',edgecolor=grey, hatch='\\', alpha=0.8, label=r'$\rm 2pt+sc$')
+
+
+    plot_fit_list = [sum_gA_tra_fit, sum_gA_sca_fit, pt2_es_fit]
+    plot_data_list = [sum_gA_tra_data, sum_gA_sca_data, pt2_es_data]
+    label_list = [r'$\rm{fh\ tr}$', r'$\rm{fh\ sc}$', r'$\rm{2pt\ es}$']
+    color_list = [blue, red, grape]
+
+    for i in range(len(plot_fit_list)):
+        temp_mean = np.array([val.mean for val in plot_fit_list[i] / sum_gA_gs_fit])
+        temp_sdev = np.array([val.sdev for val in plot_fit_list[i] / sum_gA_gs_fit])
+        ax.fill_between(sum_tsep_fit, temp_mean + temp_sdev, temp_mean - temp_sdev, color=color_list[i], alpha=0.3, label=label_list[i])
+
+        temp_mean = np.array([val.mean for val in plot_data_list[i] / sum_gA_gs_data])
+        temp_sdev = np.array([val.sdev for val in plot_data_list[i] / sum_gA_gs_data])
+        ax.errorbar(sum_tsep_data, temp_mean, yerr=temp_sdev, marker='o', color=color_list[i], **errorp)
+
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0., color='k', linestyle='-', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * 0.01, color=red, linestyle='--', linewidth=1)
+    ax.plot(np.linspace(0, 3.8, 10), np.ones(10) * -0.01, color=red, linestyle='--', linewidth=1)
+
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+
+    ax.text(20 * omega_imp_a09, 0.03, r'$\frac{{\rm FH}^{\rm es}_{A_3}(t_{\rm sep}, \tau_c=1)} {\mathring{g}_A}$', fontsize=27)
+
+    ax.set_ylim([-0.151, 0.149])
+    ax.set_xlim([0.01, plot_xmax + 0.8])
+
+    ax_x = ax.twiny()
+    ax_x.set_xlim([0.01 / omega_imp_a09, 3.8 / omega_imp_a09])
+    ax_x.set_xlabel(tsep_label, labelpad=-35, **fs_p)
+    ax_x.tick_params(direction='in', **ls_p)
+    ax_x.tick_params(axis="x", pad=-20)
+
+    legend_without_duplicate_labels(ax, 'lower right', 3)
+
+    plt.savefig(f"./new_plots/fh_excited_states.pdf", transparent=True)
+    plt.show()
+
+def m_z_plot(data_avg_dict_completed, fit_result, fitter):
+    pt2_data_range = [0, 96]
+
+    m0_eff = []
+    m0_eff_err = []
+    m0_eff_fit = []
+    m0_eff_fit_err = []
+
+    x_errorbar = np.arange(pt2_data_range[0], pt2_data_range[1]-1) * omega_imp_a09 
+    x_fill = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)] * omega_imp_a09 
+
+    for i in range(pt2_data_range[0], pt2_data_range[1]-1):
+        temp = gv.log(data_avg_dict_completed['pt2_tsep_'+str(i)] / data_avg_dict_completed['pt2_tsep_'+str(i+1)])
+        m0_eff.append(temp.mean)
+        m0_eff_err.append(temp.sdev)
+
+    fig = plt.figure(figsize=fig_size)
+    ax  = plt.axes(plt_axes)
+    ax.errorbar(x_errorbar, np.array(m0_eff), yerr=np.array(m0_eff_err), marker='o', color="k", **errorp)
+
+    pt2_fitter = fitter.pt2_fit_function(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space), fit_result.p)['pt2']
+    
+    for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
+        temp = gv.log(pt2_fitter[i] / pt2_fitter[i+ int(1/plot_space)])
+        m0_eff_fit.append(temp.mean)
+        m0_eff_fit_err.append(temp.sdev)
+        
+    m0_eff_fit_y1 = []
+    m0_eff_fit_y2 = []
+
+    for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
+        m0_eff_fit_y1.append(m0_eff_fit[i] + m0_eff_fit_err[i])
+        m0_eff_fit_y2.append(m0_eff_fit[i] - m0_eff_fit_err[i])
+    ax.fill_between(x_fill, np.array(m0_eff_fit_y1), np.array(m0_eff_fit_y2), color=blue, alpha=0.3, label='fit')
+
+    # grey band of prior
+    ax.fill_between(x_fill, np.ones(len(x_fill)) * (0.5-0.05), np.ones(len(x_fill)) * (0.5+0.05), color=grey, alpha=0.3, label='prior' )
+            
+    x_lim = [2, 25.5]
+    ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+
+    ax.set_ylim([0.43, 0.62])
+    ax.set_ylabel(meff_label, **fs_p)        
 
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tau_label, fontsize=fs_text, labelpad=-35)
-
-    ax.tick_params(direction='in', labelsize=tick_size)
-    ax1.tick_params(direction='in', labelsize=tick_size)
+    ax1.set_xlabel(tsep_label, labelpad=-35, **fs_p)
     ax1.tick_params(axis="x", pad=-20)
 
-    ax.set_ylim(1.0, 1.349)
-    ax.set_ylabel(oa00_label, fontsize=fs_text)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/oaeff{plot_type}.pdf", transparent=True)
+    ax.tick_params(direction='in', **ls_p)
+    ax1.tick_params(direction='in', **ls_p)
+    ax.yaxis.set_major_formatter(FormatStrFormatter('$%.2f$'))
+
+    plt.savefig(f"./new_plots/meff_23s.pdf", transparent=True)
     plt.show()
     
+    
+    #zeff
+    zeff = []
+
+    for i in range(pt2_data_range[0], pt2_data_range[1]-1):
+        meff = gv.log(data_avg_dict_completed['pt2_tsep_'+str(i)] / data_avg_dict_completed['pt2_tsep_'+str(i+1)])
+        zeff.append(np.sqrt(data_avg_dict_completed['pt2_tsep_'+str(i)]*np.exp(meff*i)))
     
     fig = plt.figure(figsize=fig_size)
     ax  = plt.axes(plt_axes)
-    for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
-        if plot_in_fm == False:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
+    ax.errorbar(x_errorbar, [i.mean * 1000 for i in zeff], yerr=[i.sdev * 1000 for i in zeff], marker='o', color="k", **errorp)
+ 
+    z0_eff_fit = []
+    z0_eff_fit_err = []
 
-        elif plot_in_fm == True:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
-
-        else:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-            print("Input error: plot_in_fm")
-
-        color = color_list[idx]
-        ax.errorbar(x_errorbar, np.array(gV['tsep_' + str(i)]), yerr=np.array(gV_err['tsep_' + str(i)]), marker='o', color=color, **errorp)# tau cut = 1
-
-        if fit_result != None and fitter != None:
-            gV_fit_y1 = np.array(gV_fit['tsep_'+str(i)]) + np.array(gV_fit_err['tsep_'+str(i)])
-            gV_fit_y2 = np.array(gV_fit['tsep_'+str(i)]) - np.array(gV_fit_err['tsep_'+str(i)])
-            ax.fill_between(x_fill, gV_fit_y1, gV_fit_y2, color=color, alpha=0.3) # tau_cut=1
-
-    x_lim = [-6.5, 6.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(tau_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_tau_label, **textp)
+    x = np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)[:int(-1/plot_space)]
+    pt2_fitter = fitter.pt2_fit_function(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space), fit_result.p)['pt2']
     
-    ax.set_ylim([1.0, 1.15])
-    ax.set_ylabel(oveff_label, **textp)
+    for idx, i in enumerate(range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space))):
+        meff = gv.log(pt2_fitter[i] / pt2_fitter[i+ int(1/plot_space)])
+        zeff = np.sqrt(pt2_fitter[i] * np.exp(meff*x[idx]))
+        z0_eff_fit.append(zeff.mean)
+        z0_eff_fit_err.append(zeff.sdev)
     
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/oveff{plot_type}.pdf", transparent=True)
+    z0_eff_fit_y1 = []
+    z0_eff_fit_y2 = []
+
+    for i in range(len(np.arange(pt2_data_range[0], pt2_data_range[1], plot_space)) - int(1/plot_space)):
+        z0_eff_fit_y1.append(z0_eff_fit[i] + z0_eff_fit_err[i])
+        z0_eff_fit_y2.append(z0_eff_fit[i] - z0_eff_fit_err[i])
+    
+    ax.fill_between(x_fill, np.array(z0_eff_fit_y1) * 1000, np.array(z0_eff_fit_y2) * 1000, color=blue, alpha=0.3, label='fit')
+
+    # grey band of prior
+    ax.fill_between(x_fill, np.ones(len(x_fill)) * 1000 * (0.00034-0.00034), np.ones(len(x_fill)) * 1000 * (0.00034+0.00034), color=grey, alpha=0.3, label='prior' )
+
+    x_lim = [2, 25.5]
+    ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+
+    ax.set_ylim([-0.2, 0.79])
+    ax.set_ylabel(zeff_label, labelpad=-5, **fs_p)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim(x_lim)
+    ax1.set_xlabel(tsep_label, labelpad=-35, **fs_p)
+
+    ax.tick_params(direction='in', **ls_p)
+
+    ax1.tick_params(direction='in', **ls_p)
+    ax1.tick_params(axis="x", pad=-20)
+
+    plt.savefig(f"./new_plots/zeff_23s.pdf", transparent=True)
     plt.show()
 
-def plot_pt3_no_tra(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type, plot_in_fm=False):
-    '''plot form factor with 3pt data, you can also plot fit on data'''    
-    gA_fit = {} # no transition
-    gA_fit_err = {}
+def sum_gA_plot(data_avg_dict_completed, fit_result, fitter):
+    pt3_data_range = [2, 15]
+    pt2_nstates = 5
+    pt3_nstates = pt2_nstates
+    sum_nstates = 5
+    gap = 1 # summation(t+gap) - summation(t)
 
-    gA_nsca = {}
-    gA_ntra = {} # data - no scattering
-    
-    gA_tsep = []
-    gA_tau = []
-    gV_tsep = []
-    gV_tau = []
-    
-    plot_density = 100 # bigger, more smoothy
-    
-    for i in range(pt3_data_range[0], pt3_data_range[1]): 
-            for j in np.linspace(tau_cut, i-tau_cut, plot_density):
-                gA_tsep.append(i)
-                gA_tau.append(j)
-                gV_tsep.append(i)
-                gV_tau.append(j)
-                
-                
-    for i in range(pt3_data_range[0], pt3_data_range[1]): 
-        gA_fit['tsep_'+str(i)] = []
-        gA_fit_err['tsep_'+str(i)] = []
-
-        gA_nsca['tsep_'+str(i)] = []
-          
-    p_ntra = gv.BufferDict(fit_result.p) # no transition
-    for key in p_ntra:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
-            p_ntra[key] = 0
-
-    p_nsca = gv.BufferDict(fit_result.p) # no scattering
-    for key in p_nsca:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]):
-            p_nsca[key] = 0
-                
-######################################## no transition
-    pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), p_ntra)['pt3_A3']
-
-    index = 0
-    for i in range(pt3_data_range[0], pt3_data_range[1]):
-        for j in range(plot_density):
-            index = int((i-pt3_data_range[0])*plot_density + j)
-            
-            temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-            gA_fit['tsep_'+str(i)].append(temp1.mean)
-            gA_fit_err['tsep_'+str(i)].append(temp1.sdev)
-        
-######################################### data - no scattering
-    gA_tsep_nsca = [] # errorbar do not need plot density
-    gA_tau_nsca = []      
-
-    for i in range(pt3_data_range[0], pt3_data_range[1]): # tsep and tau to generating fitter of no scattering 
-        for j in range(tau_cut, i-tau_cut+1):
-            gA_tsep_nsca.append(i)
-            gA_tau_nsca.append(j)
-
-    pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep_nsca), np.array(gV_tsep), np.array(gA_tau_nsca), np.array(gV_tau), p_nsca)['pt3_A3'] # fitter of no scattering
-
-    index = 0
-    for i in range(pt3_data_range[0], pt3_data_range[1]):
-        for j in range(tau_cut, i-tau_cut+1):
-            index = int((pt3_data_range[0]+i+1-4*tau_cut)*(i-pt3_data_range[0])/2 + j - 1)
-            
-            temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-            gA_nsca['tsep_'+str(i)].append(temp1)
-
-        gA_ntra['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_nsca['tsep_'+str(i)]) # ntra = data - nsca
-
-    mean_demo = []
-    sdev_demo = []
-    for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_ntra['tsep_'+str(i)][int(i/2-1)].sdev)
-
-    print("########################### data - no scattering ########################"+plot_type)
-    print(mean_demo)
-    print("###")
-    print(sdev_demo)
-#########################################
-
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
-        if plot_in_fm == False:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-
-        elif plot_in_fm == True:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
-
-        else:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-            print("Input error: plot_in_fm")
-
-        color = color_list[idx]
-        gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
-        gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
-        # no transition
-        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
-
-        gA_ntra_mean = np.array([value.mean for value in gA_ntra['tsep_'+str(i)]])
-        gA_ntra_sdev = np.array([value.sdev for value in gA_ntra['tsep_'+str(i)]])
-        # data - no scattering
-        ax.errorbar(x_errorbar, gA_ntra_mean, yerr=gA_ntra_sdev, marker='x', color=color, **errorp)
-    
-    x_lim = [-6.5, 6.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(tau_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_tau_label, **textp)
-
-    ax.set_ylim([1, 1.3])
-    ax.set_ylabel(oaeff_label, **textp)
-    ax.tick_params(axis='both', which='major', **labelp)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/oaeff{plot_type}_ntra.pdf", transparent=True)
-    plt.show()
-
-def plot_pt3_no_sca(pt3_data_range, data_avg_dict_completed, tau_cut, fit_result, fitter, plot_type, plot_in_fm=False):
-    '''plot form factor with 3pt data, you can also plot fit on data'''    
-    gA_fit = {} 
-    gA_fit_err = {} # no scattering except for g.s.
-
-    gA_nsca = {}
-    gA_ntra = {} # data - no transition and no g.s.
-    
-    gA_tsep = []
-    gA_tau = []
-    gV_tsep = []
-    gV_tau = []
-    
-    plot_density = 100 # bigger, more smoothy
-    
-    for i in range(pt3_data_range[0], pt3_data_range[1]): 
-            for j in np.linspace(tau_cut, i-tau_cut, plot_density):
-                gA_tsep.append(i)
-                gA_tau.append(j)
-                gV_tsep.append(i)
-                gV_tau.append(j)
-                
-                
-    for i in range(pt3_data_range[0], pt3_data_range[1]): 
-        gA_fit['tsep_'+str(i)] = []
-        gA_fit_err['tsep_'+str(i)] = []
-
-        gA_ntra['tsep_'+str(i)] = []
-
-    p_nsca = gv.BufferDict(fit_result.p) # no scattering except for g.s.
-    for key in p_nsca:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]) and key != 'A3_00':
-            p_nsca[key] = 0
-
-    p_ntra = gv.BufferDict(fit_result.p) # no transition and no g.s.
-    for key in p_ntra:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
-            p_ntra[key] = 0
-
-        p_ntra['A3_00'] = 0
-                
-######################################## no scattering except for g.s.
-    pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep), np.array(gV_tsep), np.array(gA_tau), np.array(gV_tau), p_nsca)['pt3_A3']
-
-    index = 0
-    for i in range(pt3_data_range[0], pt3_data_range[1]):
-        for j in range(plot_density):
-            index = int((i-pt3_data_range[0])*plot_density + j)
-            
-            temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-            gA_fit['tsep_'+str(i)].append(temp1.mean)
-            gA_fit_err['tsep_'+str(i)].append(temp1.sdev)
-        
-######################################### data - no transition and no g.s.
-    gA_tsep_ntra = [] # errorbar do not need plot density
-    gA_tau_ntra = []      
-
-    for i in range(pt3_data_range[0], pt3_data_range[1]): # tsep and tau to generating fitter of no transition and no g.s.
-        for j in range(tau_cut, i-tau_cut+1):
-            gA_tsep_ntra.append(i)
-            gA_tau_ntra.append(j)
-
-    pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(np.array(gA_tsep_ntra), np.array(gV_tsep), np.array(gA_tau_ntra), np.array(gV_tau), p_ntra)['pt3_A3'] # fitter of no transition and no g.s.
-
-    index = 0
-    for i in range(pt3_data_range[0], pt3_data_range[1]):
-        for j in range(tau_cut, i-tau_cut+1):
-            index = int((pt3_data_range[0]+i+1-4*tau_cut)*(i-pt3_data_range[0])/2 + j - 1)
-            
-            temp1 = pt3_gA_fitter[index] / pt2_fitter[i - pt3_data_range[0]]
-            gA_ntra['tsep_'+str(i)].append(temp1)
-
-        gA_nsca['tsep_'+str(i)] = np.array( ( data_avg_dict_completed['pt3_A3_tsep_'+str(i)][1:-1] ) / (data_avg_dict_completed['pt2_tsep_'+str(i)] ) ) - np.array(gA_ntra['tsep_'+str(i)]) # nsca = data - ntra
-
-    mean_demo = []
-    sdev_demo = []
-    for i in range(pt3_data_range[0], pt3_data_range[1], 2): # only even tsep has tau = tsep/2
-        mean_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].mean)
-        sdev_demo.append(gA_nsca['tsep_'+str(i)][int(i/2-1)].sdev)
-
-    print("########################## data - no transition and no g.s. ################################"+plot_type)
-    print(mean_demo)
-    print("###")
-    print(sdev_demo)
-#########################################
-
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    for idx, i in enumerate(range(pt3_data_range[0], pt3_data_range[1])):
-        if plot_in_fm == False:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-
-        elif plot_in_fm == True:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1) * omega_imp_a09
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density) * omega_imp_a09
-
-        else:
-            x_errorbar = np.arange(tau_cut - i/2, i/2 - tau_cut + 1)
-            x_fill = np.linspace(tau_cut - i/2, i/2 - tau_cut, plot_density)
-            print("Input error: plot_in_fm")
-
-        color = color_list[idx]
-        gA_fit_y1 = np.array(gA_fit['tsep_'+str(i)]) + np.array(gA_fit_err['tsep_'+str(i)])
-        gA_fit_y2 = np.array(gA_fit['tsep_'+str(i)]) - np.array(gA_fit_err['tsep_'+str(i)])
-        # no transition
-        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=color, alpha=0.3) # tau_cut=1              
-
-        gA_nsca_mean = np.array([value.mean for value in gA_nsca['tsep_'+str(i)]])
-        gA_nsca_sdev = np.array([value.sdev for value in gA_nsca['tsep_'+str(i)]])
-        # data - no scattering
-        ax.errorbar(x_errorbar, gA_nsca_mean, yerr=gA_nsca_sdev, marker='x', color=color, **errorp)
-
-    x_lim = [-6.5, 6.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(tau_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_tau_label, **textp)
-
-    ax.set_ylim([1, 1.3])
-    ax.set_ylabel(oaeff_label, **textp)
-    ax.tick_params(axis='both', which='major', **labelp)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/oaeff{plot_type}_nsca.pdf", transparent=True)
-    plt.show()
-
-def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=None, pt2_nstates=None, sum_nstates=None, plot_type=None, plot_in_fm=False):
-    '''plot form factor with sum data, you can also plot fit on data'''
     gA = []
     gA_err = []
-    gV = []
-    gV_err = []
     
     gA_fit = []
     gA_fit_err = []
-    gV_fit = []
-    gV_fit_err = []
-    
-    plot_space = 0.05
-    gap = 1 # summation(t+gap) - summation(t)
 
-    if plot_in_fm == False:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-gap)
-        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-gap / plot_space)]
-
-    elif plot_in_fm == True:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-gap) * omega_imp_a09
-        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-gap / plot_space)] * omega_imp_a09
-
-    else:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-gap)
-        x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-gap / plot_space)]
-        print("Input error: plot_in_fm")
+    x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-gap) * omega_imp_a09
+    x_fill = np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)[:int(-gap / plot_space)] * omega_imp_a09
 
     for i in range(pt3_data_range[0], pt3_data_range[1]-gap):
         temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
         gA.append(temp1.mean)
         gA_err.append(temp1.sdev)
         
-        temp2 = data_avg_dict_completed['sum_V4_fit_'+str(i)]
-        gV.append(temp2.mean)
-        gV_err.append(temp2.sdev)
 
     fig = plt.figure(figsize=fig_size)
     ax  = plt.axes(plt_axes)
@@ -683,6 +740,7 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     gA_even = []
     gA_err_odd = []
     gA_err_even = []
+
     for i in range(len(x_errorbar)):
         t = round(x_errorbar[i] / omega_imp_a09)
 
@@ -699,586 +757,211 @@ def plot_sum(pt3_data_range, data_avg_dict_completed, fit_result=None, fitter=No
     ax.errorbar(np.array(x_odd) * omega_imp_a09, np.array(gA_odd), yerr=np.array(gA_err_odd), marker='o', color='k', **errorp)
     ax.errorbar(np.array(x_even) * omega_imp_a09, np.array(gA_even), yerr=np.array(gA_err_even), marker='o', color='k', **errorp)#mfc=blue, **errorb)
 
-    # print(gA)
-    # print(gA_err)
-    if fit_result != None and fitter != None and sum_nstates != None:
-        if sum_nstates == pt2_nstates:
-            pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['pt2']
-            sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
-            sum_V4_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_V4']
-            
-        else:
-            pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p, sum_nstates)['pt2']
-            sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
-            sum_V4_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_V4']
-        
-        for i in range(len(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)) - int(gap / plot_space)):
-            temp1 = (sum_A3_fitter[i+int(gap / plot_space)] / pt2_fitter[i+int(gap / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]) / gap
-            gA_fit.append(temp1.mean)
-            gA_fit_err.append(temp1.sdev)
 
-            temp2 = (sum_V4_fitter[i+int(gap / plot_space)] / pt2_fitter[i+int(gap / plot_space)] - sum_V4_fitter[i] / pt2_fitter[i]) / gap
-            gV_fit.append(temp2.mean)
-            gV_fit_err.append(temp2.sdev)
-            
-        gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
-        gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
+    if sum_nstates == pt2_nstates:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['pt2']
+        sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
         
-        ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
+    else:
+        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p, sum_nstates)['pt2']
+        sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), np.arange(pt3_data_range[0], pt3_data_range[1], plot_space), fit_result.p)['sum_A3']
+    
+    for i in range(len(np.arange(pt3_data_range[0], pt3_data_range[1], plot_space)) - int(gap / plot_space)):
+        temp1 = (sum_A3_fitter[i+int(gap / plot_space)] / pt2_fitter[i+int(gap / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]) / gap
+        gA_fit.append(temp1.mean)
+        gA_fit_err.append(temp1.sdev)
+        
+    gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
+    gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
+    
+    ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
+
+    # grey band of prior
+    ax.fill_between(np.linspace(0, 1.2, 10), np.ones(10) * (1.2-0.2), np.ones(10) * (1.2+0.2), color=grey, alpha=0.3, label='prior' )
 
     x_lim = [1.5, 13.5]
     ax1 = ax.twiny()
     ax1.set_xlim(x_lim)
-    ax1.set_xlabel(tsep_label, fontsize=fs_text, labelpad=-35)
+    ax1.set_xlabel(tsep_label, labelpad=-35, **fs_p)
     ax1.tick_params(axis="x", pad=-20)
-    ax.tick_params(axis='both', which='major', direction='in', **labelp)
-    ax1.tick_params(axis='both', which='major', direction='in', **labelp)
+    ax.tick_params(axis='both', which='major', direction='in', **ls_p)
+    ax1.tick_params(axis='both', which='major', direction='in', **ls_p)
     
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, fontsize=fs_text)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, fontsize=fs_text)
+    ax.set_xlim([num*omega_imp_a09 for num in x_lim])
+    ax.set_xlabel(tsep_fm_label, **fs_p)
 
-    ax.set_ylim(1.0, 1.349)
-    ax.set_ylabel(ga_label, fontsize=20)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/soaeff{plot_type}.pdf", transparent=True)
-    plt.show()
-    
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, np.array(gV), yerr=np.array(gV_err), marker='o', color="k", **errorp)
-    # print(gV)
-    # print(gV_err)
-    if fit_result != None and fitter != None and sum_nstates != None:
-        gV_fit_y1 = np.array(gV_fit) + np.array(gV_fit_err)
-        gV_fit_y2 = np.array(gV_fit) - np.array(gV_fit_err)
-        
-        ax.fill_between(x_fill, gV_fit_y1, gV_fit_y2, color=blue, alpha=0.3)
-    
-    
-    x_lim = [1.5, 13.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, **textp)
+    ax.set_ylim(0.9, 1.49)
+    ax.set_ylabel(ga_label, **gA_fs_p)
 
-    ax.set_ylim([1.0, 1.1])
-    ax.set_ylabel(oveff_label, **textp)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/soveff{plot_type}.pdf", transparent=True)
+    plt.savefig(f"./new_plots/soaeff_23s.pdf", transparent=True)
     plt.show()
 
-    #print(gA[8])
+def tmin_tmax_combined_plot(x, value):
+    best_gA = value['gA'][1]
+    best_gA_err = value['gA_err'][1]
+    best_Q = value['Q'][1]
 
-    # return [np.arange(pt3_data_range[0], pt3_data_range[1]-1), np.array(gA), np.array(gA_err)] # save this for data plot of half stat
+    t_range = [2, 15]
+    nstate = 5
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
+
+    ax1.tick_params(direction='in', **ls_p)
+
+    ax1.vlines(7.5, gA_ylim[0], gA_ylim[1], colors = "k", linestyles = "dashed")
+
+    ax1.errorbar(np.array(x), np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[nstate-2], **errorp)
+
+    #best fit
+    ax1.fill_between(np.arange(1.5, 15.5), (best_gA + best_gA_err)*np.ones([14]), (best_gA - best_gA_err)*np.ones([14]), color=color_list[nstate-2], alpha=0.2)
+
+    ax1.errorbar(np.array([3]), np.array([best_gA]), yerr=np.array([best_gA_err]), marker='o', mfc=color_list[nstate-2], color=color_list[nstate-2], **errorb)
+
+    ax1.errorbar(np.array([14]), np.array([best_gA]), yerr=np.array([best_gA_err]), marker='o', mfc=color_list[nstate-2], color=color_list[nstate-2], **errorb)
+
+
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
+
+    ax2.vlines(7.5, 0, 1.1, colors = "k", linestyles = "dashed")
+
+    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
+
+    ax2.scatter(np.array(x), np.array(value['Q']), marker='o', c='', edgecolors=color_list[nstate-2])
+
+    #best fit
+    ax2.scatter(np.array([3]), np.array([best_Q]), marker='o', c=color_list[nstate-2])
+
+    ax2.scatter(np.array([14]), np.array([best_Q]), marker='o', c=color_list[nstate-2])
+
+    ax2.tick_params(direction='in', **ls_p)
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.xlabel(tmin_label+'\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ '+tmax_label, labelpad=1.5, **fs_p)
+    plt.xlim([1.5, 14.5])
+
+    plt.savefig('./new_plots/23s_gA-both_tmin_tmax_combined.pdf', transparent=True)
+
+def tmax_scattered_plot(best_n, tmax_name, situation_list, save_name):
+
+    value={}
+    value['Q']=[]
+    value['gA']=[]
+    value['gA_err']=[]
+
+    x=[]
+
+    for situation in situation_list:
+        tmax_dict = {}
+        tmax_dict['2pt'] = situation.pt2_tmax
+        tmax_dict['3pt'] = situation.pt3_A3_tsep_max
+        tmax_dict['sum'] = situation.sum_A3_tsep_max
+
+        x.append(tmax_dict[tmax_name])  # here is the varying parameter
+
+    x.sort()
+    for i in range(len(x)):
+        for situation in situation_list:
+            tmax_dict = {}
+            tmax_dict['2pt'] = situation.pt2_tmax
+            tmax_dict['3pt'] = situation.pt3_A3_tsep_max
+            tmax_dict['sum'] = situation.sum_A3_tsep_max
+            if tmax_dict[tmax_name] == x[i]:
+                value['Q'].append(situation.Q_value)
+                value['gA'].append(situation.A300)
+                value['gA_err'].append(situation.A300_err)
+
+    print(x)
+
+    #####################################################################################
+
+    gA_mean = 1.2534405806490314
+    gA_sdev = 0.01930206389474567
+
+    # gA - tmax
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
+    ax1.tick_params(direction='in', **ls_p)
+
+    ax1.errorbar(np.array(x), np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
+
+    ax1.fill_between(np.arange(4.5, 15.5, 1), (gA_mean + gA_sdev) * np.ones([11]), (gA_mean - gA_sdev) * np.ones([11]), color=color_list[best_n-2], alpha=0.2)
+
+
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(4.5, 15.5, 1), 0.1 * np.ones([11]), 'r--')
+
+    ax2.scatter(np.array(x), np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
+
+    ax2.tick_params(direction='in', **ls_p)
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.xlabel(tmax_label, **fs_p)
+    plt.xlim([4.5, 14.5])
+
+    plt.savefig('./new_plots/23s_gA-'+save_name+'_tmax.pdf', transparent=True)
+
+def late_23_tau_inc_plot(A3, A3_err, Q):
+    # stability plot of late tsep [10, 12, 14] # varying nstates and tau_cut
+    n_ga = [1.25343903, 0.01930155]
+    y1a = n_ga[0] - n_ga[1]
+    y2a = n_ga[0] + n_ga[1] 
         
-def plot_sum_no_tra(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type, plot_in_fm=False):
-    '''plot form factor with sum data, you can also plot fit on data'''
-    gA = []
-    gA_err = []
-    
-    gA_fit = []
-    gA_fit_err = []
-    gV_fit = []
-    gV_fit_err = []
-    
-    plot_space = 0.05
+    # nstate = 1, 2, 3, 4    
 
-    plt_min = 0
-    plt_max = 60 
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] # as tsep input
+    #####################gA
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
+    ax1.tick_params(axis='both', direction='in', which='major', **ls_p)
 
-    if plot_in_fm == False:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-
-    elif plot_in_fm == True:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1) * omega_imp_a09
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] * omega_imp_a09
-
-    else:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-        print("Input error: plot_in_fm")
-
-    for i in range(pt3_data_range[0], pt3_data_range[1]-1):
-        temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
-        gA.append(temp1.mean)
-        gA_err.append(temp1.sdev)
-
-##################### fit on data
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        sum_V4_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
+    for i in range(4):
+        ax1.errorbar(np.array([i-0.2]), np.array(A3['opt+1'][i]), yerr=np.array(A3_err['opt+1'][i]), marker='^', color=green, label=r'$\tau_{\rm inc} = \tau_{\rm inc}^{\rm opt} +1$', **errorp)
+        ax1.errorbar(np.array([i]), np.array(A3['opt'][i]), yerr=np.array(A3_err['opt'][i]), marker='o', color=blue, label=r'$\tau_{\rm inc} = \tau_{\rm inc}^{\rm opt}$', **errorp)
+        ax1.errorbar(np.array([i+0.2]), np.array(A3['opt-1'][i]), yerr=np.array(A3_err['opt-1'][i]), marker='P', color=peach, label=r'$\tau_{\rm inc} = \tau_{\rm inc}^{\rm opt} -1$', **errorp)
         
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        sum_V4_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit.append(temp1.mean)
-        gA_fit_err.append(temp1.sdev)
-
-        temp2 = sum_V4_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_V4_fitter[i] / pt2_fitter[i]
-        gV_fit.append(temp2.mean)
-        gV_fit_err.append(temp2.sdev)
+    ax1.errorbar(np.array([1]), np.array(A3['opt'][1]), yerr=np.array(A3_err['opt'][1]), marker='o', mfc=blue, color=blue, **errorb)
         
-    gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
-    gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
-    
-    ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
+    ax1.fill_between(x = [-1, 4], y1 = [y1a, y1a], y2 = [y2a, y2a], alpha = 0.3, color=yellow)
+    ax1.fill_between(x = [-1, 4], y1 = A3['opt'][1]+A3_err['opt'][1], y2 = A3['opt'][1]-A3_err['opt'][1], alpha = 0.3, color=blue)
 
-######################################## 
-    p_ntra = gv.BufferDict(fit_result.p) # no transition
-    for key in p_ntra:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
-            p_ntra[key] = 0
+    legend_without_duplicate_labels(ax1, 'lower center', 3)
 
-    p_nsca = gv.BufferDict(fit_result.p) # no scattering
-    for key in p_nsca:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]):
-            p_nsca[key] = 0
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 4 + 0.5, 1), 0.1 * np.ones([5]), 'r--')
 
-    p_gs = gv.BufferDict(fit_result.p) # g.s. only
-    for key in p_gs:
-        if key.split("_")[0] in ["A3"] and key != 'A3_00':
-            p_gs[key] = 0
-
-    p_gs_pt2 = gv.BufferDict(fit_result.p) # g.s. only for 2pt
-    for key in p_gs_pt2:
-        if 'z'in key and key != 'z0' and key != 'log(z2)':
-            p_gs_pt2[key] = 0
-
-    del p_gs_pt2['log(z2)']
-    p_gs_pt2['z2'] = 0
-
-##################### original gA from 3pt with tau = tsep/2
-    y3 = np.array([1.137246887069871, 1.0397951114352422, 1.0581101894217029, 1.0944768415815544, 1.129653822067308, 1.1607318494702763, 1.1883613569687608])
-    dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
-    x3 = np.arange(2, 15, 2)
-
-    if plot_in_fm == True:
-        x3 = x3 * omega_imp_a09
-
-    ax.errorbar(x3, y3, yerr=dy3, ls='none', marker='o', capsize=3, color=orange) 
-
-    pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, fit_result.p)['pt3_A3'] # here fillx/2 means tau = tsep/2
-
-    demo_ori = pt3_gA_fitter/pt2_fitter
-
-    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
-
-
-##################### data - no scattering gA from 3pt with tau = tsep/2
-    y3_ntra = np.array([1.0168142241834535, 1.1330664811954303, 1.189630793941224, 1.218697582268415, 1.233856395733631, 1.2438491219561556, 1.2531474983332445])
-
-    dy3_ntra = np.array([0.12563164492523324, 0.07344246748838909, 0.04554307000176309, 0.03209866967751453, 0.025578449043411906, 0.022593798888500174, 0.021829703982068273])
-
-    x3_ntra = np.arange(2, 15, 2)
-
-    if plot_in_fm == True:
-        x3_ntra = x3_ntra * omega_imp_a09
-
-    #ax.errorbar(x3_ntra, y3_ntra, yerr=dy3_ntra, ls='none', marker='x', capsize=3, color=yellow) 
-
-    pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, p_ntra)['pt3_A3']  # here fillx/2 means tau = tsep/2
-
-    demo_ntra = pt3_gA_fitter/pt2_fitter
-
-    #ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ntra]), np.array([y.mean+y.sdev for y in demo_ntra]), alpha=0.2, color=yellow)
-
-
-###################### no transition sum-sub
-    gA_fit_ntra = []
-    gA_fit_err_ntra = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_ntra)['sum_A3']
+    for i in range(4):
+        ax2.scatter(np.array([i]), np.array(Q['opt'][i]), marker='o', c='', edgecolors=blue)
+        ax2.scatter(np.array([i-0.2]), np.array(Q['opt+1'][i]), marker='^', c='', edgecolors=green)
+        ax2.scatter(np.array([i+0.2]), np.array(Q['opt-1'][i]), marker='P', c='', edgecolors=peach)
         
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_ntra)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_ntra.append(temp1.mean)
-        gA_fit_err_ntra.append(temp1.sdev)
+    ax2.scatter(np.array([1]), np.array(Q['opt'][1]), marker='o', c=blue, edgecolors=blue)
 
-    ###
-    print(p_ntra)
-        
-    gA_fit_y1_ntra = np.array(gA_fit_ntra) + np.array(gA_fit_err_ntra)
-    gA_fit_y2_ntra = np.array(gA_fit_ntra) - np.array(gA_fit_err_ntra)
-    
-    #ax.fill_between(x_fill, gA_fit_y1_ntra, gA_fit_y2_ntra, color=green, alpha=0.3)
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.xticks([0, 1, 2, 3], [r'$1$', r'$2$', r'$3$', r'$4$'])
+    plt.xlabel(r'$\rm nstates$', **fs_p)
+    plt.xlim([-0.5, 3.5])
+    ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
+    fig.savefig("./new_plots/ga_23_late_tsep_101214_taucut.pdf", transparent=True)
 
-######################## data - no scattering sum-sub
-    gA_fit_ntra = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_nsca)['sum_A3']
-    
-    for i in range(pt3_data_range[0], pt3_data_range[1]-1):
-        index = i - pt3_data_range[0]
-        temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
-        gA_fit_ntra.append(temp1) # ntra = data - nsca
-
-    #ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_ntra]), yerr=np.array([val.sdev for val in gA_fit_ntra]), ls='none', marker='x', capsize=3, color=green)
-
-######################
-###################### g.s. only
-    gA_fit_gs = []
-    gA_fit_err_gs = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_gs.append(temp1.mean)
-        gA_fit_err_gs.append(temp1.sdev)
-
-        
-    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
-    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
-    
-    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=red, alpha=0.3)
-
-######################
-###################### sum-sub / g.s. only of 2pt
-    gA_fit_gs = []
-    gA_fit_err_gs = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_gs.append(temp1.mean)
-        gA_fit_err_gs.append(temp1.sdev)
-
-        
-    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
-    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
-    
-    #ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
-
-##################
-
-    x_lim = [plt_min-0.5, plt_max+0.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, **textp)
-    
-    ax.set_xlim([0, 5])
-    ax.set_ylim([1, 1.4])
-    ax.set_ylabel(oaeff_label, **textp)
-    ax.tick_params(axis='both', which='major', **labelp)
-    ax.text(2.7, 1.35, r'$ntra$', fontsize=15)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/soaeff{plot_type}_ntra.pdf", transparent=True)
-    plt.show()
-
-
-def plot_sum_no_sca(pt3_data_range, data_avg_dict_completed, fit_result, fitter, pt2_nstates, sum_nstates, plot_type, plot_in_fm=False):
-    '''plot form factor with sum data, you can also plot fit on data'''
-    gA = []
-    gA_err = []
-    
-    gA_fit = []
-    gA_fit_err = []
-    gV_fit = []
-    gV_fit_err = []
-    
-    plot_space = 0.05
-
-    plt_min = 2
-    plt_max = 60 
-    fillx = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] # as tsep input
-
-    if plot_in_fm == False:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-
-    elif plot_in_fm == True:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1) * omega_imp_a09
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)] * omega_imp_a09
-
-    else:
-        x_errorbar = np.arange(pt3_data_range[0], pt3_data_range[1]-1)
-        x_fill = np.arange(plt_min, plt_max, plot_space)[:int(-1 / plot_space)]
-        print("Input error: plot_in_fm")
-
-    for i in range(pt3_data_range[0], pt3_data_range[1]-1):
-        temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)]
-        gA.append(temp1.mean)
-        gA_err.append(temp1.sdev)
-
-##################### fit on data
-    fig = plt.figure(figsize=fig_size)
-    ax  = plt.axes(plt_axes)
-    ax.errorbar(x_errorbar, np.array(gA), yerr=np.array(gA_err), marker='o', color=blue, **errorp)
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        sum_V4_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), fit_result.p, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        sum_V4_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_V4']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit.append(temp1.mean)
-        gA_fit_err.append(temp1.sdev)
-
-        temp2 = sum_V4_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_V4_fitter[i] / pt2_fitter[i]
-        gV_fit.append(temp2.mean)
-        gV_fit_err.append(temp2.sdev)
-        
-    gA_fit_y1 = np.array(gA_fit) + np.array(gA_fit_err)
-    gA_fit_y2 = np.array(gA_fit) - np.array(gA_fit_err)
-    
-    
-    ax.fill_between(x_fill, gA_fit_y1, gA_fit_y2, color=blue, alpha=0.3, label='fit')
-
-######################################## 
-    p_nsca = gv.BufferDict(fit_result.p) # no scattering except for g.s.
-    for key in p_nsca:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] == key.split("_")[1][1]) and key != 'A3_00':
-            p_nsca[key] = 0
-
-    p_ntra = gv.BufferDict(fit_result.p) # no transition and no g.s.
-    for key in p_ntra:
-        if key.split("_")[0] in ["A3"] and (key.split("_")[1][0] != key.split("_")[1][1]):
-            p_ntra[key] = 0
-
-    p_ntra['A3_00'] = 0
-
-    p_gs = gv.BufferDict(fit_result.p) # g.s. only
-    for key in p_gs:
-        if key.split("_")[0] in ["A3"] and key != 'A3_00':
-            p_gs[key] = 0
-
-    p_gs_pt2 = gv.BufferDict(fit_result.p) # g.s. only for 2pt
-    for key in p_gs_pt2:
-        if 'z'in key and key != 'z0' and key != 'log(z2)':
-            p_gs_pt2[key] = 0
-
-    del p_gs_pt2['log(z2)']
-    p_gs_pt2['z2'] = 0
-
-##################### original gA from 3pt with tau = tsep/2
-    y3 = np.array([1.137246887069871, 1.0397951114352422, 1.0581101894217029, 1.0944768415815544, 1.129653822067308, 1.1607318494702763, 1.1883613569687608])
-    dy3 = np.array([0.0006817408659827335, 0.0008354900714438219, 0.0011941822664530966, 0.0019041344115398975, 0.003132857777381124, 0.005059734516954951, 0.008446467991949032])
-    x3 = np.arange(2, 15, 2)
-
-    if plot_in_fm == True:
-        x3 = x3 * omega_imp_a09
-
-    ax.errorbar(x3, y3, yerr=dy3, ls='none', marker='o', capsize=3, color=orange) 
-
-    pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, fit_result.p)['pt3_A3'] # here fillx/2 means tau = tsep/2
-
-    demo_ori = pt3_gA_fitter/pt2_fitter
-
-    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_ori]), np.array([y.mean+y.sdev for y in demo_ori]), alpha=0.2, color=orange)
-
-
-##################### data - no transition and no g.s. gA from 3pt with tau = tsep/2
-    y3_nsca = np.array([0.6727799364966929, 0.7774506761828093, 0.9104118135085515, 1.0112160578126128, 1.0830704000959943, 1.1351676308811318, 1.1748843233329838])
-
-    dy3_nsca = np.array([0.12391746097652938, 0.06866160207895389, 0.03807136583051402, 0.022605124172479476, 0.0138835672428265, 0.008723160838174095, 0.00821622163788732])
-
-    x3_nsca = np.arange(2, 15, 2)
-
-    if plot_in_fm == True:
-        x3_nsca = x3_nsca * omega_imp_a09
-
-    ax.errorbar(x3_nsca, y3_nsca, yerr=dy3_nsca, ls='none', marker='x', capsize=3, color=yellow) 
-
-    pt2_fitter = fitter.pt2_fit_function(fillx, fit_result.p)['pt2']
-    pt3_gA_fitter = fitter.pt3_fit_function(fillx, fillx, fillx/2, fillx/2, p_nsca)['pt3_A3']  # here fillx/2 means tau = tsep/2
-
-    demo_nsca = pt3_gA_fitter/pt2_fitter
-
-    ax.fill_between(x_fill, np.array([y.mean-y.sdev for y in demo_nsca]), np.array([y.mean+y.sdev for y in demo_nsca]), alpha=0.2, color=yellow)
-
-
-###################### no scattering except for g.s. sum-sub
-    gA_fit_nsca = []
-    gA_fit_err_nsca = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_nsca)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_nsca)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_nsca.append(temp1.mean)
-        gA_fit_err_nsca.append(temp1.sdev)
-
-    ###
-    print(p_nsca)
-    print(p_gs_pt2)
-
-        
-    gA_fit_y1_nsca = np.array(gA_fit_nsca) + np.array(gA_fit_err_nsca)
-    gA_fit_y2_nsca = np.array(gA_fit_nsca) - np.array(gA_fit_err_nsca)
-    
-    ax.fill_between(x_fill, gA_fit_y1_nsca, gA_fit_y2_nsca, color=green, alpha=0.3)
-
-
-######################## data - no transition and no g.s. sum-sub
-    gA_fit_nsca = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(pt3_data_range[0], pt3_data_range[1]), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(pt3_data_range[0], pt3_data_range[1]), np.arange(pt3_data_range[0], pt3_data_range[1]), p_ntra)['sum_A3']
-    
-    for i in range(pt3_data_range[0], pt3_data_range[1]-1):
-        index = i - pt3_data_range[0]
-        temp1 = data_avg_dict_completed['sum_A3_fit_'+str(i)] - (sum_A3_fitter[index+1] / pt2_fitter[index+1] - sum_A3_fitter[index] / pt2_fitter[index])
-        gA_fit_nsca.append(temp1) # nsca = data - ntra
-
-    #ax.errorbar(x_errorbar, np.array([val.mean for val in gA_fit_nsca]), yerr=np.array([val.sdev for val in gA_fit_nsca]), ls='none', marker='x', capsize=3, color=green)
-
-######################
-###################### g.s. only
-    gA_fit_gs = []
-    gA_fit_err_gs = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), p_gs)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_gs.append(temp1.mean)
-        gA_fit_err_gs.append(temp1.sdev)
-
-        
-    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
-    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
-    
-    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=red, alpha=0.3)
-
-######################
-###################### g.s. only for 2pt
-    gA_fit_gs = []
-    gA_fit_err_gs = []
-
-    if sum_nstates == pt2_nstates:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2)['pt2']
-        sum_A3_fitter = fitter.summation_same_can(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-        
-    else:
-        pt2_fitter = fitter.pt2_fit_function(np.arange(plt_min, plt_max, plot_space), p_gs_pt2, sum_nstates)['pt2']
-        sum_A3_fitter = fitter.summation(np.arange(plt_min, plt_max, plot_space), np.arange(plt_min, plt_max, plot_space), fit_result.p)['sum_A3']
-    
-    for i in range(len(np.arange(plt_min, plt_max, plot_space)) - int(1 / plot_space)):
-        temp1 = sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i]
-        gA_fit_gs.append(temp1.mean)
-        gA_fit_err_gs.append(temp1.sdev)
-
-        
-    gA_fit_y1_gs = np.array(gA_fit_gs) + np.array(gA_fit_err_gs)
-    gA_fit_y2_gs = np.array(gA_fit_gs) - np.array(gA_fit_err_gs)
-    
-    ax.fill_between(x_fill, gA_fit_y1_gs, gA_fit_y2_gs, color=grey, alpha=0.3)
-
-##################
-    
-    x_lim = [plt_min-0.5, plt_max+0.5]
-    if plot_in_fm == False:
-        ax.set_xlim(x_lim)
-        ax.set_xlabel(t_label, **textp)
-    elif plot_in_fm == True:
-        ax.set_xlim([num*omega_imp_a09 for num in x_lim])
-        ax.set_xlabel(fm_t_label, **textp)
-
-    ax.set_ylim([1, 1.4])
-    ax.set_ylabel(oaeff_label, **textp)
-    ax.tick_params(axis='both', which='major', **labelp)
-    ax.text(2.7, 1.35, r'$nsca$', fontsize=15)
-    
-    plt.tight_layout(pad=0, rect=plt_axes)
-    plt.savefig(f"./new_plots/soaeff{plot_type}_nsca.pdf", transparent=True)
-    plt.show()
-
-# %%
-def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel):
+def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, fit_name, xlabel):
     value={}
     value['Q']=[]
     value['logGBF']=[]
-    value['E0']=[]
-    value['E0_err']=[]
     value['gA']=[]
     value['gA_err']=[]
-    value['gV']=[]
-    value['gV_err']=[]
     x = []
 
     for n_ in range(n_range[1]): # n_ represents index of n in n_range
         value['Q'].append([])
         value['logGBF'].append([])
-        value['E0'].append([])
-        value['E0_err'].append([])
         value['gA'].append([])
         value['gA_err'].append([])
-        value['gV'].append([])
-        value['gV_err'].append([])
         x.append([])
 
     for n in range(n_range[0], n_range[1]): # n represents nstates value
@@ -1292,9 +975,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
                 tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
                 
                 x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
@@ -1310,19 +991,13 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
                 tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
                 
                 if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
                     value['Q'][n].append(situation.Q_value)
                     value['logGBF'][n].append(situation.log_GBF)
-                    value['E0'][n].append(situation.E0)
-                    value['E0_err'][n].append(situation.E0_err)
                     value['gA'][n].append(situation.A300)
                     value['gA_err'][n].append(situation.A300_err)
-                    value['gV'][n].append(situation.V400)
-                    value['gV_err'][n].append(situation.V400_err)
                 
             
     print(x)
@@ -1331,23 +1006,18 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     best_t_ = best_t - t_range[0] # t_ represents index, t represents value
 
     #####################################################################################
-    #####################################################################################
     # gA - tmin
     fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
 
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
 
-
     # ax1
-    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
+    ax1.set_ylabel(ga_label, **gA_fs_p)
     ax1.set_ylim(gA_ylim)
 
 
     for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label='nstates='+str(n), **errorp)
+        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label = r'$n_{\rm s} = %d$' %n, **errorp)
 
     ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gA'][best_n][best_t_]+value['gA_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_n][best_t - t_range[0]]-value['gA_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
 
@@ -1356,10 +1026,11 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     print("Best fit")
     print(np.array([value['gA'][best_n][best_t_]]), np.array([value['gA_err'][best_n][best_t_]]))
     
-    ax1.legend(ncol=4, loc='lower center')
+
+    legend_without_duplicate_labels(ax1, 'lower center', 4)
     
     # ax2
-    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylabel(q_label, **fs_p)
     ax2.set_ylim([0.01, 1.1])
 
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
@@ -1372,7 +1043,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
 
     
     # ax3
-    ax3.set_ylabel(w_label, **textp)
+    ax3.set_ylabel(w_label, **fs_p)
     ax3.set_ylim([0.01, 1.1])
     
     ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
@@ -1387,7 +1058,6 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
             
         log_max['t='+str(t)] = max(logGBF_list)
         
-        w_list = []
         for n in range(n_range[0], n_range[1]):
             w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
             ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
@@ -1396,184 +1066,122 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
+    plt.xlabel(xlabel, **fs_p)
     plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
+    ax1.tick_params(axis='both', direction='in', which='major', **ls_p)
+    ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
+    ax3.tick_params(axis='both', direction='in', which='major', **ls_p)
 
     plt.savefig('./new_plots/'+fit_name+'_gA-'+tmin_name+'_tmin.pdf', transparent=True)
-    
-    #####################################################################################
-    #####################################################################################
-    # gV - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)     
+def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, fit_name, xlabel):
 
-
-    # ax1
-    ax1.set_ylabel(ov00_label, **textp)
-    ax1.set_ylim(gV_ylim)
-
-
-    for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gV'][n]), yerr=np.array(value['gV_err'][n]), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gV'][best_n][best_t_]+value['gV_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gV'][best_n][best_t - t_range[0]]-value['gV_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
-
-    # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['gV'][best_n][best_t_]]), yerr=np.array([value['gV_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-    print("Best fit")
-    print(np.array([value['gV'][best_n][best_t_]]), np.array([value['gV_err'][best_n][best_t_]]))
-    
-    
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    
-    # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
-    
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-    
-    log_max = {}
-    
-    for t in range(t_range[0], t_range[1]):
-        t_ = t - t_range[0]
-        logGBF_list = []
-        for n in range(n_range[0], n_range[1]):
-            logGBF_list.append(value['logGBF'][n][t_])
-            
-        log_max['t='+str(t)] = max(logGBF_list)
-        
-        w_list = []
-        for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
-        
-    # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    plt.savefig('./new_plots/'+fit_name+'_gV-'+tmin_name+'_tmin.pdf', transparent=True)
-
-    #####################################################################################
-    #####################################################################################
-    # E0 - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
-
-    # ax1
-    ax1.set_ylabel(e0_label, **textp)
-    ax1.set_ylim(E0_ylim)
-
-
-    for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['E0'][best_n][best_t_]+value['E0_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['E0'][best_n][best_t - t_range[0]]-value['E0_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
-
-    # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['E0'][best_n][best_t_]]), yerr=np.array([value['E0_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-
-
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    
-    # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
-    
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-    
-    log_max = {}
-    
-    for t in range(t_range[0], t_range[1]):
-        t_ = t - t_range[0]
-        logGBF_list = []
-        for n in range(n_range[0], n_range[1]):
-            logGBF_list.append(value['logGBF'][n][t_])
-            
-        log_max['t='+str(t)] = max(logGBF_list)
-        
-        w_list = []
-        for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
-        
-    # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
-    
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
-
-# %%
-def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel):
     value={}
     value['Q']=[]
-    value['E0']=[]
-    value['E0_err']=[]
     value['gA']=[]
     value['gA_err']=[]
-    value['gV']=[]
-    value['gV_err']=[]
+
+    x=[]
+
+    for situation in situation_list:
+        tmax_dict = {}
+        tmax_dict['2pt'] = situation.pt2_tmax
+        tmax_dict['3pt'] = situation.pt3_A3_tsep_max
+        tmax_dict['sum'] = situation.sum_A3_tsep_max
+
+        x.append(tmax_dict[tmax_name])  # here is the varying parameter
+
+    x.sort()
+    for i in range(len(x)):
+        for situation in situation_list:
+            tmax_dict = {}
+            tmax_dict['2pt'] = situation.pt2_tmax
+            tmax_dict['3pt'] = situation.pt3_A3_tsep_max
+            tmax_dict['sum'] = situation.sum_A3_tsep_max
+            if tmax_dict[tmax_name] == x[i]:
+                value['Q'].append(situation.Q_value)
+                value['gA'].append(situation.A300)
+                value['gA_err'].append(situation.A300_err)
+
+    print(x)
+    
+    best_t_ = best_t - t_range[0]
+
+    #####################################################################################
+    #####################################################################################
+
+    # gA - tmax
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
+
+    ax1.tick_params(direction='in', **ls_p)
+
+    ax1.errorbar(np.array(x)-1, np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
+
+    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, (value['gA'][best_t_]+value['gA_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_t_]-value['gA_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n-2], alpha=0.2)
+    # best fit
+    ax1.errorbar(np.array([best_t])-1, np.array([value['gA'][best_t_]]), yerr=np.array([value['gA_err'][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
+
+
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
+
+    ax2.scatter(np.array(x)-1, np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
+
+    # best fit
+    ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
+
+    ax2.tick_params(direction='in', **ls_p)
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.xlabel(xlabel, **fs_p)
+    plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
+
+    plt.savefig('./new_plots/'+fit_name+'_gA-'+tmax_name+'_tmax.pdf', transparent=True)
+
+def best_fit_comparison_plot(A3, A3_err, Q):
+    n_ga = [1.266, 0.011]
+    y1a = n_ga[0] - n_ga[1]
+    y2a = n_ga[0] + n_ga[1]
+
+    #####################gA
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)    
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
+    ax1.tick_params(axis='both', which='major', direction='in', **ls_p)
+
+    for i in range(3):
+        ax1.errorbar(np.array([i]), np.array(A3[i]), yerr=np.array(A3_err[i]), marker='o', color="k", **errorp)
+
+    ax1.fill_between(x = [-1, 3], y1 = [y1a, y1a], y2 = [y2a, y2a], alpha = 0.2, color="k")
+
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 3 + 0.5, 1), 0.1 * np.ones([4]), 'r--')
+
+    for i in range(3):
+        ax2.scatter(np.array([i]), np.array(Q[i]), marker='o', c='', edgecolors="k")
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+
+    plt.xticks([0, 1, 2], [r'$23\rm s$', r'$2\rm s$', r'$23$'], **fs_p)
+    plt.xlim([-0.5, 2.5])
+    ax2.tick_params(axis='both', which='major', direction='in', **ls_p)
+    plt.savefig("./new_plots/ga_summary.pdf", transparent=True)
+
+def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, fit_name, xlabel):
+    value={}
+    value['Q']=[]
+    value['gA']=[]
+    value['gA_err']=[]
     x = []
 
     for n_ in range(n_range[1]):
         value['Q'].append([])
-        value['E0'].append([])
-        value['E0_err'].append([])
         value['gA'].append([])
         value['gA_err'].append([])
-        value['gV'].append([])
-        value['gV_err'].append([])
         x.append([])
 
 
@@ -1581,19 +1189,13 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
         n_ = n - n_range[0]
         for situation in situation_list[n_]:         
             value['Q'][n].append(situation.Q_value)
-            value['E0'][n].append(situation.E0)
-            value['E0_err'][n].append(situation.E0_err)
             value['gA'][n].append(situation.A300)
             value['gA_err'][n].append(situation.A300_err)
-            value['gV'][n].append(situation.V400)
-            value['gV_err'][n].append(situation.V400_err)
 
             tmin_dict = {}
             tmin_dict['2pt'] = situation.pt2_tmin
             tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-            tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
             tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-            tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
 
             x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
@@ -1608,24 +1210,16 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     plot_tmax = t_range[0][1]
 
     #####################################################################################
-    #####################################################################################
     # gA - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      
-
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)     
 
     # ax1
-    ax1.set_ylabel(oa00_label, **textp)
+    ax1.set_ylabel(ga_label, **gA_fs_p)
     ax1.set_ylim(gA_ylim)
-
 
     for n in range(n_range[0], n_range[1]):
         n_ = n - n_range[0]
-        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], **errorp)
+        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
 
     # best fit
     ax1.fill_between(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][best_n][best_t_[best_n_]]+value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), (value['gA'][best_n][best_t_[best_n_]]-value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), color=color_list[best_n - 2], alpha=0.2)
@@ -1637,14 +1231,14 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
         
         ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gA'][n][best_t_[n_]]]), yerr=np.array([value['gA_err'][n][best_t_[n_]]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
     
-    ax1.plot()
+    legend_without_duplicate_labels(ax1, 'lower center', 3)
     
     print("Best fit")
     print(np.array([value['gA'][best_n][best_t_[best_n_]]]), np.array([value['gA_err'][best_n][best_t_[best_n_]]]))
     
     
     # ax2
-    ax2.set_ylabel(q_label, **textp)
+    ax2.set_ylabel(q_label, **fs_p)
     ax2.set_ylim([0, 1.1])
 
     ax2.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), 0.1 * np.ones([plot_tmax - plot_tmin + 1]), 'r--')
@@ -1657,147 +1251,66 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, g
     for n_ in range(n_range[1] - n_range[0]):
         n = n_ + n_range[0]    
         ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker='o', c=color_list[n-2])
-    
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
+    plt.xlabel(xlabel, **fs_p)
     plt.xlim([plot_tmin - 0.5, plot_tmax - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
+    ax1.tick_params(axis='both', direction='in', which='major', **ls_p)
+    ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
 
     plt.savefig('./new_plots/'+fit_name+'_gA-'+tmin_name+'_tmin.pdf', transparent=True)
-    
-    #####################################################################################
-    #####################################################################################
-    # gV - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)      
+def tau_cut_plot(A3, A3_err, Q, n, fit_name):
+    #####################gA
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)  
 
+    ax1.set_ylabel(ga_label, **gA_fs_p)
+    ax1.set_ylim(gA_ylim)
 
-    # ax1
-    ax1.set_ylabel(ov00_label, **textp)
-    ax1.set_ylim(gV_ylim)
+    ax1.errorbar(np.arange(0, 5), np.array(A3), yerr=np.array(A3_err), marker='o', color=color_list[n-2], **errorp)
 
+    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[1] + A3_err[1])*np.ones([6]), (A3[1] - A3_err[1])*np.ones([6]), color=color_list[n-2], alpha=0.2)
 
-    for n in range(n_range[0], n_range[1]):
-        n_ = n - n_range[0]
-        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gV'][n]), yerr=np.array(value['gV_err'][n]), marker='o', color=color_list[n-2], **errorp)
+    if fit_name == '23s':
+        best_i = 1
+
+    elif fit_name == '23':
+        best_i = 0
 
     # best fit
-    ax1.fill_between(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gV'][best_n][best_t_[best_n_]]+value['gV_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), (value['gV'][best_n][best_t_[best_n_]]-value['gV_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), color=color_list[best_n - 2], alpha=0.2)
-    for n_ in range(n_range[1] - n_range[0]):
-        n = n_ + n_range[0]
-        if n != best_n:
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gV'][n][best_t_[n_]]+value['gV_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gV'][n][best_t_[n_]]-value['gV_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
+    ax1.errorbar(np.array([best_i]), np.array([A3[best_i]]), yerr=np.array([A3_err[best_i]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
 
-        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gV'][n][best_t_[n_]]]), yerr=np.array([value['gV_err'][n][best_t_[n_]]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
-        
-    print("Best fit")
-    print(np.array([value['gV'][best_n][best_t_[best_n_]]]), np.array([value['gV_err'][best_n][best_t_[best_n_]]]))
-    
-    
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
+
+    ax2.set_ylabel(q_label, **fs_p)
     ax2.set_ylim([0, 1.1])
+    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
 
-    ax2.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), 0.1 * np.ones([plot_tmax - plot_tmin + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        n_ = n - n_range[0]
-        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
+    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
 
     # best fit
-    for n_ in range(n_range[1] - n_range[0]):
-        n = n_ + n_range[0]    
-        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker='o', c=color_list[n-2])
-
+    ax2.scatter(np.array([best_i]), np.array([Q[best_i]]), marker='o', c=color_list[n-2])
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([plot_tmin - 0.5, plot_tmax - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    plt.savefig('./new_plots/'+fit_name+'_gV-'+tmin_name+'_tmin.pdf', transparent=True)
-
-    #####################################################################################
-    #####################################################################################
-    # E0 - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)    
-
-    # ax1
-    ax1.set_ylabel(e0_label, **textp)
-    ax1.set_ylim(E0_ylim)
 
 
-    for n in range(n_range[0], n_range[1]):
-        n_ = n - n_range[0]
-        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker='o', color=color_list[n-2], **errorp)
+    if fit_name == '23s':
+        plt.xticks([0, 1, 2, 3, 4], [r'$\tau_{\rm inc}^{\rm opt} + 1$', r'$\tau_{\rm inc}^{\rm opt}$', r'$\tau_{\rm inc}^{\rm opt} - 1$', r'$\tau_{\rm inc}^{\rm opt} - 2$', r'$\tau_{\rm inc}^{\rm opt} - 3$'])
 
-    # best fit
-    ax1.fill_between(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['E0'][best_n][best_t_[best_n_]]+value['E0_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), (value['E0'][best_n][best_t_[best_n_]]-value['E0_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), color=color_list[best_n - 2], alpha=0.2)
-    for n_ in range(n_range[1] - n_range[0]):
-        n = n_ + n_range[0]
-        if n != best_n:
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['E0'][n][best_t_[n_]]+value['E0_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['E0'][n][best_t_[n_]]-value['E0_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
+    elif fit_name == '23':
+        plt.xticks([0, 1, 2, 3, 4], [r'$\tau_{\rm inc}^{\rm opt}$', r'$\tau_{\rm inc}^{\rm opt} - 1$', r'$\tau_{\rm inc}^{\rm opt} - 2$', r'$\tau_{\rm inc}^{\rm opt} - 3$', r'$\tau_{\rm inc}^{\rm opt} - 4$'])
 
-        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['E0'][n][best_t_[n_]]]), yerr=np.array([value['E0_err'][n][best_t_[n_]]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+    plt.xlim([-0.5, 4.5])
+    ax1.tick_params(axis='both', which='major', direction='in', **ls_p)
+    ax2.tick_params(axis='both', which='major', direction='in', **ls_p)
     
-    
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
+    plt.savefig("./new_plots/"+fit_name+"_gA_tins.pdf", transparent=True)
 
-    ax2.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), 0.1 * np.ones([plot_tmax - plot_tmin + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        n_ = n - n_range[0]
-        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    for n_ in range(n_range[1] - n_range[0]):
-        n = n_ + n_range[0]    
-        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker='o', c=color_list[n-2])
-    
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([plot_tmin - 0.5, plot_tmax - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
-
-# %%
-def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, gA_ylim, gV_ylim, E0_ylim, z0_ylim, fit_name, xlabel):
+def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, fit_name, xlabel):
     value={}
     value['Q']=[]
     value['logGBF']=[]
     value['E0']=[]
     value['E0_err']=[]
-    value['z0']=[]
-    value['z0_err']=[]
-    value['gA']=[]
-    value['gA_err']=[]
-    value['gV']=[]
-    value['gV_err']=[]
     x = []
 
     for n_ in range(n_range[1]):
@@ -1805,16 +1318,10 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
         value['logGBF'].append([])
         value['E0'].append([])
         value['E0_err'].append([])
-        value['z0'].append([])
-        value['z0_err'].append([])
-        value['gA'].append([])
-        value['gA_err'].append([])
-        value['gV'].append([])
-        value['gV_err'].append([])
         x.append([])
 
 
-    for n in range(n_range[0], n_range[1]): # n represents nstates value
+    for n in range(n_range[0], n_range[1]):
         for situation in situation_list:         
             nstate_dict = {}
             nstate_dict['2pt'] = situation.pt2_nstates
@@ -1822,6 +1329,11 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
             nstate_dict['sum'] = situation.sum_nstates
             
             if nstate_dict[nstate_name] == n:
+                value['Q'][n].append(situation.Q_value)
+                value['logGBF'][n].append(situation.log_GBF)
+                value['E0'][n].append(situation.E0)
+                value['E0_err'][n].append(situation.E0_err)
+                
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
@@ -1831,214 +1343,34 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
                 
                 x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
-        x[n].sort() # fix n, search for all situations to complete x[n], then sort x[n]
-
-        for i in range(len(x[n])):
-            for situation in situation_list:
-                nstate_dict = {}
-                nstate_dict['2pt'] = situation.pt2_nstates
-                nstate_dict['3pt'] = situation.pt3_nstates
-                nstate_dict['sum'] = situation.sum_nstates
-
-                tmin_dict = {}
-                tmin_dict['2pt'] = situation.pt2_tmin
-                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-                tmin_dict['3pt_gV'] = situation.pt3_V4_tsep_min
-                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-                tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
-                
-                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == x[n][i]:
-                    value['Q'][n].append(situation.Q_value)
-                    value['logGBF'][n].append(situation.log_GBF)
-                    value['E0'][n].append(situation.E0)
-                    value['E0_err'][n].append(situation.E0_err)
-                    value['gA'][n].append(situation.A300)
-                    value['gA_err'][n].append(situation.A300_err)
-                    value['gV'][n].append(situation.V400)
-                    value['gV_err'][n].append(situation.V400_err)
-
     print(x)
     
     best_n_ = best_n - n_range[0]
     best_t_ = best_t - t_range[0]
 
     #####################################################################################
-    #####################################################################################
-    # gA - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
-
-
-    # ax1
-    ax1.set_ylabel(oa00_label, **textp)
-    ax1.set_ylim(gA_ylim)
-
-
-    for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.array(x[n]) + (n-4) * 0.1, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gA'][best_n][best_t_]+value['gA_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_n][best_t - t_range[0]]-value['gA_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
-
-    # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['gA'][best_n][best_t_]]), yerr=np.array([value['gA_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-    print("Best fit")
-    print(np.array([value['gA'][best_n][best_t_]]), np.array([value['gA_err'][best_n][best_t_]]))
-    
-    
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.array(x[n]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    
-    # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
-    
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-    
-    log_max = {}
-    
-    for t in range(t_range[0], t_range[1]):
-        t_ = t - t_range[0]
-        logGBF_list = []
-        for n in range(n_range[0], n_range[1]):
-            logGBF_list.append(value['logGBF'][n][t_])
-            
-        log_max['t='+str(t)] = max(logGBF_list)
-        
-        w_list = []
-        for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
-        
-    # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    #plt.savefig('./new_plots/'+fit_name+'_gA-'+tmin_name+'_tmin.pdf', transparent=True)
-    
-    #####################################################################################
-    #####################################################################################
-    # gV - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
-
-
-    # ax1
-    ax1.set_ylabel(ov00_label, **textp)
-    ax1.set_ylim(gV_ylim)
-
-
-    for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['gV'][n]), yerr=np.array(value['gV_err'][n]), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['gV'][best_n][best_t_]+value['gV_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gV'][best_n][best_t - t_range[0]]-value['gV_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
-
-    # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['gV'][best_n][best_t_]]), yerr=np.array([value['gV_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-    print("Best fit")
-    print(np.array([value['gV'][best_n][best_t_]]), np.array([value['gV_err'][best_n][best_t_]]))
-    
-    
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    
-    # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
-    
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-    
-    log_max = {}
-    
-    for t in range(t_range[0], t_range[1]):
-        t_ = t - t_range[0]
-        logGBF_list = []
-        for n in range(n_range[0], n_range[1]):
-            logGBF_list.append(value['logGBF'][n][t_])
-            
-        log_max['t='+str(t)] = max(logGBF_list)
-        
-        w_list = []
-        for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
-        
-    # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    #plt.savefig('./new_plots/'+fit_name+'_gV-'+tmin_name+'_tmin.pdf', transparent=True)
-
-    #####################################################################################
-    #####################################################################################
     # E0 - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)     
 
     # ax1
-    ax1.set_ylabel(e0_label, **textp)
+    ax1.set_ylabel(e0_label, **fs_p)
     ax1.set_ylim(E0_ylim)
 
-
     for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker='o', color=color_list[n-2], **errorp)
+        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker='o', color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
 
     ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['E0'][best_n][best_t_]+value['E0_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['E0'][best_n][best_t - t_range[0]]-value['E0_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
 
     # best fit
     ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['E0'][best_n][best_t_]]), yerr=np.array([value['E0_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
 
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
+    ax1.legend(loc='lower center', ncol=4, fontsize=18, handletextpad=0, columnspacing =0)
 
+    legend_without_duplicate_labels(ax1, 'lower center', 4)
+    
+    # ax2
+    ax2.set_ylabel(q_label, **fs_p)
+    ax2.set_ylim([0, 1.1])
 
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
@@ -2050,8 +1382,8 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
 
     
     # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
+    ax3.set_ylabel(w_label, **fs_p)
+    ax3.set_ylim([0, 1.3])
     
     ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
     
@@ -2075,438 +1407,48 @@ def tmin_late_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, sit
     
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
+    plt.xlabel(xlabel, **fs_p)
     plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
+    ax1.tick_params(axis='both', direction='in', which='major', **ls_p)
+    ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
+    ax3.tick_params(axis='both', direction='in', which='major', **ls_p)
 
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    #plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
     plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
-    
-    #####################################################################################
-    #####################################################################################
-    # z0 - tmin
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex = True, gridspec_kw=gridspec_tmin)      
-
-    # ax1
-    ax1.set_ylabel(z0_label, **textp)
-    ax1.set_ylim(z0_ylim)
-
-
-    for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['z0'][n]), yerr=np.array(value['z0_err'][n]), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['z0'][best_n][best_t_]+value['z0_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['z0'][best_n][best_t - t_range[0]]-value['z0_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
-
-    # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['z0'][best_n][best_t_]]), yerr=np.array([value['z0_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-
-    # ax2
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-
-
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    
-    # ax3
-    ax3.set_ylabel(w_label, **textp)
-    ax3.set_ylim([0, 1.1])
-    
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-    
-    log_max = {}
-    
-    for t in range(t_range[0], t_range[1]):
-        t_ = t - t_range[0]
-        logGBF_list = []
-        for n in range(n_range[0], n_range[1]):
-            logGBF_list.append(value['logGBF'][n][t_])
-            
-        log_max['t='+str(t)] = max(logGBF_list)
-        
-        w_list = []
-        for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
-        
-    # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
-    
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, **textp)
-    plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
-    ax1.tick_params(axis='both', which='major', **labelp)
-    ax2.tick_params(axis='both', which='major', **labelp)
-    ax3.tick_params(axis='both', which='major', **labelp)
-
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    #plt.savefig('./new_plots/'+fit_name+'_E0-'+tmin_name+'_tmin.pdf', transparent=True)
-
-# %%
-def tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name=None):
-
-    value={}
-    value['Q']=[]
-    value['E0']=[]
-    value['E0_err']=[]
-    value['gA']=[]
-    value['gA_err']=[]
-    value['gV']=[]
-    value['gV_err']=[]
-
-    x=[]
-
-    for situation in situation_list:
-        tmax_dict = {}
-        tmax_dict['2pt'] = situation.pt2_tmax
-        tmax_dict['3pt'] = situation.pt3_A3_tsep_max
-        tmax_dict['sum'] = situation.sum_A3_tsep_max
-
-        x.append(tmax_dict[tmax_name])  # here is the varying parameter
-
-    x.sort()
-    for i in range(len(x)):
-        for situation in situation_list:
-            tmax_dict = {}
-            tmax_dict['2pt'] = situation.pt2_tmax
-            tmax_dict['3pt'] = situation.pt3_A3_tsep_max
-            tmax_dict['sum'] = situation.sum_A3_tsep_max
-            if tmax_dict[tmax_name] == x[i]:
-                value['Q'].append(situation.Q_value)
-                value['E0'].append(situation.E0)
-                value['E0_err'].append(situation.E0_err)
-                value['gA'].append(situation.A300)
-                value['gA_err'].append(situation.A300_err)
-                value['gV'].append(situation.V400)
-                value['gV_err'].append(situation.V400_err)
-
-    print(x)
-    
-    best_t_ = best_t - t_range[0]
-
-    #####################################################################################
-    #####################################################################################
-
-    # gA - tmax
-    fig=plt.figure(figsize=fig_size)
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(oa00_label, fontsize=fs_text)
+def prior_width_plot(value):
+    # gA - prior width
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_prior_width)      
+    ax1.set_ylabel(ga_label, **gA_fs_p)
     ax1.set_ylim(gA_ylim)
+    ax1.tick_params(axis='both', which='major', direction='in', **ls_p)
 
-    ax1.tick_params(direction='in', labelsize=tick_size)
+    mask = [0, 1, 3, 4]
+    ax1.errorbar([-0.05, 0.95, 2.95, 3.95], np.array(value['A3'])[mask], yerr=np.array(value['A3_err'])[mask],label=r'$\rm{g.s.}$', marker="P", color=red, **errorp)
+    ax1.errorbar([0.05, 1.05, 3.05, 4.05], np.array(value['A3_'])[mask], yerr=np.array(value['A3_err_'])[mask], label=r'$\rm{g.s.\ and\ 1\ e.s.}$', marker="^", color=blue, **errorp)
 
-    ax1.errorbar(np.array(x)-1, np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
+    ax1.fill_between(np.arange(- 0.5, 5.5, 1), (value['A3'][2]+value['A3_err'][2])*np.ones([6]), (value['A3'][2]-value['A3_err'][2])*np.ones([6]), color=green, alpha=0.3)
 
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, (value['gA'][best_t_]+value['gA_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gA'][best_t_]-value['gA_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n-2], alpha=0.2)
-    # best fit
-    ax1.errorbar(np.array([best_t])-1, np.array([value['gA'][best_t_]]), yerr=np.array([value['gA_err'][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
+    # highest logGBF
+    ax1.errorbar(np.array([2]), np.array([value['A3'][2]]), yerr=np.array([value['A3_err'][2]]), color=green, marker="o", label=r"$\rm{best\ fit}$", **errorb)
 
+    legend_without_duplicate_labels(ax1, 'lower center', 3)
 
-    ax2.set_ylabel(q_label, fontsize=fs_text)
+    ax2.set_ylabel(q_label, **fs_p)
     ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
+    ax2.plot(np.arange( - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
 
-    ax2.scatter(np.array(x)-1, np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
+    ax2.scatter([-0.05, 0.95, 2.95, 3.95], np.array(value['Q'])[mask], marker='P', c='', edgecolors=red)
+    ax2.scatter([0.05, 1.05, 3.05, 4.05], np.array(value['Q_'])[mask], marker='^', c='', edgecolors=blue)
 
-    # best fit
-    ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
+    # highest logGBF
+    ax2.scatter(np.array([2]), np.array([value['Q'][2]]), marker="o", c=green)
 
-    ax2.tick_params(direction='in', labelsize=tick_size)
+    ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, fontsize=fs_text)
-    plt.xlim([4.5, 14.5])
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    if save_name != None:
-        plt.savefig('./new_plots/'+fit_name+'_gA-'+save_name+'_tmax.pdf', transparent=True)
-    else:
-        plt.savefig('./new_plots/'+fit_name+'_gA-'+tmax_name+'_tmax.pdf', transparent=True)
-    
-    #####################################################################################
-    #####################################################################################
-
-    # gV - tmax
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
-    ax1.set_ylabel(ov00_label, fontsize=fs_text)
-    ax1.set_ylim(gV_ylim)
-    ax1.tick_params(direction='in', labelsize=tick_size)
-
-    ax1.errorbar(np.array(x)-1, np.array(value['gV']), yerr=np.array(value['gV_err']), marker='o', color=color_list[best_n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, (value['gV'][best_t_]+value['gV_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['gV'][best_t_]-value['gV_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n-2], alpha=0.2)
-    # best fit
-    ax1.errorbar(np.array([best_t])-1, np.array([value['gV'][best_t_]]), yerr=np.array([value['gV_err'][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-
-
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    ax2.scatter(np.array(x)-1, np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
-
-    ax2.tick_params(direction='in', labelsize=tick_size)
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, fontsize=fs_text)
-    plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    if save_name != None:
-        plt.savefig('./new_plots/'+fit_name+'_gV-'+save_name+'_tmax.pdf', transparent=True)
-    else: 
-        plt.savefig('./new_plots/'+fit_name+'_gV-'+tmax_name+'_tmax.pdf', transparent=True)
-
-    #####################################################################################
-    #####################################################################################
-
-    # E0 - tmax
-    fig=plt.figure()
-    plt.rcParams['figure.figsize'] = fig_size
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['ytick.direction'] = 'in'
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)     
-    ax1.set_ylabel(e0_label, **textp)
-    ax1.set_ylim(E0_ylim)
-
-
-    ax1.errorbar(np.array(x)-1, np.array(value['E0']), yerr=np.array(value['E0_err']), marker='o', color=color_list[best_n-2], **errorp)
-
-    ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, (value['E0'][best_t_]+value['E0_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['E0'][best_t_]-value['E0_err'][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n-2], alpha=0.2)
-    # best fit
-    ax1.errorbar(np.array([best_t])-1, np.array([value['E0'][best_t_]]), yerr=np.array([value['E0_err'][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-
-
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1)-1, 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
-
-    ax2.scatter(np.array(x)-1, np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_t])-1, np.array([value['Q'][best_t_]]), marker='o', c=color_list[best_n-2])
-
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, fontsize=fs_text)
-    plt.xlim([t_range[0] - 1.5, t_range[1] - 1.5])
-    ax1.tick_params(direction='in', labelsize=tick_size)
-    ax2.tick_params(direction='in', labelsize=tick_size)
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    if save_name != None:
-        plt.savefig('./new_plots/'+fit_name+'_E0-'+save_name+'_tmax.pdf', transparent=True)
-    else:
-        plt.savefig('./new_plots/'+fit_name+'_E0-'+tmax_name+'_tmax.pdf', transparent=True)
-
-# %%
-def tau_cut_plot(E0, E0_err, A3, A3_err, V4, V4_err, Q, n, fit_name, gA_ylim, gV_ylim, E0_ylim):
-    #####################gA
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
-    ax1.set_ylim(gA_ylim)
-
-    ax1.errorbar(np.arange(0, 5), np.array(A3), yerr=np.array(A3_err), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (A3[1] + A3_err[1])*np.ones([6]), (A3[1] - A3_err[1])*np.ones([6]), color=color_list[n-2], alpha=0.2)
-
-    best_i = 1
-
-    # best fit
-    ax1.errorbar(np.array([best_i]), np.array([A3[best_i]]), yerr=np.array([A3_err[best_i]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
-
-
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
-
-    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([best_i]), np.array([Q[best_i]]), marker='o', c=color_list[n-2])
-
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    #plt.xlabel('$tau\ cut$', **textp)
-    plt.xticks([0, 1, 2, 3, 4], [r'$\tau_c^{\rm opt} - 1$', r'$\tau_c^{\rm opt}$', r'$\tau_c^{\rm opt} + 1$', r'$\tau_c^{\rm opt} + 2$', r'$\tau_c^{\rm opt} + 3$'])
-    #plt.xticks([0, 1, 2, 3, 4], [r'$\tau_c^{\rm opt}$', r'$\tau_c^{\rm opt} + 1$', r'$\tau_c^{\rm opt} + 2$', r'$\tau_c^{\rm opt} + 3$', r'$\tau_c^{\rm opt} + 4$'])
-    plt.xlabel(r'$\tau_c$', fontsize=20)
-    plt.xlim([-0.5, 4.5])
-    ax1.tick_params(axis='both', which='major', direction='in', **labelp)
-    ax2.tick_params(axis='both', which='major', direction='in', **labelp)
-    plt.tight_layout(pad=30, rect=plt_axes)
-    plt.savefig("./new_plots/"+fit_name+"_gA_tins.pdf", transparent=True)
-
-    #####################gV
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(ov00_label, **textp)
-    ax1.set_ylim(gV_ylim)
-
-
-    ax1.errorbar(np.arange(0, 5), np.array(V4), yerr=np.array(V4_err), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (V4[2] + V4_err[2])*np.ones([6]), (V4[2] - V4_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
-    # best fit
-    ax1.errorbar(np.array([1]), np.array([V4[1]]), yerr=np.array([V4_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
-
-
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
-
-    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
-
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    #plt.xlabel('$tau\ cut$', **textp)
-    plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
-    plt.xlim([-0.5, 4.5])
-    ax2.tick_params(axis='both', which='major', **labelp)
-    plt.tight_layout(pad=30, rect=plt_axes)
-    plt.savefig("./new_plots/"+fit_name+"_gV_tins.pdf", transparent=True)
-
-
-    ######################E0
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(e0_label, **textp)
-    ax1.set_ylim(E0_ylim)
-
-    ax1.errorbar(np.arange(0, 5), np.array(E0), yerr=np.array(E0_err), marker='o', color=color_list[n-2], **errorp)
-
-    ax1.fill_between(np.arange(0 - 0.5, 5 + 0.5, 1), (E0[2] + E0_err[2])*np.ones([6]), (E0[2] - E0_err[2])*np.ones([6]), color=color_list[n-2], alpha=0.2)
-    # best fit
-    ax1.errorbar(np.array([1]), np.array([E0[1]]), yerr=np.array([E0_err[1]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
-
-
-    ax2.set_ylabel(q_label, **textp)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(0 - 0.5, 5 + 0.5, 1), 0.1 * np.ones([6]), 'r--')
-
-    ax2.scatter(np.arange(0, 5), np.array(Q), marker='o', c='', edgecolors=color_list[n-2])
-
-    # best fit
-    ax2.scatter(np.array([1]), np.array([Q[1]]), marker='o', c=color_list[n-2])
-
-    ax2.tick_params(direction='in', labelsize=tick_size)
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    #plt.xlabel('$tau\ cut$', **textp)
-    plt.xticks([0, 1, 2, 3, 4], [r'$-1$', r'$tau\ cut$', r'$+1$', r'$+2$', r'$+3$'])
-    plt.xlim([-0.5, 4.5])
-    
-    plt.tight_layout(pad=30, rect=plt_axes)
-    plt.savefig("./new_plots/"+fit_name+"_E0_tins.pdf", transparent=True)
-
-# %%
-def tmax_scattered_plot(t_list, best_n, tmax_name, situation_list, gA_ylim, gV_ylim, E0_ylim, fit_name, xlabel, save_name=None):
-
-    value={}
-    value['Q']=[]
-    value['E0']=[]
-    value['E0_err']=[]
-    value['gA']=[]
-    value['gA_err']=[]
-    value['gV']=[]
-    value['gV_err']=[]
-
-    x=[]
-
-    for situation in situation_list:
-        tmax_dict = {}
-        tmax_dict['2pt'] = situation.pt2_tmax
-        tmax_dict['3pt'] = situation.pt3_A3_tsep_max
-        tmax_dict['sum'] = situation.sum_A3_tsep_max
-
-        x.append(tmax_dict[tmax_name])  # here is the varying parameter
-
-    x.sort()
-    for i in range(len(x)):
-        for situation in situation_list:
-            tmax_dict = {}
-            tmax_dict['2pt'] = situation.pt2_tmax
-            tmax_dict['3pt'] = situation.pt3_A3_tsep_max
-            tmax_dict['sum'] = situation.sum_A3_tsep_max
-            if tmax_dict[tmax_name] == x[i]:
-                value['Q'].append(situation.Q_value)
-                value['E0'].append(situation.E0)
-                value['E0_err'].append(situation.E0_err)
-                value['gA'].append(situation.A300)
-                value['gA_err'].append(situation.A300_err)
-                value['gV'].append(situation.V400)
-                value['gV_err'].append(situation.V400_err)
-
-    print(x)
-
-    #####################################################################################
-    #####################################################################################
-
-    gA_mean = 1.2534405806490314
-    gA_sdev = 0.01930206389474567
-
-    # gA - tmax
-    fig=plt.figure(figsize=fig_size)
-    plt.rcParams['figure.figsize'] = fig_size
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmax)      
-    ax1.set_ylabel(ga_label, fontsize=fs_text_gA)
-    ax1.set_ylim(gA_ylim)
-    ax1.tick_params(direction='in', labelsize=tick_size)
-
-    ax1.errorbar(np.array(x), np.array(value['gA']), yerr=np.array(value['gA_err']), marker='o', color=color_list[best_n-2], **errorp)
-
-    ax1.fill_between(np.arange(4.5, 15.5, 1), (gA_mean + gA_sdev) * np.ones([11]), (gA_mean - gA_sdev) * np.ones([11]), color=color_list[best_n-2], alpha=0.2)
-
-
-    ax2.set_ylabel(q_label, fontsize=fs_text)
-    ax2.set_ylim([0, 1.1])
-    ax2.plot(np.arange(4.5, 15.5, 1), 0.1 * np.ones([11]), 'r--')
-
-    ax2.scatter(np.array(x), np.array(value['Q']), marker='o', c='', edgecolors=color_list[best_n-2])
-
-    ax2.tick_params(direction='in', labelsize=tick_size)
-
-
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.xlabel(xlabel, fontsize=fs_text)
-    plt.xlim([4.5, 14.5])
-    
-    plt.tight_layout(pad=30, rect=plt_axes)
-
-    if save_name != None:
-        plt.savefig('./new_plots/'+fit_name+'_gA-'+save_name+'_tmax.pdf', transparent=True)
-    else:
-        plt.savefig('./new_plots/'+fit_name+'_gA-'+tmax_name+'_tmax.pdf', transparent=True)
-    
+    plt.xlabel(r'$ \rm prior\ width$', **fs_p)
+    plt.xticks([0, 1, 2, 3, 4], [r'$0.1\sigma$', r'$0.5\sigma$', r'$1\sigma$', r'$2\sigma$', r'$10\sigma$'], **fs_p) 
+    plt.xlim([- 0.5, 4.5])
+
+    plt.savefig('./new_plots/'+'23s_gA-prior_width.pdf', transparent=True)
+    plt.show()

@@ -183,7 +183,7 @@ class Fit():
 
         return val 
     
-    def summation_same_can(self, A3_t, V4_t, p):
+    def summation_same_can(self, A3_t, V4_t, p): # when sumsub has same n_s as pt2/pt3, they should use same cans of dE, z and gA/gV
         E_list = {}
         for i in range(self.sum_nstates): #initialize       
             E_list['E'+str(i)] = p['E0']
