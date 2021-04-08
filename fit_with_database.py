@@ -20,12 +20,12 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
         pt2_t = np.array([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
 
-        pt2_range = [pt2_t[0], pt2_t[-1]+1]
+        pt2_range = [pt2_t[0], pt2_t[-1]]
 
-        pt3_A3_t = [3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14]
-        pt3_A3_tau = [1, 1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 7]
+        pt3_A3_t = [3, 5, 5, 7, 7, 7]
+        pt3_A3_tau = [1, 1, 2, 1, 2, 3]
 
-        pt3_A3_range = [pt3_A3_t[0], pt3_A3_t[-1]+1]
+        pt3_A3_range = [pt3_A3_t[0], pt3_A3_t[-1]]
         pt3_V4_range = pt3_A3_range
 
         pt3_V4_t = pt3_A3_t
@@ -34,10 +34,10 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
         pt3_A3 = [np.array(pt3_A3_t), np.array(pt3_A3_tau)]
         pt3_V4 = [np.array(pt3_V4_t), np.array(pt3_V4_tau)]
 
-        sum_A3 = np.array([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+        sum_A3 = np.array([3, 5])
         sum_V4 = sum_A3 
 
-        sum_A3_range = [sum_A3[0], sum_A3[-1]+1]
+        sum_A3_range = [sum_A3[0], sum_A3[-1]]
         sum_V4_range = sum_A3_range
 
         data_avg_dict_completed = prepare_data.add_sum_data_scattered(data_avg_dict, sum_tau_cut, sum_A3)
@@ -144,11 +144,11 @@ data_avg_dict = prepare_data.read_data_with_average()
 #print([i.mean for i in data_avg_dict['pt3_A3_tsep_10']])
 
 include_2pt = True
-include_3pt = False
+include_3pt = True
 include_sum = True
 
 sum_tau_cut = 1
-id_num = 6
+id_num = 1
 
 fit_type = "continuous" 
 save = False
@@ -177,16 +177,16 @@ elif fit_type == "continuous":
         pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1) # for 23 fit, start from 1
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(5, 6) for tmax in range(18, 19)]
-    pt2_nstates_list = [nstates for nstates in range(3, 4)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
+    pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
     #pt3_nstates_list = [nstates for nstates in range(5, 6)] # pt2_nstates = pt3_nstates
 
-    sum_A3_range_list = [[tmin, tmax] for tmin in range(2, 8) for tmax in range(14, 15)]
-    sum_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
-    sum_nstates_list = [nstates for nstates in range(3, 4)]
+    sum_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
+    #sum_V4_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(14, 15)]
+    sum_nstates_list = [nstates for nstates in range(5, 6)]
 
     times = 0
 
@@ -194,19 +194,18 @@ elif fit_type == "continuous":
         for pt2_nstates in pt2_nstates_list:
             for pt3_A3_range in pt3_A3_range_list:
                 for sum_A3_range in sum_A3_range_list:
-                    for sum_V4_range in sum_V4_range_list:
-                        for sum_nstates in sum_nstates_list:
-                            print('#################################################')
-                            times += 1
-                            pt3_nstates = pt2_nstates ## pt3_nstates = pt2_nstates
+                    for sum_nstates in sum_nstates_list:
+                        print('#################################################')
+                        times += 1
+                        pt3_nstates = pt2_nstates 
 
-                            #sum_A3_range = [pt3_A3_range[0], pt3_A3_range[1]-1]
-                            print(sum_A3_range)
+                        #sum_A3_range = [pt3_A3_range[0], pt3_A3_range[1]-1]
+                        print(sum_A3_range)
 
-                            pt3_V4_range = pt3_A3_range ##
-                            #sum_V4_range = sum_A3_range ##
+                        pt3_V4_range = pt3_A3_range ##
+                        sum_V4_range = sum_A3_range ##
 
-                            fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
+                        fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
     print('total '+str(times)+' fits')
 #########################################################
 
@@ -216,7 +215,7 @@ t_list = []
 tau_list = []
 
 for t in range(3, 15): # 15 -> 6
-    if t % 2 == 0 or t % 2 == 1:
+    if t % 2 == 1:
         if t in range(2, 11):
             for tau in range(1, int(t/2)+1):
                 t_list.append(t)

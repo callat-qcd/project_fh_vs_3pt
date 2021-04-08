@@ -89,9 +89,9 @@ def both_even_tmax():
     tmax_name = '3pt' # varying tmax is not so interesting as tmin 
     save_name = 'both_even'
 
-    situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
+    situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='a9b2c4edb2b2222486dcbf23d24381d2', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
     pt2_nstates=5,
-    id_num=2,
+    pt3_A3_tsep_min=4, id_num=2,
     sum_tau_cut=1, sum_nstates=5)
 
     tmax_scattered_plot(best_n, tmax_name, situation_list, save_name)
@@ -106,9 +106,9 @@ def both_odd_tmax():
     tmax_name = '3pt' # varying tmax is not so interesting as tmin 
     save_name = 'both_odd'
 
-    situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
+    situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='a9b2c4edb2b2222486dcbf23d24381d2', fit_type='scattered', include_2pt=True, include_3pt=True, include_sum=True,
     pt2_nstates=5,
-    id_num=3,
+    pt3_A3_tsep_min=3, id_num=3,
     sum_tau_cut=1, sum_nstates=5)
 
     tmax_scattered_plot(best_n, tmax_name, situation_list, save_name)
@@ -403,6 +403,6 @@ def prior_width_23s():
 
 # %%
 if __name__ == "__main__":
-    sum_tmin_2s()
+    prior_width_23s()
 
 # %%
