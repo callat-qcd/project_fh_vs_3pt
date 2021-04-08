@@ -21,6 +21,8 @@ def prior_ho_width_1(pt2_nstates, pt3_nstates, sum_nstates):
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25, 0.5)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
+    prior['log(dE4)'] = gv.gvar(-1.25, 0.5*5)
+
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
 
@@ -158,15 +160,17 @@ def prior_sw_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
     prior['log(dE1)'] = gv.gvar(-1.25, 0.5)
     prior['z1'] = gv.gvar(0, 0.00025)
 
-    prior['log(dE2)'] = gv.gvar(-1.25+np.log(3), 0.5)
+    prior['log(dE2)'] = gv.gvar(-1.25+np.log(3), 0.5/3)
     prior['z2'] = gv.gvar(0, 0.00015)
 
     max_nstate = max(np.array([pt2_nstates, pt3_nstates, sum_nstates]))
 
     if max_nstate > 3:
         for i in range(3, max_nstate):
-            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25+np.log(2*i-1), 0.5)
+            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25+np.log(2*i-1), 0.5/(2*i-1))
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
+
+    prior['log(dE4)'] = gv.gvar(-1.25+np.log(2*4-1), 0.5/(2*4-1)*5)
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
@@ -205,14 +209,14 @@ def prior_id1_width_1(pt2_nstates, pt3_nstates, sum_nstates): # 1/n
     prior['log(dE1)'] = gv.gvar(-1.25, 0.5)
     prior['z1'] = gv.gvar(0, 0.00025)
 
-    prior['log(dE2)'] = gv.gvar(-1.25-np.log(2), 0.5)
+    prior['log(dE2)'] = gv.gvar(-1.25-np.log(2), 0.5*2)
     prior['z2'] = gv.gvar(0, 0.00015)
 
     max_nstate = max(np.array([pt2_nstates, pt3_nstates, sum_nstates]))
 
     if max_nstate > 3:
         for i in range(3, max_nstate):
-            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-np.log(i), 0.5)
+            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-np.log(i), 0.5*i)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
@@ -252,14 +256,14 @@ def prior_id2_width_1(pt2_nstates, pt3_nstates, sum_nstates): # 1/n**2
     prior['log(dE1)'] = gv.gvar(-1.25, 0.5)
     prior['z1'] = gv.gvar(0, 0.00025)
 
-    prior['log(dE2)'] = gv.gvar(-1.25-2*np.log(2), 0.5)
+    prior['log(dE2)'] = gv.gvar(-1.25-2*np.log(2), 0.5*4)
     prior['z2'] = gv.gvar(0, 0.00015)
 
     max_nstate = max(np.array([pt2_nstates, pt3_nstates, sum_nstates]))
 
     if max_nstate > 3:
         for i in range(3, max_nstate):
-            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-2*np.log(i), 0.5)
+            prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-2*np.log(i), 0.5*(i**2))
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
