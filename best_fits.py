@@ -21,8 +21,8 @@ import numpy as np
 from module.prepare_data import Prepare_data
 from module.fit import Fit
 from module.p0 import best_p0
-from module.prior_setting import prior_sw_width_1
-prior = prior_sw_width_1
+from module.prior_setting import prior_ho_width_1
+prior = prior_ho_width_1
 
 # %%
 pt2_data_range = [0, 96]
@@ -159,25 +159,29 @@ def late_23_fit(file_path, best_fit=False):
         return data_avg_dict_completed, fit_result, fitter
     
     
-
 # %%
 if __name__ == '__main__':
     data_avg_dict_completed, fit_result, fitter = combined_best_fit('/home/greyyy/Desktop/qcd/fh_vs_3pt/a09m310_e_gA_srcs0-15.h5') # path of data file
+
     # %%
     data_avg_dict_completed, fit_result, fitter = late_23_fit('/home/greyyy/Desktop/qcd/fh_vs_3pt/a09m310_e_gA_srcs0-15.h5', True)
 
 # %%
 # import numpy as np
+# from module.prior_setting import prior_ho_width_1
 # from module.prior_setting import prior_sw_width_1
 # from module.prior_setting import prior_id1_width_1
 # from module.prior_setting import prior_id2_width_1
 
-# prior = prior_sw_width_1(5, 5, 5)
+# prior = prior_ho_width_1(5, 5, 5)
 # prior['E1'] = prior['E0'] + prior['dE1']
 # prior['E2'] = prior['E0'] + prior['dE1'] + prior['dE2']
 # prior['E3'] = prior['E0'] + prior['dE1'] + prior['dE2'] + prior['dE3']
 # prior['E4'] = prior['E0'] + prior['dE1'] + prior['dE2'] + prior['dE3'] + prior['dE4']
 
-# print(prior['dE1'].sdev, prior['dE2'].sdev, prior['dE3'].sdev, prior['dE4'].sdev)
+# print(prior['E0'])
+# print(prior['dE1'])
+
+# print(prior['E1'], prior['E2'], prior['E3'], prior['E4'])
 
 # %%

@@ -19,7 +19,7 @@ grape = "#635BB1"
 violet = "#7C5AB8" # nstates = 7
 fuschia = "#C3559F"
 
-color_list = [red, peach, orange, green, blue, violet] # for stability plots
+color_list = [red, peach, orange, green, blue, violet, grey] # for stability plots
 psychedelic_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
 
 marker_list = ['8', 'P', 'D', 's', 'o', '*']
@@ -1187,17 +1187,19 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
 
     for n in range(n_range[0], n_range[1]):
         n_ = n - n_range[0]
-        for situation in situation_list[n_]:         
-            value['Q'][n].append(situation.Q_value)
-            value['gA'][n].append(situation.A300)
-            value['gA_err'][n].append(situation.A300_err)
+        for t in range(t_range[n_][0], t_range[n_][1]):
+            for situation in situation_list[n_]:         
+                tmin_dict = {}
+                tmin_dict['2pt'] = situation.pt2_tmin
+                tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
+                tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
+            
+                if tmin_dict[tmin_name] == t:
+                    value['Q'][n].append(situation.Q_value)
+                    value['gA'][n].append(situation.A300)
+                    value['gA_err'][n].append(situation.A300_err)
 
-            tmin_dict = {}
-            tmin_dict['2pt'] = situation.pt2_tmin
-            tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
-            tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
-
-            x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
+                    x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
     print(x)
     
@@ -1219,7 +1221,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
 
     for n in range(n_range[0], n_range[1]):
         n_ = n - n_range[0]
-        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker='o', color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
+        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker=marker_list[n], color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
 
     # best fit
     ax1.fill_between(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][best_n][best_t_[best_n_]]+value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), (value['gA'][best_n][best_t_[best_n_]]-value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), color=color_list[best_n - 2], alpha=0.2)
@@ -1229,7 +1231,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
             ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]+value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
             ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]-value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
         
-        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gA'][n][best_t_[n_]]]), yerr=np.array([value['gA_err'][n][best_t_[n_]]]), marker='o', mfc=color_list[n-2], color=color_list[n-2], **errorb)
+        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gA'][n][best_t_[n_]]]), yerr=np.array([value['gA_err'][n][best_t_[n_]]]), marker=marker_list[n], mfc=color_list[n-2], color=color_list[n-2], **errorb)
     
     legend_without_duplicate_labels(ax1, 'lower center', 3)
     
@@ -1245,12 +1247,12 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
 
     for n in range(n_range[0], n_range[1]):
         n_ = n - n_range[0]
-        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
+        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker=marker_list[n], c='', edgecolors=color_list[n-2])
 
     # best fit
     for n_ in range(n_range[1] - n_range[0]):
         n = n_ + n_range[0]    
-        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker='o', c=color_list[n-2])
+        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker=marker_list[n], c=color_list[n-2])
 
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.xlabel(xlabel, **fs_p)
@@ -1322,18 +1324,13 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
 
 
     for n in range(n_range[0], n_range[1]):
-        for situation in situation_list:         
-            nstate_dict = {}
-            nstate_dict['2pt'] = situation.pt2_nstates
-            nstate_dict['3pt'] = situation.pt3_nstates
-            nstate_dict['sum'] = situation.sum_nstates
-            
-            if nstate_dict[nstate_name] == n:
-                value['Q'][n].append(situation.Q_value)
-                value['logGBF'][n].append(situation.log_GBF)
-                value['E0'][n].append(situation.E0)
-                value['E0_err'][n].append(situation.E0_err)
-                
+        for t in range(t_range[0], t_range[1]):
+            for situation in situation_list:         
+                nstate_dict = {}
+                nstate_dict['2pt'] = situation.pt2_nstates
+                nstate_dict['3pt'] = situation.pt3_nstates
+                nstate_dict['sum'] = situation.sum_nstates
+
                 tmin_dict = {}
                 tmin_dict['2pt'] = situation.pt2_tmin
                 tmin_dict['3pt_gA'] = situation.pt3_A3_tsep_min
@@ -1341,7 +1338,13 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
                 tmin_dict['sum_gA'] = situation.sum_A3_tsep_min
                 tmin_dict['sum_gV'] = situation.sum_V4_tsep_min
                 
-                x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
+                if nstate_dict[nstate_name] == n and tmin_dict[tmin_name] == t:
+                    value['Q'][n].append(situation.Q_value)
+                    value['logGBF'][n].append(situation.log_GBF)
+                    value['E0'][n].append(situation.E0)
+                    value['E0_err'][n].append(situation.E0_err)
+                    
+                    x[n].append(tmin_dict[tmin_name])  # here is the varying parameter
 
     print(x)
     
@@ -1357,14 +1360,12 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
     ax1.set_ylim(E0_ylim)
 
     for n in range(n_range[0], n_range[1]):
-        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker='o', color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
+        ax1.errorbar(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['E0'][n]), yerr=np.array(value['E0_err'][n]), marker=marker_list[n], color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
 
     ax1.fill_between(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), (value['E0'][best_n][best_t_]+value['E0_err'][best_n][best_t_])*np.ones([t_range[1] - t_range[0] + 1]), (value['E0'][best_n][best_t - t_range[0]]-value['E0_err'][best_n][best_t - t_range[0]])*np.ones([t_range[1] - t_range[0] + 1]), color=color_list[best_n - 2], alpha=0.2)
 
     # best fit
-    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['E0'][best_n][best_t_]]), yerr=np.array([value['E0_err'][best_n][best_t_]]), marker='o', mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
-
-    ax1.legend(loc='lower center', ncol=4, fontsize=18, handletextpad=0, columnspacing =0)
+    ax1.errorbar(np.array([best_t + (best_n-4)*0.1]), np.array([value['E0'][best_n][best_t_]]), yerr=np.array([value['E0_err'][best_n][best_t_]]), marker=marker_list[best_n], mfc=color_list[best_n-2], color=color_list[best_n-2], **errorb)
 
     legend_without_duplicate_labels(ax1, 'lower center', 4)
     
@@ -1375,10 +1376,10 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
     for n in range(n_range[0], n_range[1]):
-        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker='o', c='', edgecolors=color_list[n-2])
+        ax2.scatter(np.arange(t_range[0], t_range[1]) + (n-4) * 0.1, np.array(value['Q'][n]), marker=marker_list[n], c='', edgecolors=color_list[n-2])
 
     # best fit
-    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker='o', c=color_list[best_n-2])
+    ax2.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([value['Q'][best_n][best_t_]]), marker=marker_list[best_n], c=color_list[best_n-2])
 
     
     # ax3
@@ -1400,10 +1401,10 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
         w_list = []
         for n in range(n_range[0], n_range[1]):
             w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
-            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='', edgecolors=color_list[n-2])
+            ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker=marker_list[n], c='', edgecolors=color_list[n-2])
         
     # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
+    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker=marker_list[best_n], c=color_list[best_n-2])
     
 
     plt.subplots_adjust(wspace=0, hspace=0)

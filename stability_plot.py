@@ -286,14 +286,14 @@ def pt2_tmin_2s():
     fit_name='2s'
     xlabel=c2pt_tmin
 
-    situation_1 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
+    situation_1 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='a99c26dd6000f43a5cce4158bd42c3f7', include_2pt=True, include_3pt=False, include_sum=True, 
     pt2_tmax=18, pt2_nstates=1,
     pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
     sum_A3_tsep_min=11, sum_V4_tsep_min=7, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=1)
 
     situation_2 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
     pt2_tmax=18, pt2_nstates=2,
-    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
+    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=5,
     sum_A3_tsep_min=5, sum_V4_tsep_min=5, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=2)
 
     situation_3 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
@@ -315,19 +315,19 @@ def sum_tmin_2s():
     fit_name='2s'
     xlabel=csum_tmin
 
-    situation_1 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
+    situation_1 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='a99c26dd6000f43a5cce4158bd42c3f7', include_2pt=True, include_3pt=False, include_sum=True, 
     pt2_tmin=12, pt2_tmax=18, pt2_nstates=1,
-    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
+    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=6,
     sum_V4_tsep_min=7, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=1)
 
     situation_2 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
     pt2_tmin=5, pt2_tmax=18, pt2_nstates=2,
-    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
+    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=6,
     sum_V4_tsep_min=5, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=2)
 
     situation_3 = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True, 
     pt2_tmin=5, pt2_tmax=18, pt2_nstates=3,
-    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
+    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=6,
     sum_V4_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=3)
 
     situation_list = [situation_1, situation_2, situation_3]
@@ -358,7 +358,7 @@ def late_tsep_23_E0():
 
     situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=False, 
     pt2_tmax=18, 
-    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
+    pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=3,
     sum_A3_tsep_min=3, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=5)
 
     late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tmin_name, situation_list, fit_name, xlabel)
@@ -403,5 +403,6 @@ def prior_width_23s():
 
 # %%
 if __name__ == "__main__":
-    ga_summary()
+    sum_tmin_2s()
+
 # %%

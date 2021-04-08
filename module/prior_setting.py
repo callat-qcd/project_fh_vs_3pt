@@ -21,7 +21,7 @@ def prior_ho_width_1(pt2_nstates, pt3_nstates, sum_nstates):
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25, 0.5)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
-    prior['log(dE4)'] = gv.gvar(-1.25, 0.5*5)
+    prior['log(dE4)'] = gv.gvar(-1.25, 0.5*5) # garbage can
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
@@ -70,6 +70,8 @@ def prior_ho_width_gs_times(pt2_nstates, pt3_nstates, sum_nstates, times): # cha
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25, 0.5)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
+    prior['log(dE4)'] = gv.gvar(-1.25, 0.5*5) # garbage can
+
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
 
@@ -116,6 +118,8 @@ def prior_ho_width_ge_times(pt2_nstates, pt3_nstates, sum_nstates, times): # cha
         for i in range(3, max_nstate):
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25, 0.5)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
+
+    prior['log(dE4)'] = gv.gvar(-1.25, 0.5*5) # garbage can
 
     # same garbage for sum and fh, so below are shared 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
@@ -170,7 +174,7 @@ def prior_sw_width_1(pt2_nstates, pt3_nstates, sum_nstates): # square well
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25+np.log(2*i-1), 0.5/(2*i-1))
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
-    prior['log(dE4)'] = gv.gvar(-1.25+np.log(2*4-1), 0.5/(2*4-1)*5)
+    prior['log(dE4)'] = gv.gvar(-1.25+np.log(2*4-1), 0.5/(2*4-1)*5) # garbage can
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
@@ -219,6 +223,8 @@ def prior_id1_width_1(pt2_nstates, pt3_nstates, sum_nstates): # 1/n
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-np.log(i), 0.5*i)
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
 
+    prior['log(dE4)'] = gv.gvar(-1.25-np.log(4), 0.5*4*5) # garbage can
+
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 
 
@@ -265,6 +271,8 @@ def prior_id2_width_1(pt2_nstates, pt3_nstates, sum_nstates): # 1/n**2
         for i in range(3, max_nstate):
             prior['log(dE'+str(i)+')'] = gv.gvar(-1.25-2*np.log(i), 0.5*(i**2))
             prior['z'+str(i)] = gv.gvar(0, 0.00015)
+
+    prior['log(dE4)'] = gv.gvar(-1.25-2*np.log(4), 0.5*16*5) # garbage can
 
     prior['log(E_sum)'] = gv.gvar(-1.25, 0.5) 
     prior['z_sum'] = gv.gvar(0, 0.00015) 

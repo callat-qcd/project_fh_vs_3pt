@@ -66,7 +66,7 @@ class Fit():
         for i in range(self.pt3_nstates): #initialize       
             E_list['E'+str(i)] = p['E0']
 
-        for i in range(1, self.pt3_nstates): #define Ei      
+        for i in range(1, self.pt3_nstates): #define Ei    
             for j in range(1, i+1):
                     E_list['E'+str(i)] += p['dE'+str(j)]
 
@@ -231,7 +231,6 @@ class Fit():
         val['sum_A3'] = z[0] * A3[0][0] * z[0] * np.exp(-E[0] * A3_t) * (A3_t - 2*cut + 1)
 
         val['sum_V4'] = z[0] * V4[0][0] * z[0] * np.exp(-E[0] * V4_t) * (V4_t - 2*cut + 1)
-
 
         for i in range(self.sum_nstates):
             for j in range(self.sum_nstates):
