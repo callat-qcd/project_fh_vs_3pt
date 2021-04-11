@@ -161,10 +161,10 @@ def late_23_fit(file_path, best_fit=False):
     
 # %%
 if __name__ == '__main__':
-    data_avg_dict_completed, fit_result, fitter = combined_best_fit('/home/greyyy/Desktop/qcd/fh_vs_3pt/a09m310_e_gA_srcs0-15.h5') # path of data file
+    data_avg_dict_completed, fit_result, fitter = combined_best_fit('/home/greyyy/Desktop/git/project_fh_vs_3pt/a09m310_e_gA_srcs0-15_full_tau.h5') # path of data file
 
     # %%
-    data_avg_dict_completed, fit_result, fitter = late_23_fit('/home/greyyy/Desktop/qcd/fh_vs_3pt/a09m310_e_gA_srcs0-15.h5', True)
+    data_avg_dict_completed, fit_result, fitter = late_23_fit('/home/greyyy/Desktop/git/project_fh_vs_3pt/a09m310_e_gA_srcs0-15_full_tau.h5', True)
 
 # %%
 # import numpy as np

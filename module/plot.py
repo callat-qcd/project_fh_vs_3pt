@@ -411,7 +411,7 @@ def tau_c_plot(file_path, f_range, d_range, fit_result): # fit range and data ra
     ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
 
     ax.set_ylim(gA_ylim)
-    ax.set_xlim([1 * omega_imp_a09, 23 * omega_imp_a09])
+    ax.set_xlim([1 * omega_imp_a09, 22 * omega_imp_a09])
     ax.set_ylabel(fha_label, **gA_fs_p)
     ax.set_xlabel(tsep_fm_label, **fs_p)
     ax.text(0.525, 1.295, tsep_label, **fs_p)
@@ -419,12 +419,122 @@ def tau_c_plot(file_path, f_range, d_range, fit_result): # fit range and data ra
     legend_without_duplicate_labels(ax, 'lower right', 3)
 
     ax1 = ax.twiny()
-    ax1.set_xlim([1, 23])
+    ax1.set_xlim([1, 22])
     ax1.tick_params(axis="x", pad=-20)   
     ax1.tick_params(direction='in', **ls_p)
 
     plot_range = str(f_range[0]) + '_to_' + str(f_range[1]-1)
     plt.savefig(f"./new_plots/tau_c_sum_plot_{plot_range}.pdf", transparent=True)
+    plt.show()
+
+def FH_R_plot(file_path, f_range, d_range, fit_result, combined_best_data_avg_dict_completed): # fit range and data range
+    from module.prepare_data import Prepare_data
+    from module.fit import Fit
+    from module.prior_setting import prior_ho_width_1 
+    prior = prior_ho_width_1
+
+    file_name = 'a09m310_e_gA_srcs0-15_full_tau.h5'
+    pt2_nstates = 5
+    pt3_nstates = pt2_nstates
+    sum_nstates = 5
+    include_2pt = True
+    include_3pt = True
+    include_sum = True
+
+    pt2_data_range = [0, 96]
+    pt3_data_range = [2, 15]
+
+    prepare_data = Prepare_data(file_name, file_path, pt2_data_range, pt3_data_range)
+
+    data_avg_dict = prepare_data.read_data_with_average()
+
+    
+
+    plt.figure(figsize=fig_size)
+    ax = plt.axes(plt_axes)
+    for sum_tau_cut in range(f_range[0], f_range[1]):
+        fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, include_2pt, include_3pt, include_sum)
+
+        tmin = max(2, 2*sum_tau_cut) - 0.5
+        tmax = 23
+
+        x_fill = np.arange(tmin, tmax, plot_space)[:int(-1 / plot_space)]
+
+        pt2_fitter = fitter.pt2_fit_function(np.arange(tmin, tmax, plot_space), fit_result.p)['pt2']
+
+        sum_A3_fitter = fitter.summation_same_can(np.arange(tmin, tmax, plot_space), np.arange(tmin, tmax, plot_space), fit_result.p)['sum_A3']
+
+        temp = []
+
+        for i in range(len(np.arange(tmin, tmax, plot_space)) - int(1 / plot_space)):
+            temp.append(sum_A3_fitter[i+int(1 / plot_space)] / pt2_fitter[i+int(1 / plot_space)] - sum_A3_fitter[i] / pt2_fitter[i])
+
+
+        y1 = np.array([val.mean for val in temp]) + np.array([val.sdev for val in temp])
+        y2 = np.array([val.mean for val in temp]) - np.array([val.sdev for val in temp])
+
+        ax.fill_between(x_fill * omega_imp_a09, y1, y2, color=color_list[sum_tau_cut], alpha=0.3)
+
+    for sum_tau_cut in range(d_range[0], d_range[1]):
+
+        data_avg_dict_completed = prepare_data.add_sum_data(data_avg_dict, sum_tau_cut)
+        
+        sum_data_list = []
+
+        tmin = max(2, 2*sum_tau_cut)
+
+        for t in range(tmin, 14):
+            sum_data_list.append(data_avg_dict_completed['sum_A3_fit_'+str(t)])
+
+        temp_mean = np.array([val.mean for val in sum_data_list])
+        temp_sdev = np.array([val.sdev for val in sum_data_list])
+
+        if sum_tau_cut == 1:
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], mfc=color_list[sum_tau_cut], **errorb)
+
+        else:
+            ax.errorbar(np.arange(tmin, 14) * omega_imp_a09, temp_mean, yerr=temp_sdev, label=r'$\tau_c=%d$' %sum_tau_cut, marker=marker_list[sum_tau_cut], color=color_list[sum_tau_cut], **errorp)
+    
+    ## R(tau=t/2) part
+    gA = {}
+    gA_err = {}
+
+    for t in range(pt3_data_range[0], pt3_data_range[1]):
+        if t % 2 == 0:
+            gA['tsep_'+str(t)] = []
+            gA_err['tsep_'+str(t)] = []
+
+            tau = int(t / 2)
+            temp = ( combined_best_data_avg_dict_completed['pt3_A3_tsep_'+str(t)][tau] ) / (combined_best_data_avg_dict_completed['pt2_tsep_'+str(t)])
+
+            gA['tsep_'+str(t)].append(temp.mean)
+            gA_err['tsep_'+str(t)].append(temp.sdev)
+
+            color = psychedelic_list[t-2]
+
+            ax.errorbar(np.array([t]) * omega_imp_a09, np.array(gA['tsep_'+str(t)]), yerr=np.array(gA_err['tsep_'+str(t)]), marker='o', color=color, label=r'$R_{A_3}(t_{\rm sep}, \tau=t_{\rm sep}/2)$', **errorp)
+
+    # plot best fit result of ga
+    best_x = np.linspace(1 * omega_imp_a09, 23 * omega_imp_a09, 100)
+    best_y1 = (fit_result.p['A3_00'].mean + fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+    best_y2 = (fit_result.p['A3_00'].mean - fit_result.p['A3_00'].sdev) * np.ones(len(best_x))
+
+    ax.fill_between(best_x, best_y1, best_y2, color=grey, alpha=0.3)
+
+    ax.set_ylim(gA_ylim)
+    ax.set_xlim([1 * omega_imp_a09, 22 * omega_imp_a09])
+    ax.set_ylabel(fha_label, **gA_fs_p)
+    ax.set_xlabel(tsep_fm_label, **fs_p)
+    ax.text(0.525, 1.295, tsep_label, **fs_p)
+    ax.tick_params(direction='in', **ls_p)
+    legend_without_duplicate_labels(ax, 'lower right', 1)
+
+    ax1 = ax.twiny()
+    ax1.set_xlim([1, 22])
+    ax1.tick_params(axis="x", pad=-20)   
+    ax1.tick_params(direction='in', **ls_p)
+
+    plt.savefig(f"./new_plots/FH_R_plot.pdf", transparent=True)
     plt.show()
 
 def excited_states_plot(pt3_list, ratio_list):

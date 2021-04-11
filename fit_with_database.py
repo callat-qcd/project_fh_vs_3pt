@@ -131,7 +131,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
 
 # %%
-file_name = 'a09m310_e_gA_srcs0-15.h5'
+file_name = 'a09m310_e_gA_srcs0-15_full_tau.h5'
 file_path = './' + file_name # just put the data file in the same path as this code.
 
 pt2_data_range = [0, 96] # range in data file
