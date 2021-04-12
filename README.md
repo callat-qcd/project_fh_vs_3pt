@@ -1,49 +1,68 @@
 # READ ME
 
-This project is used to fit a09 data and produce all plots in fh comparison paper.
+This project is used to fit the three-point vector and axia-vector correlation functions on the a09m310 data.  It also produces most plots in the paper, [arXiv:2104.xxxxx](https://arxiv.org/abs/2104.xxxx)
 
-## Prepare
+## Preparation
 
-download a09 h5 file from somewhere and save it in the same folder as this README:
+### Data files
+The correlation functions can be obtained with
+```
+wget https://a51.lbl.gov/~callat/published_results/a09m310_e_gA_srcs0-15_all_tau.h5
+```
+The data file includes the current insertion time in between the source and sink, as well as the "out-of-time" data.
+
+After obtaining the file, either rename it, or create a softlink in the root directory of this repository:
+```
+ln -s a09m310_e_gA_srcs0-15_all_tau.h5 a09m310_e_gA_srcs0-15.h5
+```
+
+### Using the database:
+An sqlite database of fit results for this project can be obtained
+```
+wget https://a51.lbl.gov/~callat/published_results/ga_excited_states_a09m310_db.sqlite
+```
+which can be used to generate plots.  Also, one can create a new database and perform fits.  
+
+The present code is tested with (the existing database is known to not work on newer versions of gvar - this will be updated at some point in the future)
+- [gvar](https://github.com/gplepage/gvar), version 11.5.2
+- [lsqfit](), version 11.5.3
+
+
+To make use of the database, you need to install [Espressodb](https://arxiv.org/abs/1912.03580).
 
 ```
-a09m310_e_gA_srcs0-15.h5
+pip install espressodb
+```
+Edit the "NAME" in the `db-config.yaml` file to match the downloaded sqlite file (including a relative or full path you create).  Then, to set up the db
+```
+python manage.py makemigrations
+python manage.py migrate
 ```
 
-In order to use database:
-
-```
-1. run "pip install espressodb"
-
-2. download "fh_db-db.sqlite" file and save it in the same folder as this README (this db file contains all fits that you needed to make every plot)
-
-wget <file_from_andre_desktop>
-
-3. change the "NAME" in "db-config.yaml" file to the correct path of "fh_db-db.sqlite" file 
-
-4. run "python manage.py makemigrations"
-
-5. run "python manage.py migrate"
-```
 
 ## Figures in the paper
 
+With the downloaded sqlite file, one can make these plots in the paper with the corresponding code:
+- Fig. 1 and 2: `python fit_on_data_plot.py`
+- Fig. 3: `python plot_eg_results.py`
 
-you can make these plots in the paper with corresponding code
+For other plots, the plotting functions are contained in the `stability_plot.py` file.  You can run
+```
+python stability_plot.py -h
+```
+to see how to generate the various plots.
 
-for those plots that made by "fit_on_data_plot.py" and "excited_state.py", just need to run the .py file
+- Fig. 4 t_min/t_max: `python stability_plot.py`
+- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_even`
+- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd
+- Fig. 5 excited state contamination: `python stability_plot.py`
+
 
 for those plots that made by "stability_plot.py", inside the .py file, there will be a specific function to make each plot, the corresponding function is in the () below, if you would like to make these plots, you should put the corresponding functions into the main function of "stability_plot.py" and run it
 
 all plots will be saved in "new_plots" folder
 
 ```
-Fig.1: fit_on_data_plot.py 
-
-Fig.3: stability_plot.py ( tmin_tmax_combined() , both_even_tmax() and both_odd_tmax() )
-
-Fig.4: excited_state.py 
-
 Fig.5: fit_on_data_plot.py
 
 Fig.6: stability_plot.py ( late_tsep_23_tau_inc() )
@@ -52,7 +71,7 @@ Fig.7: stability_plot.py ( late_tsep_23_E0() )
 
 Fig.8: stability_plot.py ( ga_summary() )
 
-Fig.10: fit_on_data_plot.py 
+Fig.10: fit_on_data_plot.py
 
 Fig.11: stability_plot.py ( pt2_tmin_2s() , sum_tmin_2s() )
 
