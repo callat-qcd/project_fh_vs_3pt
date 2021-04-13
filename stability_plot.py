@@ -416,9 +416,18 @@ if __name__ == "__main__":
     parser.add_argument('--t_odd',              default=False, action='store_true',
                         help=                'create t_odd stability plot? [%(default)s]')
 
-    parser.add_argument('--t_large',            default=False, action='store_true',
+    parser.add_argument('--t_large_stab',            default=False, action='store_true',
                         help=                'create large t_sep plot? [%(default)s]')
+    parser.add_argument('--t_large_2pt',             default=False, action='store_true',
+                        help=                'create large t_sep 2pt tmin stability? [%(default)s]')
 
+    parser.add_argument('--ga_summary',              default=False, action='store_true',
+                        help=                'create gA summary plot? [%(default)s]')
+
+    parser.add_argument('--tpt_fh',                  default=False, action='store_true',
+                        help=                'create 2pt+FH stability plots? [%(default)s]')
+    parser.add_argument('--tpt_3pt',                 default=False, action='store_true',
+                        help=                'create 2pt+3pt stability plots? [%(default)s]')
 
     parser.add_argument('--prior_width_23s', default=False, action='store_true',
                         help=                'create prior width stability plot? [%(default)s]')
@@ -437,8 +446,21 @@ if __name__ == "__main__":
     if args.t_odd:
         both_odd_tmax()
 
-    if args.t_large:
+    if args.t_large_stab:
         late_tsep_23_tau_inc()
+    if args.t_large_2pt:
+        late_tsep_23_E0()
+
+    if args.ga_summary:
+        ga_summary()
+
+    if args.tpt_fh:
+        pt2_tmin_2s()
+        sum_tmin_2s()
+        #pt2_tmax_2s()# this plot is broken
+    if args.tpt_3pt:
+        pt2_tmin_23()
+        pt3_tmin_23()
 
     if args.prior_width_23s:
         prior_width_23s()
