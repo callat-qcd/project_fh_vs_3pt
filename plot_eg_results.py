@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys
+import os, sys
 import matplotlib.pyplot as plt
 import numpy as np
 import gvar as gv
@@ -215,7 +215,9 @@ ax_esr.set_yticks([s_gev*t for t in ax_es.get_yticks()])
 ax_esr.set_yticklabels(["%.2f" %t for t in ax_esr.get_yticks()])
 ax_esr.set_ylabel(r'$E_n / {\rm GeV}$', **textp)
 
-plt.savefig('es_model_sensitivity.pdf', transparent=True)
+if not os.path.exists('new_plots'):
+    os.makedirs('new_plots')
+plt.savefig('new_plots/es_model_sensitivity.pdf', transparent=True)
 
 plt.ioff()
 plt.show()
