@@ -78,7 +78,7 @@ fit_with_database.py
 you can change parameters to do any fit you want, and choose to store results in the database or not.
 ```
 
-## About things in module folder
+## About code in module folder
 
 ```
 fit.py : all fit functions and process about fits
