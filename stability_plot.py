@@ -465,7 +465,7 @@ if __name__ == "__main__":
     if args.tpt_fh:
         pt2_tmin_2s()
         sum_tmin_2s()
-        pt2_tmax_2s()# this plot is broken
+        pt2_tmax_2s()
     if args.tpt_3pt:
         pt2_tmin_23()
         pt3_tmin_23()
