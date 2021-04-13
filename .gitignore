@@ -6,6 +6,5 @@ fh_db-db1.sqlite
 fh_db-db2.sqlite
 fh_db-db3.sqlite
 new_plots/*.pdf
-__pycache__/
+*__pycache__/
 db-config.yaml
-
