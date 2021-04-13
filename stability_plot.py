@@ -265,16 +265,21 @@ def pt2_tmax_2s():
     best_n = 2
     best_t = 18
     tmax_name = '2pt'
-
     fit_name = '2s'
     xlabel = c2pt_tmax
-
     situation_list = ff_fit_FF_fit.objects.filter(data_file_name='a09m310_e_gA_srcs0-15.h5', prior_hexcode='8e08f23bc983bf0fa9778157733d8235', include_2pt=True, include_3pt=False, include_sum=True,
     pt2_tmin=5, pt2_nstates=2,
     pt3_A3_tsep_min=3, pt3_A3_tsep_max=15, id_num=4,
     sum_A3_tsep_min=5, sum_A3_tsep_max=14, sum_tau_cut=1, sum_nstates=2)
-
-    tmax_plot(t_range, best_n, best_t, tmax_name, situation_list, fit_name, xlabel)
+    situation_list_modify = []
+    idx = 0
+    for situation in situation_list:
+        if situation.pt2_tmax == 18 and idx == 0:
+            situation_list_modify.append(situation)
+            idx += 1
+        elif situation.pt2_tmax != 18:
+            situation_list_modify.append(situation)
+    tmax_plot(t_range, best_n, best_t, tmax_name, situation_list_modify, fit_name, xlabel)
 
 def pt2_tmin_2s():
     n_range=[1, 4]
@@ -460,7 +465,7 @@ if __name__ == "__main__":
     if args.tpt_fh:
         pt2_tmin_2s()
         sum_tmin_2s()
-        #pt2_tmax_2s()# this plot is broken
+        pt2_tmax_2s()# this plot is broken
     if args.tpt_3pt:
         pt2_tmin_23()
         pt3_tmin_23()
