@@ -1,6 +1,6 @@
 # READ ME
 
-This project is used to fit the three-point vector and axia-vector correlation functions on the a09m310 data.  It also produces most plots in the paper, [arXiv:2104.xxxxx](https://arxiv.org/abs/2104.xxxx)
+This project is used to fit the three-point vector and axia-vector correlation functions on the a09m310 data.  It also produces most plots in the paper, [arXiv:2104.05226](https://arxiv.org/abs/2104.05226)
 
 ## Preparation
 
