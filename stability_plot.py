@@ -410,27 +410,30 @@ if __name__ == "__main__":
                         help=           'show plot before exiting? [%(default)s]')
 
     parser.add_argument('--tmin_max_stability', default=True,  action='store_false',
-                        help=                'create t_min/max stability plot? [%(default)s]')
+                        help=                   'create t_min/max stability plot? [%(default)s]')
     parser.add_argument('--t_even',             default=False, action='store_true',
-                        help=                'create t_even stability plot? [%(default)s]')
+                        help=                   'create t_even stability plot? [%(default)s]')
     parser.add_argument('--t_odd',              default=False, action='store_true',
-                        help=                'create t_odd stability plot? [%(default)s]')
+                        help=                   'create t_odd stability plot? [%(default)s]')
 
-    parser.add_argument('--t_large_stab',            default=False, action='store_true',
-                        help=                'create large t_sep plot? [%(default)s]')
-    parser.add_argument('--t_large_2pt',             default=False, action='store_true',
-                        help=                'create large t_sep 2pt tmin stability? [%(default)s]')
+    parser.add_argument('--t_large_stab',       default=False, action='store_true',
+                        help=                   'create large t_sep plot? [%(default)s]')
+    parser.add_argument('--t_large_2pt',        default=False, action='store_true',
+                        help=                   'create large t_sep 2pt tmin stability? [%(default)s]')
 
-    parser.add_argument('--ga_summary',              default=False, action='store_true',
-                        help=                'create gA summary plot? [%(default)s]')
+    parser.add_argument('--ga_summary',         default=False, action='store_true',
+                        help=                   'create gA summary plot? [%(default)s]')
 
-    parser.add_argument('--tpt_fh',                  default=False, action='store_true',
-                        help=                'create 2pt+FH stability plots? [%(default)s]')
-    parser.add_argument('--tpt_3pt',                 default=False, action='store_true',
-                        help=                'create 2pt+3pt stability plots? [%(default)s]')
+    parser.add_argument('--tpt_fh',             default=False, action='store_true',
+                        help=                   'create 2pt+FH stability plots? [%(default)s]')
+    parser.add_argument('--tpt_3pt',            default=False, action='store_true',
+                        help=                   'create 2pt+3pt stability plots? [%(default)s]')
 
-    parser.add_argument('--prior_width_23s', default=False, action='store_true',
-                        help=                'create prior width stability plot? [%(default)s]')
+    parser.add_argument('--tpt_3pt_fh',         default=False, action='store_true',
+                        help=                   'create 2pt+3pt+fh stability plots? [%(default)s]')
+
+    parser.add_argument('--prior_width',        default=False, action='store_true',
+                        help=                   'create prior width stability plot? [%(default)s]')
 
 
 
@@ -461,8 +464,14 @@ if __name__ == "__main__":
     if args.tpt_3pt:
         pt2_tmin_23()
         pt3_tmin_23()
+        tau_cut_23()
+    if args.tpt_3pt_fh:
+        pt2_tmin_23s()
+        pt3_tmin_23s()
+        sum_tmin_23s()
+        tau_cut_23s()
 
-    if args.prior_width_23s:
+    if args.prior_width:
         prior_width_23s()
 
     if args.show_plots:

@@ -56,38 +56,19 @@ to see how to generate the various plots.
 - Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_even`
 - Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd
 - Fig. 5 excited state contamination: `python stability_plot.py`
+- Fig. 6 excited state contamination: `python stability_plot.py`
+- Fig. 7 late time 3pt fit: `python stability_plot.py --tmin_max_stability --t_large_stab`
+- Fig. 8 late time 2pt sensitivity: `python stability_plot.py --tmin_max_stability --t_large_2pt`
+- Fig. 9 gA summary plot: `python stability_plot.py --tmin_max_stability --ga_summary`
+- Fig. 10 [in the works]:
+- Fig. 11 effective mass/z0/ga plots: `python stability_plot.py`
+- Fig. 12+13 2pt + FH stability: `python stability_plot.py --tmin_max_stability --tpt_fh`
+- Fig. 14+16 2pt + 3pt stability: `python stability_plot.py --tmin_max_stability --tpt_3pt`
+- Fig. 15 [in the works]:
+- Fig. 17+18 combined 2pt, 3pt, fh stability: `python stability_plot.py --tmin_max_stability --tpt_3pt_fh`
+- Fig. 19 prior width stability: `python stability_plot.py --tmin_max_stability --prior_width`
 
-
-for those plots that made by "stability_plot.py", inside the .py file, there will be a specific function to make each plot, the corresponding function is in the () below, if you would like to make these plots, you should put the corresponding functions into the main function of "stability_plot.py" and run it
-
-all plots will be saved in "new_plots" folder
-
-```
-Fig.5: fit_on_data_plot.py
-
-Fig.6: stability_plot.py ( late_tsep_23_tau_inc() )
-
-Fig.7: stability_plot.py ( late_tsep_23_E0() )
-
-Fig.8: stability_plot.py ( ga_summary() )
-
-Fig.10: fit_on_data_plot.py
-
-Fig.11: stability_plot.py ( pt2_tmin_2s() , sum_tmin_2s() )
-
-Fig.12: stability_plot.py ( pt2_tmax_2s() )
-
-Fig.13: stability_plot.py ( pt2_tmin_23() , pt3_tmin_23() )
-
-Fig.15: stability_plot.py ( tau_cut_23() )
-
-Fig.16: stability_plot.py ( pt2_tmin_23s() , pt3_tmin_23s() and sum_tmin_23s() )
-
-Fig.17: stability_plot.py ( tau_cut_23s() )
-
-Fig.18: stability_plot.py ( prior_width_23s() )
-
-```
+Figures will be saved in a `new_plots` folder.
 
 ## Do the fit with database
 
