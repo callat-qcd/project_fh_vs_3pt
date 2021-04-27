@@ -15,7 +15,7 @@ from module.prior_setting import prior_ho_width_1
 prior = prior_ho_width_1
 
 # %%
-def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num=None, pt2_range=[None, None], pt3_A3_range=[None, None], pt3_V4_range=[None, None], sum_A3_range=[None, None], sum_V4_range=[None, None], pt3_tau_dict=None):
+def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, include_sum, include_ga, include_gv, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num=None, pt2_range=[None, None], pt3_A3_range=[None, None], pt3_V4_range=[None, None], sum_A3_range=[None, None], sum_V4_range=[None, None], pt3_tau_dict=None):
     if fit_type == "scattered":
 
         pt2_t = np.array([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
@@ -77,7 +77,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
 
     print(pt2_nstates, pt3_nstates, sum_nstates)
 
-    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum)
+    fitter = Fit(file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum, include_ga, include_gv)
 
     fit_result, hexcode, dr_hex = fitter.fit(data_avg_dict_completed, pt2_t, pt3_A3, pt3_V4, sum_A3, sum_V4, best_p0, save)  
 
@@ -85,7 +85,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
     print(fit_result.p['A3_00'].mean)
     print(fit_result.p['A3_00'].sdev) 
 
-    #gv.dump(fit_result, 'n2_result'+str(pt2_range[0]))
+    gv.dump(fit_result, './data/spec_results_gv/ho_result'+str(pt2_range[0]))
 
     if save == True:
         tau_dict = gv.dumps(pt3_tau_dict)
@@ -146,6 +146,8 @@ data_avg_dict = prepare_data.read_data_with_average()
 include_2pt = True
 include_3pt = True
 include_sum = True
+include_ga = True
+include_gv = True
 
 sum_tau_cut = 1
 id_num = 1
@@ -162,7 +164,7 @@ if fit_type == "scattered":
     pt3_nstates = 5
     sum_nstates = 5
 
-    fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num)
+    fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, include_ga, include_gv, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num)
 
 
 ############################################################
@@ -177,7 +179,7 @@ elif fit_type == "continuous":
         pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1) # for 23 fit, start from 1
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
     pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]
@@ -205,7 +207,7 @@ elif fit_type == "continuous":
                         pt3_V4_range = pt3_A3_range ##
                         sum_V4_range = sum_A3_range ##
 
-                        fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
+                        fit_and_save(file_name, fit_type, save, include_2pt, include_3pt, include_sum, include_ga, include_gv, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut, id_num, pt2_range=pt2_range, pt3_A3_range=pt3_A3_range, pt3_V4_range=pt3_V4_range, sum_A3_range=sum_A3_range, sum_V4_range=sum_V4_range, pt3_tau_dict=pt3_tau_dict)
     print('total '+str(times)+' fits')
 #########################################################
 

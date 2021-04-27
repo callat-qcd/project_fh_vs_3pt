@@ -7,7 +7,7 @@ import math
 import hashlib
 
 class Fit():
-    def __init__(self, file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum):
+    def __init__(self, file_name, prior, pt2_nstates, pt3_nstates, sum_nstates, sum_tau_cut,  include_2pt, include_3pt, include_sum, include_ga=True, include_gv=True):
         self.file_name = file_name
         
         self.pt2_nstates = pt2_nstates
@@ -18,6 +18,8 @@ class Fit():
         self.include_2pt = include_2pt
         self.include_3pt = include_3pt
         self.include_sum = include_sum
+        self.include_ga = include_ga
+        self.include_gv = include_gv
         
         self.prior = prior(self.pt2_nstates, self.pt3_nstates, self.sum_nstates)
 
@@ -72,24 +74,30 @@ class Fit():
 
         val = {}
 
-        val['pt3_A3'] = p['A3_00']*p['z0']*p['z0']*np.exp(-E_list['E0']*pt3_tsep_A3) 
+        if self.include_ga == True:
+            val['pt3_A3'] = p['A3_00']*p['z0']*p['z0']*np.exp(-E_list['E0']*pt3_tsep_A3) 
 
-        val['pt3_V4'] = p['V4_00']*p['z0']*p['z0']*np.exp(-E_list['E0']*pt3_tsep_V4) 
+        if self.include_gv == True:
+            val['pt3_V4'] = p['V4_00']*p['z0']*p['z0']*np.exp(-E_list['E0']*pt3_tsep_V4) 
 
         for i in range(self.pt3_nstates):    
             for j in range(self.pt3_nstates):
                 if i+j >= 1:
                     if j == i:
-                        val['pt3_A3'] += p['A3_'+str(j)+str(i)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_A3)
+                        if self.include_ga == True:
+                            val['pt3_A3'] += p['A3_'+str(j)+str(i)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_A3)
 
-                        val['pt3_V4'] += p['V4_'+str(j)+str(i)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_V4)
+                        if self.include_gv == True:
+                            val['pt3_V4'] += p['V4_'+str(j)+str(i)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_V4)
 
                     else:
                         mi = np.minimum(j, i)
                         ma = np.maximum(j, i)
-                        val['pt3_A3'] += p['A3_'+str(mi)+str(ma)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_A3)*np.exp((E_list['E'+str(j)]-E_list['E'+str(i)])*pt3_tau_A3)
+                        if self.include_ga == True:
+                            val['pt3_A3'] += p['A3_'+str(mi)+str(ma)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_A3)*np.exp((E_list['E'+str(j)]-E_list['E'+str(i)])*pt3_tau_A3)
 
-                        val['pt3_V4'] += p['V4_'+str(mi)+str(ma)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_V4)*np.exp((E_list['E'+str(j)]-E_list['E'+str(i)])*pt3_tau_V4)
+                        if self.include_gv == True:
+                            val['pt3_V4'] += p['V4_'+str(mi)+str(ma)]*p['z'+str(j)]*p['z'+str(i)]*np.exp(-E_list['E'+str(j)]*pt3_tsep_V4)*np.exp((E_list['E'+str(j)]-E_list['E'+str(i)])*pt3_tau_V4)
 
         return val
 
@@ -107,9 +115,11 @@ class Fit():
 
             val = {}
 
-            val['sum_A3'] = p['z0'] * p['A3_00'] * p['z0'] * np.exp(-E_list['E0'] * A3_t) * (A3_t - 2*cut + 1)
+            if self.include_ga == True:
+                val['sum_A3'] = p['z0'] * p['A3_00'] * p['z0'] * np.exp(-E_list['E0'] * A3_t) * (A3_t - 2*cut + 1)
 
-            val['sum_V4'] = p['z0'] * p['V4_00'] * p['z0'] * np.exp(-E_list['E0'] * V4_t) * (V4_t - 2*cut + 1)
+            if self.include_gv == True:
+                val['sum_V4'] = p['z0'] * p['V4_00'] * p['z0'] * np.exp(-E_list['E0'] * V4_t) * (V4_t - 2*cut + 1)
 
             return val
 
@@ -137,49 +147,62 @@ class Fit():
             for j in range(self.sum_nstates-1):
                 mi = np.minimum(j, i)
                 ma = np.maximum(j, i)
-                A3[i][j] = p['A3_'+str(mi)+str(ma)]
-                V4[i][j] = p['V4_'+str(mi)+str(ma)]
+                if self.include_ga == True:
+                    A3[i][j] = p['A3_'+str(mi)+str(ma)]
+                if self.include_gv == True:
+                    V4[i][j] = p['V4_'+str(mi)+str(ma)]
 
         for i in range(self.sum_nstates):
-            sumA3[i] = p['sum_A3_'+str(i)]
-            sumV4[i] = p['sum_V4_'+str(i)]
+            if self.include_ga == True:
+                sumA3[i] = p['sum_A3_'+str(i)]
+            if self.include_gv == True:
+                sumV4[i] = p['sum_V4_'+str(i)]
 
         cut = self.sum_tau_cut
 
         val = {}
 
-        val['sum_A3'] = z[0] * A3[0][0] * z[0] * np.exp(-E[0] * A3_t) * (A3_t - 2*cut + 1)
+        if self.include_ga == True:
+            val['sum_A3'] = z[0] * A3[0][0] * z[0] * np.exp(-E[0] * A3_t) * (A3_t - 2*cut + 1)
 
-        val['sum_V4'] = z[0] * V4[0][0] * z[0] * np.exp(-E[0] * V4_t) * (V4_t - 2*cut + 1)
+        if self.include_gv == True:
+            val['sum_V4'] = z[0] * V4[0][0] * z[0] * np.exp(-E[0] * V4_t) * (V4_t - 2*cut + 1)
 
 
         for i in range(self.sum_nstates-1):
             for j in range(self.sum_nstates-1):
                 if i+j >= 1:
                     if j == i: 
-                        val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * (A3_t - 2*cut + 1)
+                        if self.include_ga == True:
+                            val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * (A3_t - 2*cut + 1)
 
-                        val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * (V4_t - 2*cut + 1) 
+                        if self.include_gv == True:
+                            val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * (V4_t - 2*cut + 1) 
 
                     else:
-                        val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((A3_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
+                        if self.include_ga == True:
+                            val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((A3_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
 
-                        val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((V4_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
+                        if self.include_gv == True:
+                            val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((V4_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
                         
 
         for i in range(self.sum_nstates-1):
-            val['sum_A3'] += z_sum * sumA3[i] * z[i] * np.exp(-E_sum * A3_t) * (((np.exp(cut * (E_sum - E[i])) ) * (1 - np.exp((A3_t - 2*cut + 1) * (E_sum - E[i])) )) / (1 - np.exp(E_sum - E[i]) ))
+            if self.include_ga == True:
+                val['sum_A3'] += z_sum * sumA3[i] * z[i] * np.exp(-E_sum * A3_t) * (((np.exp(cut * (E_sum - E[i])) ) * (1 - np.exp((A3_t - 2*cut + 1) * (E_sum - E[i])) )) / (1 - np.exp(E_sum - E[i]) ))
 
-            val['sum_A3'] += z[i] * sumA3[i] * z_sum * np.exp(-E[i] * A3_t) * (((np.exp(cut * (E[i] - E_sum)) ) * (1 - np.exp((A3_t - 2*cut + 1) * (E[i] - E_sum)) )) / (1 - np.exp(E[i] - E_sum) ))
+                val['sum_A3'] += z[i] * sumA3[i] * z_sum * np.exp(-E[i] * A3_t) * (((np.exp(cut * (E[i] - E_sum)) ) * (1 - np.exp((A3_t - 2*cut + 1) * (E[i] - E_sum)) )) / (1 - np.exp(E[i] - E_sum) ))
 
-            val['sum_V4'] += z_sum * sumV4[i] * z[i] * np.exp(-E_sum * V4_t) * (((np.exp(cut * (E_sum - E[i])) ) * (1 - np.exp((V4_t - 2*cut + 1) * (E_sum - E[i])) )) / (1 - np.exp(E_sum - E[i]) ))
+            if self.include_gv == True:
+                val['sum_V4'] += z_sum * sumV4[i] * z[i] * np.exp(-E_sum * V4_t) * (((np.exp(cut * (E_sum - E[i])) ) * (1 - np.exp((V4_t - 2*cut + 1) * (E_sum - E[i])) )) / (1 - np.exp(E_sum - E[i]) ))
 
-            val['sum_V4'] += z[i] * sumV4[i] * z_sum * np.exp(-E[i] * V4_t) * (((np.exp(cut * (E[i] - E_sum)) ) * (1 - np.exp((V4_t - 2*cut + 1) * (E[i] - E_sum)) )) / (1 - np.exp(E[i] - E_sum) ))
+                val['sum_V4'] += z[i] * sumV4[i] * z_sum * np.exp(-E[i] * V4_t) * (((np.exp(cut * (E[i] - E_sum)) ) * (1 - np.exp((V4_t - 2*cut + 1) * (E[i] - E_sum)) )) / (1 - np.exp(E[i] - E_sum) ))
             
+        if self.include_ga == True:
+           val['sum_A3'] += z_sum * sumA3[self.sum_nstates-1] * z_sum * np.exp(-E_sum * A3_t) * (A3_t - 2*cut + 1)
 
-        val['sum_A3'] += z_sum * sumA3[self.sum_nstates-1] * z_sum * np.exp(-E_sum * A3_t) * (A3_t - 2*cut + 1)
-
-        val['sum_V4'] += z_sum * sumV4[self.sum_nstates-1] * z_sum * np.exp(-E_sum * V4_t) * (V4_t - 2*cut + 1)
+        if self.include_gv == True:
+            val['sum_V4'] += z_sum * sumV4[self.sum_nstates-1] * z_sum * np.exp(-E_sum * V4_t) * (V4_t - 2*cut + 1)
 
         return val 
     
@@ -197,9 +220,11 @@ class Fit():
 
             val = {}
 
-            val['sum_A3'] = p['z0'] * p['A3_00'] * p['z0'] * np.exp(-E_list['E0'] * A3_t) * (A3_t - 2*cut + 1)
+            if self.include_ga == True:
+                val['sum_A3'] = p['z0'] * p['A3_00'] * p['z0'] * np.exp(-E_list['E0'] * A3_t) * (A3_t - 2*cut + 1)
 
-            val['sum_V4'] = p['z0'] * p['V4_00'] * p['z0'] * np.exp(-E_list['E0'] * V4_t) * (V4_t - 2*cut + 1)
+            if self.include_gv == True:
+                val['sum_V4'] = p['z0'] * p['V4_00'] * p['z0'] * np.exp(-E_list['E0'] * V4_t) * (V4_t - 2*cut + 1)
 
             return val
 
@@ -221,29 +246,38 @@ class Fit():
             for j in range(self.sum_nstates):
                 mi = np.minimum(j, i)
                 ma = np.maximum(j, i)
-                A3[i][j] = p['A3_'+str(mi)+str(ma)]
-                V4[i][j] = p['V4_'+str(mi)+str(ma)]
+                if self.include_ga == True:
+                    A3[i][j] = p['A3_'+str(mi)+str(ma)]
+    
+                if self.include_gv == True:
+                    V4[i][j] = p['V4_'+str(mi)+str(ma)]
 
         cut = self.sum_tau_cut
 
         val = {}
 
-        val['sum_A3'] = z[0] * A3[0][0] * z[0] * np.exp(-E[0] * A3_t) * (A3_t - 2*cut + 1)
+        if self.include_ga == True:
+            val['sum_A3'] = z[0] * A3[0][0] * z[0] * np.exp(-E[0] * A3_t) * (A3_t - 2*cut + 1)
 
-        val['sum_V4'] = z[0] * V4[0][0] * z[0] * np.exp(-E[0] * V4_t) * (V4_t - 2*cut + 1)
+        if self.include_gv == True:
+            val['sum_V4'] = z[0] * V4[0][0] * z[0] * np.exp(-E[0] * V4_t) * (V4_t - 2*cut + 1)
 
         for i in range(self.sum_nstates):
             for j in range(self.sum_nstates):
                 if i+j >= 1:
                     if j == i: 
-                        val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * (A3_t - 2*cut + 1)
+                        if self.include_ga == True:
+                            val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * (A3_t - 2*cut + 1)
 
-                        val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * (V4_t - 2*cut + 1) 
+                        if self.include_gv == True:
+                            val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * (V4_t - 2*cut + 1) 
 
                     else:  ### transition terms
-                        val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((A3_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
+                        if self.include_ga == True:
+                            val['sum_A3'] += z[j] * A3[j][i] * z[i] * np.exp(-E[j] * A3_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((A3_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
 
-                        val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((V4_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
+                        if self.include_gv == True:
+                            val['sum_V4'] += z[j] * V4[j][i] * z[i] * np.exp(-E[j] * V4_t) * ((np.exp(cut * D[j][i]) * (1 - np.exp((V4_t - 2*cut + 1) * D[j][i]) )) / (1 - np.exp(D[j][i]) ))
 
         return val 
 
@@ -256,48 +290,70 @@ class Fit():
             val['pt2'] = self.pt2_fit_function(pt2_t, p)['pt2']
 
         if self.include_3pt == True:
-            pt3_tsep_A3 = x['pt3_A3'][0]
-            pt3_tau_A3 = x['pt3_A3'][1]
-            pt3_tsep_V4 = x['pt3_V4'][0]
-            pt3_tau_V4 = x['pt3_V4'][1]
+            pt3_tsep_A3 = []
+            pt3_tau_A3 = []
+            pt3_tsep_V4 = []
+            pt3_tau_V4 = []
 
-            val['pt3_A3'] = self.pt3_fit_function(pt3_tsep_A3, pt3_tsep_V4, pt3_tau_A3, pt3_tau_V4, p)['pt3_A3']
+            if self.include_ga == True:
+                pt3_tsep_A3 = x['pt3_A3'][0]
+                pt3_tau_A3 = x['pt3_A3'][1]
 
-            val['pt3_V4'] = self.pt3_fit_function(pt3_tsep_A3, pt3_tsep_V4, pt3_tau_A3, pt3_tau_V4, p)['pt3_V4']
+            if self.include_gv == True:
+                pt3_tsep_V4 = x['pt3_V4'][0]
+                pt3_tau_V4 = x['pt3_V4'][1]
+                
+            if self.include_ga == True:
+                val['pt3_A3'] = self.pt3_fit_function(pt3_tsep_A3, pt3_tsep_V4, pt3_tau_A3, pt3_tau_V4, p)['pt3_A3']
+                
+            if self.include_gv == True:
+                val['pt3_V4'] = self.pt3_fit_function(pt3_tsep_A3, pt3_tsep_V4, pt3_tau_A3, pt3_tau_V4, p)['pt3_V4']
 
         if self.include_sum == True:
-            gap_a = x['sum_A3'][1] - x['sum_A3'][0]
-            gap_v = x['sum_V4'][1] - x['sum_V4'][0]
+            pt2_t_A3_fit_1 = []
+            pt2_t_A3_fit_2 = []
+            pt2_t_V4_fit_1 = []
+            pt2_t_V4_fit_2 = []
+            sum_tsep_A3_fit_1 = []
+            sum_tsep_A3_fit_2 = []
+            sum_tsep_V4_fit_1 = []
+            sum_tsep_V4_fit_2 = []
+    
+            if self.include_ga == True:
+                gap_a = x['sum_A3'][1] - x['sum_A3'][0]
+                sum_tsep_A3_fit_1 = x['sum_A3'][:-1]
+                sum_tsep_A3_fit_2 = x['sum_A3'][1:]
+                pt2_t_A3_fit_1 = sum_tsep_A3_fit_1
+                pt2_t_A3_fit_2 = sum_tsep_A3_fit_2
 
-            sum_tsep_A3_fit_1 = x['sum_A3'][:-1]
-            sum_tsep_V4_fit_1 = x['sum_V4'][:-1]
-
-            sum_tsep_A3_fit_2 = x['sum_A3'][1:]
-            sum_tsep_V4_fit_2 = x['sum_V4'][1:]
-
-            pt2_t_A3_fit_1 = sum_tsep_A3_fit_1
-            pt2_t_V4_fit_1 = sum_tsep_V4_fit_1
-
-            pt2_t_A3_fit_2 = sum_tsep_A3_fit_2
-            pt2_t_V4_fit_2 = sum_tsep_V4_fit_2
+            if self.include_gv == True:
+                gap_v = x['sum_V4'][1] - x['sum_V4'][0]
+                sum_tsep_V4_fit_1 = x['sum_V4'][:-1]
+                sum_tsep_V4_fit_2 = x['sum_V4'][1:]
+                pt2_t_V4_fit_1 = sum_tsep_V4_fit_1
+                pt2_t_V4_fit_2 = sum_tsep_V4_fit_2
 
             if self.pt2_nstates != self.sum_nstates:
-                val['sum_A3'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p, self.sum_nstates)['pt2']) # using same nstates in the ratio
+                if self.include_ga == True:
+                    val['sum_A3'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p, self.sum_nstates)['pt2']) # using same nstates in the ratio
 
-                val['sum_A3'] = val['sum_A3'] / gap_a
+                    val['sum_A3'] = val['sum_A3'] / gap_a
 
-                val['sum_V4'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p, self.sum_nstates)['pt2'])
+                if self.include_gv == True:
+                    val['sum_V4'] = (self.summation(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p, self.sum_nstates)['pt2']) - (self.summation(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p, self.sum_nstates)['pt2'])
 
-                val['sum_V4'] = val['sum_V4'] / gap_v
+                    val['sum_V4'] = val['sum_V4'] / gap_v
   
             if self.pt2_nstates == self.sum_nstates:
-                val['sum_A3'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p)['pt2'])
+                if self.include_ga == True:
+                    val['sum_A3'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_A3']/self.pt2_fit_function(pt2_t_A3_fit_1, p)['pt2'])
 
-                val['sum_A3'] = val['sum_A3'] / gap_a
+                    val['sum_A3'] = val['sum_A3'] / gap_a
 
-                val['sum_V4'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p)['pt2'])
+                if self.include_gv == True:
+                    val['sum_V4'] = (self.summation_same_can(sum_tsep_A3_fit_2, sum_tsep_V4_fit_2, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_2, p)['pt2']) - (self.summation_same_can(sum_tsep_A3_fit_1, sum_tsep_V4_fit_1, p)['sum_V4']/self.pt2_fit_function(pt2_t_V4_fit_1, p)['pt2'])
 
-                val['sum_V4'] = val['sum_V4'] / gap_v
+                    val['sum_V4'] = val['sum_V4'] / gap_v
 
         return val
 
@@ -317,57 +373,58 @@ class Fit():
             Amp['pt2'] = np.array(pt2_amp)
         
         if self.include_3pt == True:
-            pt3_A3_tsep = pt3_A3[0]
-            pt3_A3_tau = pt3_A3[1]
-            pt3_V4_tsep = pt3_V4[0]
-            pt3_V4_tau = pt3_V4[1]
+            if self.include_ga == True:
+                pt3_A3_tsep = pt3_A3[0]
+                pt3_A3_tau = pt3_A3[1]
 
-            pt3_A3_amp = []
-            pt3_V4_amp = []
+                pt3_A3_amp = []
+                for i in range(len(pt3_A3[0])):
+                    t = pt3_A3[0][i]
+                    tau = pt3_A3[1][i]
 
-            for i in range(len(pt3_A3[0])):
-                t = pt3_A3[0][i]
-                tau = pt3_A3[1][i]
+                    pt3_A3_amp.append((data_avg_dict['pt3_A3_tsep_' + str(t)][tau] + data_avg_dict['pt3_A3_tsep_' + str(t)][t - tau])/2) # average tau=i and tau=tsep-i to make data symmetric
 
-                pt3_A3_amp.append((data_avg_dict['pt3_A3_tsep_' + str(t)][tau] + data_avg_dict['pt3_A3_tsep_' + str(t)][t - tau])/2) # average tau=i and tau=tsep-i to make data symmetric
+                t_tsep_tau['pt3_A3'] = [np.array(pt3_A3_tsep), np.array(pt3_A3_tau)]
+                Amp['pt3_A3'] = np.array(pt3_A3_amp)
 
-            for i in range(len(pt3_V4[0])):
-                t = pt3_V4[0][i]
-                tau = pt3_V4[1][i]
+            if self.include_gv == True:
+                pt3_V4_tsep = pt3_V4[0]
+                pt3_V4_tau = pt3_V4[1]
 
-                pt3_V4_amp.append((data_avg_dict['pt3_V4_tsep_' + str(t)][tau] + data_avg_dict['pt3_V4_tsep_' + str(t)][t - tau])/2) # average tau=i and tau=tsep-i to make data symmetric
+                pt3_V4_amp = []
+                for i in range(len(pt3_V4[0])):
+                    t = pt3_V4[0][i]
+                    tau = pt3_V4[1][i]
 
+                    pt3_V4_amp.append((data_avg_dict['pt3_V4_tsep_' + str(t)][tau] + data_avg_dict['pt3_V4_tsep_' + str(t)][t - tau])/2) # average tau=i and tau=tsep-i to make data symmetric
+                
+                t_tsep_tau['pt3_V4'] = [np.array(pt3_V4_tsep), np.array(pt3_V4_tau)]
+                Amp['pt3_V4'] = np.array(pt3_V4_amp)
 
-            t_tsep_tau['pt3_A3'] = [np.array(pt3_A3_tsep), np.array(pt3_A3_tau)]
-            t_tsep_tau['pt3_V4'] = [np.array(pt3_V4_tsep), np.array(pt3_V4_tau)]
-            Amp['pt3_A3'] = np.array(pt3_A3_amp)
-            Amp['pt3_V4'] = np.array(pt3_V4_amp)
-
-            print(pt3_A3_amp)
 
         if self.include_sum == True:
-            sum_A3_factor=[]
-            sum_V4_factor=[]
+            if self.include_ga == True:
+                sum_A3_factor=[]
+                for t in sum_A3:
+                    sum_A3_factor.append(data_avg_dict['sum_A3_fit_'+str(t)])
 
-            for t in sum_A3:
-                sum_A3_factor.append(data_avg_dict['sum_A3_fit_'+str(t)])
+                sum_A3 = [t for t in sum_A3]
+                sum_A3.append(2*sum_A3[-1] - sum_A3[-2])
+                t_tsep_tau['sum_A3'] = np.array(sum_A3)
 
-            for t in sum_V4:
-                sum_V4_factor.append(data_avg_dict['sum_V4_fit_'+str(t)])
+                Amp['sum_A3'] = np.array(sum_A3_factor)
 
-            sum_A3 = [t for t in sum_A3]
-            sum_A3.append(2*sum_A3[-1] - sum_A3[-2])
-            t_tsep_tau['sum_A3'] = np.array(sum_A3)
+            if self.include_gv == True:
+                sum_V4_factor=[]
+                for t in sum_V4:
+                    sum_V4_factor.append(data_avg_dict['sum_V4_fit_'+str(t)])
 
-            sum_V4 = [t for t in sum_V4]
-            sum_V4.append(2*sum_V4[-1] - sum_V4[-2])
-            t_tsep_tau['sum_V4'] = np.array(sum_V4)
+                sum_V4 = [t for t in sum_V4]
+                sum_V4.append(2*sum_V4[-1] - sum_V4[-2])
+                t_tsep_tau['sum_V4'] = np.array(sum_V4)
 
-            Amp['sum_A3'] = np.array(sum_A3_factor)
-            Amp['sum_V4'] = np.array(sum_V4_factor)
+                Amp['sum_V4'] = np.array(sum_V4_factor)
 
-        #print(t_tsep_tau)
-        #print(Amp)
 
         if best_p0 == 0:
             fit_result = lsf.nonlinear_fit(data=(t_tsep_tau, Amp), prior=priors, fcn=self.fcn, maxit=100000, fitter='scipy_least_squares') # scipy_least_squares   # gsl_multifit
