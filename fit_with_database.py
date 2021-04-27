@@ -85,7 +85,7 @@ def fit_and_save(data_file_name, fit_type, save, include_2pt, include_3pt, inclu
     print(fit_result.p['A3_00'].mean)
     print(fit_result.p['A3_00'].sdev) 
 
-    gv.dump(fit_result, './data/spec_results_gv/ho_result'+str(pt2_range[0]))
+    #gv.dump([fit_result.prior, fit_result.p, fit_result.Q, fit_result.logGBF], './data/spec_results/ho_result'+str(pt2_range[0]))
 
     if save == True:
         tau_dict = gv.dumps(pt3_tau_dict)
@@ -179,7 +179,7 @@ elif fit_type == "continuous":
         pt3_tau_dict['A3_tsep'+str(t)] = np.arange(2, int(t/2)+1) # for 23 fit, start from 1
         pt3_tau_dict['V4_tsep'+str(t)] = np.arange(2, int(t/2)+1)
 
-    pt2_range_list = [[tmin, tmax] for tmin in range(3, 8) for tmax in range(18, 19)]
+    pt2_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(18, 19)]
     pt2_nstates_list = [nstates for nstates in range(5, 6)]
 
     pt3_A3_range_list = [[tmin, tmax] for tmin in range(3, 4) for tmax in range(15, 16)]

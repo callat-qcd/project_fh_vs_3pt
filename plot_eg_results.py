@@ -24,18 +24,19 @@ for m in models:
         fits[m][k] = []
 for t in ['3','4','5','6','7']:
     for m in models:
-        f = gv.load('data/spec_results/'+file_m[m]+t)
-        fits[m]['logGBF'].append(f.logGBF)
-        fits[m]['Q'].append(f.Q)
-        fits[m]['E0'].append(f.p['E0'])
+        f = gv.load('data/spec_results_pt2/'+file_m[m]+t) # [prior, posterior, Q, logGBF]
+        fits[m]['logGBF'].append(f[3])
+        fits[m]['Q'].append(f[2])
+        fits[m]['E0'].append(f[1]['E0'])
         for n in [1,2,3,4]:
-            tmp = f.p['E0']
+            tmp = f[1]['E0']
             for l in range(1,n+1):
-                tmp += f.p['dE'+str(l)]
+                tmp += f[1]['dE'+str(l)]
             fits[m]['E'+str(n)].append(tmp)
-            fits[m]['pdE'+str(n)].append(f.prior['dE'+str(n)])
-        fits[m]['gA'].append(f.p['A3_00'])
-        fits[m]['z0'].append(f.p['z0'])
+            fits[m]['pdE'+str(n)].append(f[0]['dE'+str(n)])
+        #print(f[0]['dE2'])
+        fits[m]['gA'].append(f[1]['A3_00'])
+        fits[m]['z0'].append(f[1]['z0'])
 # make weights
 for t in range(5):
     lGBF_rel = []
@@ -159,9 +160,15 @@ for i_t,t in enumerate([3,4,5,6,7]):
         for n in [1,2,3,4]:
             # plot prior
             #En = fits[m]['E'+str(n-1)][i_t] + dE_mod(n, m)
+            if n == 2:
+                print(En)
+                print(fits[m]['E1'][i_t])
+                print(fits[m]['pdE2'][i_t])
             En = fits[m]['E'+str(n-1)][i_t] + fits[m]['pdE'+str(n)][i_t]
             n_base  = t_0 + 2*p_width*(n-1)
             p_range = np.arange(n_base-p_width, n_base+p_width+.001, .001)
+            if n == 2:
+                print(En)
             ax_es.fill_between(p_range, En.mean-En.sdev, En.mean+En.sdev,
                     color=n_clr[m], alpha=.5)
 
@@ -217,7 +224,7 @@ ax_esr.set_ylabel(r'$E_n / {\rm GeV}$', **textp)
 
 if not os.path.exists('new_plots'):
     os.makedirs('new_plots')
-plt.savefig('new_plots/es_model_sensitivity.pdf', transparent=True)
+plt.savefig('new_plots/es_model_sensitivity_pt2.pdf', transparent=True)
 
 plt.ioff()
 plt.show()
