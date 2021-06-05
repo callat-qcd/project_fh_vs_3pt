@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import gvar as gv
 if gv.__version__ != '11.5.2':
+    print('your gvar is version ', gv.__version__)
     sys.exit('For now, you must have gvar version 11.5.2 to be able to read the results')
 
 s_mev = 197.3 / 0.08730
@@ -24,7 +25,7 @@ for m in models:
         fits[m][k] = []
 for t in ['3','4','5','6','7']:
     for m in models:
-        f = gv.load('data/spec_results_pt2/'+file_m[m]+t) # [prior, posterior, Q, logGBF]
+        f = gv.load('data/spec_results/'+file_m[m]+t) # [prior, posterior, Q, logGBF]
         fits[m]['logGBF'].append(f[3])
         fits[m]['Q'].append(f[2])
         fits[m]['E0'].append(f[1]['E0'])
