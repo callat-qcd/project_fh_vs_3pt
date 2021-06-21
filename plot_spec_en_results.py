@@ -25,7 +25,7 @@ for m in models:
         fits[m][k] = []
 for t in ['3','4','5','6','7']:
     for m in models:
-        f = gv.load('data/spec_results/'+file_m[m]+t) # [prior, posterior, Q, logGBF]
+        f = gv.load('data/spec_results_pt2/'+file_m[m]+t) # [prior, posterior, Q, logGBF]
         fits[m]['logGBF'].append(f[3])
         fits[m]['Q'].append(f[2])
         fits[m]['E0'].append(f[1]['E0'])
@@ -109,10 +109,10 @@ plt.ion()
 plt.rcParams['xtick.direction'] = 'in'
 plt.rcParams['ytick.direction'] = 'in'
 
-gridspec_tmin = {'height_ratios': [10, 2, 2, 1.25, 1.25],
+gridspec_tmin = {'height_ratios': [10, 2, 1.25, 1.25],
     'left': 0.06, 'bottom': 0.1, 'right': 0.945, 'top': 0.99, 'hspace':0}
 
-fig, (ax_es, ax_e0, ax_gA, ax_Q, ax_w) = plt.subplots(5, 1, sharex = True, gridspec_kw=gridspec_tmin, figsize=figsize)
+fig, (ax_es, ax_e0, ax_Q, ax_w) = plt.subplots(4, 1, sharex = True, gridspec_kw=gridspec_tmin, figsize=figsize)
 
 # add N-pi levels
 E_Npi = Npi(mN=mN, mpi=mpi, L=32)
@@ -139,25 +139,25 @@ p_width = 0.0625/2
 for i_t,t in enumerate([3,4,5,6,7]):
     for m in models:
         mfc = n_clr[m]
-        clr = n_clr[m]
+        clr = 'k'#n_clr[m]
         e0 = fits[m]['E0'][i_t]
 
         if t==3 and m == 'HO':
             clr = 'k'
-            mfc = n_clr[m]
+            mfc = 'white'#n_clr[m]
 
         t_0  = t + shift[m]
         ax_e0.errorbar(t_0, e0.mean, yerr=e0.sdev,
                     color=clr, marker=mrkr[m], mfc=mfc)
-        gA = fits[m]['gA'][i_t]
-        ax_gA.errorbar(t_0, gA.mean, yerr=gA.sdev,
-                    color=clr, marker=mrkr[m], mfc=mfc)
+        #gA = fits[m]['gA'][i_t]
+        #ax_gA.errorbar(t_0, gA.mean, yerr=gA.sdev,
+        #            color=clr, marker=mrkr[m], mfc=mfc)
         ax_Q.plot(t_0, fits[m]['Q'][i_t], color=n_clr[m], marker=mrkr[m], mfc=mfc)
         ax_w.plot(t_0, fits[m]['w'][i_t], color=n_clr[m], marker=mrkr[m], mfc=mfc)
 
         if t==3 and m == 'HO':
             ax_e0.axhspan(e0.mean-e0.sdev, e0.mean+e0.sdev, color=n_clr[m], alpha=.3)
-            ax_gA.axhspan(gA.mean-gA.sdev, gA.mean+gA.sdev, color=n_clr[m], alpha=.3)
+            #ax_gA.axhspan(gA.mean-gA.sdev, gA.mean+gA.sdev, color=n_clr[m], alpha=.3)
 
         for n in [1,2,3,4]:
             # plot prior
@@ -194,11 +194,11 @@ ax_e0r.tick_params(axis='both', which='major', **labelp)
 ax_e0r.set_yticklabels(["%.2f" %t for t in ax_e0r.get_yticks()])
 ax_e0r.set_ylabel(r'$E_0 / {\rm GeV}$', **textp)
 
-ax_gA.set_ylim(1.16, 1.34)
-ax_gA.set_ylabel(r'$\mathring{g}_A$', **textp)
-ax_gA.tick_params(axis='both', which='major', **labelp)
-ax_gA.set_yticks([1.19, fits['HO']['gA'][0].mean, 1.31])
-ax_gA.set_yticklabels(["%.2f" %e for e in ax_gA.get_yticks()])
+#ax_gA.set_ylim(1.16, 1.34)
+#ax_gA.set_ylabel(r'$\mathring{g}_A$', **textp)
+#ax_gA.tick_params(axis='both', which='major', **labelp)
+#ax_gA.set_yticks([1.19, fits['HO']['gA'][0].mean, 1.31])
+#ax_gA.set_yticklabels(["%.2f" %e for e in ax_gA.get_yticks()])
 
 ax_w.set_ylim(0,1)
 ax_w.set_yticks([0.1,0.75])
@@ -226,7 +226,7 @@ ax_esr.set_ylabel(r'$E_n / {\rm GeV}$', **textp)
 
 if not os.path.exists('new_plots'):
     os.makedirs('new_plots')
-plt.savefig('new_plots/es_model_sensitivity.pdf', transparent=True)
+plt.savefig('new_plots/es_model_sensitivity_2pt.pdf', transparent=True)
 
 plt.ioff()
 plt.show()

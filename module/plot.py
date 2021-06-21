@@ -1142,6 +1142,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     # ax2
     ax2.set_ylabel(q_label, **fs_p)
     ax2.set_ylim([0.01, 1.1])
+    ax2.set_yticks([0.1,0.75])
 
     ax2.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.1 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
@@ -1156,7 +1157,7 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
     ax3.set_ylabel(w_label, **fs_p)
     ax3.set_ylim([0.01, 1.1])
 
-    ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
+    #ax3.plot(np.arange(t_range[0] - 0.5, t_range[1] + 0.5, 1), 0.3 * np.ones([t_range[1] - t_range[0] + 1]), 'r--')
 
     log_max = {}
 
@@ -1167,13 +1168,23 @@ def tmin_plot(n_range, t_range, best_n, best_t, nstate_name, tmin_name, situatio
             logGBF_list.append(value['logGBF'][n][t_])
 
         log_max['t='+str(t)] = max(logGBF_list)
+        w_norm = np.sum( np.array( [np.exp(lgbf-max(logGBF_list)) for lgbf in logGBF_list]))
+        print(w_norm, [np.exp(lgbf-max(logGBF_list)) for lgbf in logGBF_list])
+        if t == best_t:
+            w_norm_best = w_norm
 
         for n in range(n_range[0], n_range[1]):
-            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
+            #w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)])
+            w = np.exp(value['logGBF'][n][t_] - log_max['t='+str(t)]) / w_norm
             ax3.scatter(np.array([t + (n-4)*0.1]), np.array([w]), marker='o', c='None', edgecolors=color_list[n-2])
 
     # best fit
-    ax3.scatter(np.array([best_t + (best_n-4)*0.1]), np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]), marker='o', c=color_list[best_n-2])
+    print(value['logGBF'][best_n][best_t_])
+    ax3.scatter(np.array([best_t + (best_n-4)*0.1]),
+        #np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)] )]),
+        np.array([np.exp( value['logGBF'][best_n][best_t_] - log_max['t='+str(best_t)]) / w_norm_best]),
+        marker='o', c=color_list[best_n-2])
+    ax3.set_yticks([0.1,0.75])
 
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.xlabel(xlabel, **fs_p)
