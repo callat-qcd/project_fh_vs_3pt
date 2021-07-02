@@ -15,7 +15,7 @@ s_gev = s_mev / 1000
 mpi = 0.14073
 mN  = 0.4904
 
-fit_types = ['spec_results','spec_results_pt2','spec_results_ga','spec_results_gv']
+fit_types = ['spec_results','spec_results_ga','spec_results_gv','spec_results_pt2']
 
 models = ['SqW', 'HO', '1/n', '1/n2']
 models = ['HO', '1/n', '1/n2']
@@ -134,7 +134,7 @@ n_clr = {'SqW':red, 'HO':orange, '1/n':green, '1/n2':blue}
 mrkr  = {'SqW':'s', 'HO':'o', '1/n':'X', '1/n2':'D'}
 p_width = 0.025
 
-shift = {'spec_results': -.3, 'spec_results_pt2':-.1, 'spec_results_ga':.1,'spec_results_gv':.3}
+shift = {'spec_results': -.3, 'spec_results_pt2':.3, 'spec_results_ga':-.1,'spec_results_gv':.1}
 n_clr = {'spec_results': red, 'spec_results_pt2':orange, 'spec_results_ga':green,'spec_results_gv':blue}
 mrkr  = {'spec_results': 's', 'spec_results_pt2':'o', 'spec_results_ga':'X','spec_results_gv':'D'}
 p_width = 0.025
