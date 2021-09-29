@@ -21,23 +21,29 @@ An sqlite database of fit results for this project can be obtained
 ```
 wget https://a51.lbl.gov/~callat/published_results/ga_excited_states_a09m310_db.sqlite
 ```
-which can be used to generate plots.  Also, one can create a new database and perform fits.  
+After obtaining the file, either rename it, or create a softlink in the `data` directory of this repository:
+```
+ln -s ga_excited_states_a09m310_db.sqlite data/ga_excited_states_a09m310_db.sqlite
+```
+_(Equivalently, you can also update the database location provided by the `NAME` variable in `db-config.yaml`.)_
 
-The present code is tested with (the existing database is known to not work on newer versions of gvar - this will be updated at some point in the future)
-- [gvar](https://github.com/gplepage/gvar), version 11.5.2
-- [lsqfit](), version 11.5.3
+This file can be used to generate plots.  Also, one can create a new database and perform fits.
 
-
-To make use of the database, you need to install [Espressodb](https://arxiv.org/abs/1912.03580).
+To make use of the database, you need to install [Espressodb](https://arxiv.org/abs/1912.03580) and further dependencies:
 
 ```
-pip install espressodb
+pip install -r requirements.txt
 ```
-Edit the "NAME" in the `db-config.yaml` file to match the downloaded sqlite file (including a relative or full path you create).  Then, to set up the db
+
+Then, run the following command to set up the db
 ```
 python manage.py makemigrations
 python manage.py migrate
 ```
+
+The present code is tested with (the existing database is known to not work on newer versions of gvar - this will be updated at some point in the future)
+- [gvar](https://github.com/gplepage/gvar), version 11.5.2
+- [lsqfit](), version 11.5.3
 
 
 ## Figures in the paper
@@ -54,7 +60,7 @@ to see how to generate the various plots.
 
 - Fig. 4 t_min/t_max: `python stability_plot.py`
 - Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_even`
-- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd
+- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd`
 - Fig. 5 excited state contamination: `python stability_plot.py`
 - Fig. 6 excited state contamination: `python stability_plot.py`
 - Fig. 7 late time 3pt fit: `python stability_plot.py --tmin_max_stability --t_large_stab`
