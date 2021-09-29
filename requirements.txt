@@ -2,3 +2,7 @@ Django
 django-bootstrap4
 django-widget-tweaks
 espressodb
+matplotlib
+h5py
+gvar==11.5.2
+lsqfit==11.5.3
