@@ -1,6 +1,7 @@
 FK_Fpi_data.h5
 a09m310_e_gA_srcs0-15.h5
 a09m310_e_gA_srcs0-15_full_tau.h5
+a09m310_e_gA_srcs0-15_all_tau.h5
 fh_db-db.sqlite
 fh_db-db1.sqlite
 fh_db-db2.sqlite
@@ -8,3 +9,4 @@ fh_db-db3.sqlite
 new_plots/*.pdf
 *__pycache__/
 db-config.yaml
+data/ga_excited_states_a09m310_db.sqlite

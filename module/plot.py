@@ -22,7 +22,7 @@ fuschia = "#C3559F"
 color_list = [red, peach, orange, green, blue, violet, grey] # for stability plots
 psychedelic_list = [grey, fuschia, violet, grape, blue, turquoise, green, lime, yellow, sunkist, orange, peach, red] # for psychedelic moose
 
-marker_list = ['8', 'P', 'D', 's', 'o', '*']
+marker_list = ['8', 'h', 'D', 's', 'o', '*']
 
 fig_width = 6.75 # in inches, 2x as wide as APS column
 gr        = 1.618034333 # golden ratio
@@ -1036,7 +1036,7 @@ def late_23_tau_inc_plot(A3, A3_err, Q):
 
     ax1.errorbar(np.array([1]), np.array(A3['opt'][1]), yerr=np.array(A3_err['opt'][1]), marker='o', mfc=blue, color=blue, **errorb)
 
-    ax1.fill_between(x = [-1, 4], y1 = [y1a, y1a], y2 = [y2a, y2a], alpha = 0.3, color=yellow)
+    ax1.fill_between(x = [-1, 4], y1 = [y1a, y1a], y2 = [y2a, y2a], alpha = 0.3, color=grape)
     ax1.fill_between(x = [-1, 4], y1 = A3['opt'][1]+A3_err['opt'][1], y2 = A3['opt'][1]-A3_err['opt'][1], alpha = 0.3, color=blue)
 
     legend_without_duplicate_labels(ax1, 'lower center', 3)
@@ -1337,6 +1337,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
 
     #####################################################################################
     # gA - tmin
+
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, gridspec_kw=gridspec_tmin_div)
 
     # ax1
@@ -1344,18 +1345,34 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
     ax1.set_ylim(gA_ylim)
 
     for n in range(n_range[0], n_range[1]):
+
+        col = color_list[n-2]
+        alp = 1
+        if col == grey:
+            col = 'k'
+            alp = 0.7
+
         n_ = n - n_range[0]
-        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker=marker_list[n], color=color_list[n-2], label=r'$n_{\rm s} = %d$' %n, **errorp)
+        ax1.errorbar(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['gA'][n]), yerr=np.array(value['gA_err'][n]), marker=marker_list[n], color=col, label=r'$n_{\rm s} = %d$' %n, alpha=alp, **errorp)
+
 
     # best fit
     ax1.fill_between(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][best_n][best_t_[best_n_]]+value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), (value['gA'][best_n][best_t_[best_n_]]-value['gA_err'][best_n][best_t_[best_n_]])*np.ones([plot_tmax - plot_tmin + 1]), color=color_list[best_n - 2], alpha=0.2)
     for n_ in range(n_range[1] - n_range[0]):
         n = n_ + n_range[0]
-        if n != best_n:
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]+value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
-            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]-value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = color_list[n-2], linestyle='--')
 
-        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gA'][n][best_t_[n_]]]), yerr=np.array([value['gA_err'][n][best_t_[n_]]]), marker=marker_list[n], mfc=color_list[n-2], color=color_list[n-2], **errorb)
+        col = color_list[n-2]
+        alp = 1
+        if col == grey:
+            col = 'k'
+            alp = 0.7
+
+        if n != best_n:
+            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]+value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = col, alpha=alp, linestyle='--')
+            ax1.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), (value['gA'][n][best_t_[n_]]-value['gA_err'][n][best_t_[n_]])*np.ones([plot_tmax - plot_tmin + 1]), color = col, alpha=alp, linestyle='--')
+
+        ax1.errorbar(np.array([best_t[n_] + (n - 2)*0.2]), np.array([value['gA'][n][best_t_[n_]]]), yerr=np.array([value['gA_err'][n][best_t_[n_]]]), marker=marker_list[n], mfc=col, color=col, alpha=alp, **errorb)
+
 
     legend_without_duplicate_labels(ax1, 'lower center', 3)
 
@@ -1370,13 +1387,27 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
     ax2.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), 0.1 * np.ones([plot_tmax - plot_tmin + 1]), 'r--')
 
     for n in range(n_range[0], n_range[1]):
+        
+        col = color_list[n-2]
+        alp = 1
+        if col == grey:
+            col = 'k'
+            alp = 0.7
+
         n_ = n - n_range[0]
-        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker=marker_list[n], c='None', edgecolors=color_list[n-2])
+        ax2.scatter(np.arange(t_range[n_][0], t_range[n_][1]) + (n-2) * 0.2, np.array(value['Q'][n]), marker=marker_list[n], c='None', alpha=alp, edgecolors=col)
 
     # best fit
     for n_ in range(n_range[1] - n_range[0]):
         n = n_ + n_range[0]
-        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker=marker_list[n], c=color_list[n-2])
+
+        col = color_list[n-2]
+        alp = 1
+        if col == grey:
+            col = 'k'
+            alp = 0.7
+
+        ax2.scatter(np.array([best_t[n_] + (n-2)*0.2]), np.array([value['Q'][n][best_t_[n_]]]), marker=marker_list[n], c=col, alpha=alp)
 
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.xlabel(xlabel, **fs_p)
@@ -1544,6 +1575,7 @@ def late_23_tmin_plot(E0_ylim, n_range, t_range, best_n, best_t, nstate_name, tm
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.xlabel(xlabel, **fs_p)
     plt.xlim([t_range[0] - 0.5, t_range[1] - 0.5])
+    plt.xticks([t for t in range(3, 17, 2)])
     ax1.tick_params(axis='both', direction='in', which='major', **ls_p)
     ax2.tick_params(axis='both', direction='in', which='major', **ls_p)
     ax3.tick_params(axis='both', direction='in', which='major', **ls_p)
