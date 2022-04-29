@@ -49,10 +49,10 @@ gA_ylim = [1.01, 1.349]
 
 # labels
 ra_label = r"$R_{A_3}(t_{\rm sep}, \tau)$"
-tau_label = r"$(\tau - t_{\rm sep}/2) ({\rm a09m310})$"
+tau_label = r"$(\tau - t_{\rm sep}/2) (a_{09})$"
 fm_tau_label = r"$(\tau - t_{\rm sep}/2) ({\rm fm})$"
 fha_label = r"${\rm FH}_{A_3}(t_{\rm sep}, \tau_c)$"
-tsep_label = r'$t_{\textrm{sep}} ({\rm a09m310})$'
+tsep_label = r'$t_{\textrm{sep}} (a_{09})$'
 tsep_fm_label = r'$t_{\textrm{sep}} ({\rm fm})$'
 meff_label = r"$m_{\textrm{eff}}$"
 zeff_label = r"$10^3 z_{\textrm{eff}}$"
@@ -1387,7 +1387,7 @@ def tmin_div_plot(n_range, t_range, best_n, best_t, tmin_name, situation_list, f
     ax2.plot(np.arange(plot_tmin - 0.5, plot_tmax + 0.5, 1), 0.1 * np.ones([plot_tmax - plot_tmin + 1]), 'r--')
 
     for n in range(n_range[0], n_range[1]):
-        
+
         col = color_list[n-2]
         alp = 1
         if col == grey:
