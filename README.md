@@ -24,7 +24,7 @@ wget https://a51.lbl.gov/~callat/published_results/ga_excited_states_a09m310_db.
 which can be used to generate plots.  Also, one can create a new database and perform fits.  
 
 The present code is tested with (the existing database is known to not work on newer versions of gvar - this will be updated at some point in the future)
-- [gvar](https://github.com/gplepage/gvar), version 11.5.2
+- [gvar](https://github.com/gplepage/gvar), version 11.9.6 (if does not work, please try again with 11.5.2)
 - [lsqfit](), version 11.5.3
 
 
@@ -54,19 +54,20 @@ to see how to generate the various plots.
 
 - Fig. 4 t_min/t_max: `python stability_plot.py`
 - Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_even`
-- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd
-- Fig. 5 excited state contamination: `python stability_plot.py`
-- Fig. 6 excited state contamination: `python stability_plot.py`
+- Fig. 4 t_even: `python stability_plot.py --tmin_max_stability --t_odd`
+- Fig. 5 excited state contamination: `python excited_state.py`
+- Fig. 6 late time 2pt+3pt fit: `python fit_on_data_plot.py`
 - Fig. 7 late time 3pt fit: `python stability_plot.py --tmin_max_stability --t_large_stab`
 - Fig. 8 late time 2pt sensitivity: `python stability_plot.py --tmin_max_stability --t_large_2pt`
 - Fig. 9 gA summary plot: `python stability_plot.py --tmin_max_stability --ga_summary`
-- Fig. 10 [in the works]:
-- Fig. 11 effective mass/z0/ga plots: `python stability_plot.py`
+- Fig. 10 : miss
+- Fig. 11 effective mass/z0/ga plots: `python fit_on_data_plot.py`
 - Fig. 12+13 2pt + FH stability: `python stability_plot.py --tmin_max_stability --tpt_fh`
 - Fig. 14+16 2pt + 3pt stability: `python stability_plot.py --tmin_max_stability --tpt_3pt`
-- Fig. 15 [in the works]:
+- Fig. 15 : miss
 - Fig. 17+18 combined 2pt, 3pt, fh stability: `python stability_plot.py --tmin_max_stability --tpt_3pt_fh`
 - Fig. 19 prior width stability: `python stability_plot.py --tmin_max_stability --prior_width`
+- Fig. 20 consistency of extracted spectrum: `python plot_spec_en_results.py` and `python plot_spec_g_en_results.py`
 
 Figures will be saved in a `new_plots` folder.
 

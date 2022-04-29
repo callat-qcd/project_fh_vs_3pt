@@ -49,13 +49,13 @@ gA_ylim = [1.01, 1.349]
 
 # labels
 ra_label = r"$R_{A_3}(t_{\rm sep}, \tau)$"
-tau_label = r"$(\tau - t_{\rm sep}/2) / a_{09}$"
-fm_tau_label = r"$(\tau - t_{\rm sep}/2) / {\rm fm}$"
+tau_label = r"$(\tau - t_{\rm sep}/2) ({\rm a09m310})$"
+fm_tau_label = r"$(\tau - t_{\rm sep}/2) ({\rm fm})$"
 fha_label = r"${\rm FH}_{A_3}(t_{\rm sep}, \tau_c)$"
-tsep_label = r'$t_{\textrm{sep}} / a_{09}$'
-tsep_fm_label = r'$t_{\textrm{sep}} / {\rm fm}$'
+tsep_label = r'$t_{\textrm{sep}} ({\rm a09m310})$'
+tsep_fm_label = r'$t_{\textrm{sep}} ({\rm fm})$'
 meff_label = r"$m_{\textrm{eff}}$"
-zeff_label = r"$z_{\textrm{eff}} \times 10^3$"
+zeff_label = r"$10^3 z_{\textrm{eff}}$"
 ga_label = r"$\mathring{g}_A$"
 e0_label = r"$E_{0}$"
 q_label = r"$Q$"

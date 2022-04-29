@@ -3,9 +3,9 @@ import os, sys
 import matplotlib.pyplot as plt
 import numpy as np
 import gvar as gv
-if gv.__version__ != '11.5.2':
-    print('your gvar is version ', gv.__version__)
-    sys.exit('For now, you must have gvar version 11.5.2 to be able to read the results')
+# if gv.__version__ != '11.5.2':
+#     print('your gvar is version ', gv.__version__)
+#     sys.exit('For now, you must have gvar version 11.5.2 to be able to read the results')
 
 s_mev = 197.3 / 0.08730
 s_gev = s_mev / 1000
@@ -152,7 +152,7 @@ for i_t,t in enumerate([3,4,5,6,7]):
 
         t_0  = t + shift[m]
         ax_e0.errorbar(t_0, e0.mean, yerr=e0.sdev,
-                    color=clr, marker=mrkr[m], mfc=mfc)
+                    color=clr, marker=mrkr[m], mfc=mfc, capsize=3)
         #gA = fits[m]['gA'][i_t]
         #ax_gA.errorbar(t_0, gA.mean, yerr=gA.sdev,
         #            color=clr, marker=mrkr[m], mfc=mfc)
@@ -186,7 +186,7 @@ for i_t,t in enumerate([3,4,5,6,7]):
             if t==3 and m == 'spec_results':
                 ax_es.axhspan(en.mean-en.sdev, en.mean+en.sdev, color=n_clr[m], alpha=.3)
             ax_es.errorbar(t_0+2*p_width*(n-1), en.mean, yerr=en.sdev,
-                    color=clr, marker=mrkr[m], mfc=mfc, label=lbl, linestyle='None')
+                    color=clr, marker=mrkr[m], mfc=mfc, label=lbl, linestyle='None', capsize=3)
 
             if t in [5,6] and n==1 and m in ['spec_results','spec_results_pt2']:
                 print(m,t,en)
@@ -199,7 +199,7 @@ ax_e0r.set_ylim(ax_e0.get_ylim()[0]*s_gev, ax_e0.get_ylim()[1]*s_gev)
 ax_e0r.set_yticks([s_gev*t for t in ax_e0.get_yticks()[1:-1]])
 ax_e0r.tick_params(axis='both', which='major', **labelp)
 ax_e0r.set_yticklabels(["%.2f" %t for t in ax_e0r.get_yticks()])
-ax_e0r.set_ylabel(r'$E_0 / {\rm GeV}$', **textp)
+ax_e0r.set_ylabel(r'$E_0 ({\rm GeV})$', **textp)
 
 #ax_gA.set_ylim(1.16, 1.34)
 #ax_gA.set_ylabel(r'$\mathring{g}_A$', **textp)
@@ -229,7 +229,7 @@ ax_esr.set_ylim(ax_es.get_ylim()[0]*s_gev, ax_es.get_ylim()[1]*s_gev)
 ax_esr.tick_params(axis='both', which='major', **labelp)
 ax_esr.set_yticks([s_gev*t for t in ax_es.get_yticks()])
 ax_esr.set_yticklabels(["%.2f" %t for t in ax_esr.get_yticks()])
-ax_esr.set_ylabel(r'$E_n / {\rm GeV}$', **textp)
+ax_esr.set_ylabel(r'$E_n ({\rm GeV})$', **textp)
 
 if not os.path.exists('new_plots'):
     os.makedirs('new_plots')
